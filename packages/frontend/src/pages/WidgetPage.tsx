@@ -9,7 +9,7 @@ export default function WidgetPage() {
   const { token } = useParams<{ token: string }>();
 
   useEffect(() => {
-    document.title = 'TS Server Widget';
+    document.title = 'TS 服务器小组件';
     const meta = document.createElement('meta');
     meta.name = 'robots';
     meta.content = 'noindex';
@@ -32,7 +32,7 @@ export default function WidgetPage() {
         height: '100vh', background: '#0f1117', color: '#8b949e',
         fontFamily: "'Segoe UI', sans-serif", fontSize: '13px',
       }}>
-        Loading...
+        加载中...
       </div>
     );
   }
@@ -44,7 +44,7 @@ export default function WidgetPage() {
         height: '100vh', background: '#0f1117', color: '#8b949e',
         fontFamily: "'Segoe UI', sans-serif", fontSize: '13px',
       }}>
-        Widget not available
+        小组件暂时无法访问
       </div>
     );
   }

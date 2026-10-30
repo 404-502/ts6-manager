@@ -70,8 +70,8 @@ function ClientEntry({ client, depth }: { client: ClientInfo; depth: number }) {
         {client.client_nickname?.[0]?.toUpperCase() || '?'}
       </div>
       <span className="truncate">{client.client_nickname}</span>
-      {client.client_away === 1 && <Badge variant="warning" className="text-[8px] px-1 py-0 h-3.5">Away</Badge>}
-      {client.client_input_muted === 1 && !client.client_away && <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5">Muted</Badge>}
+      {client.client_away === 1 && <Badge variant="warning" className="text-[8px] px-1 py-0 h-3.5">离开</Badge>}
+      {client.client_input_muted === 1 && !client.client_away && <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5">静音</Badge>}
     </div>
   );
 }
@@ -259,22 +259,22 @@ export default function Channels() {
     return map;
   }, [clientData]);
 
-  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Hash} title="No server selected" />;
+  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Hash} title="未选择服务器" />;
   if (channelsLoading) return <PageLoader />;
 
   const handleCreate = () => {
     if (!newName.trim()) return;
     createChannel.mutate({ channel_name: newName, channel_flag_permanent: 1 }, {
-      onSuccess: () => { toast.success('Channel created'); setShowCreate(false); setNewName(''); },
-      onError: () => toast.error('Failed to create channel'),
+      onSuccess: () => { toast.success('频道已创建'); setShowCreate(false); setNewName(''); },
+      onError: () => toast.error('创建频道失败'),
     });
   };
 
   const handleDelete = () => {
     if (!deleteTarget) return;
     deleteChannel.mutate(deleteTarget.cid, {
-      onSuccess: () => { toast.success('Channel deleted'); setDeleteTarget(null); },
-      onError: () => toast.error('Failed to delete channel'),
+      onSuccess: () => { toast.success('频道已删除'); setDeleteTarget(null); },
+      onError: () => toast.error('删除频道失败'),
     });
   };
 
@@ -289,15 +289,15 @@ export default function Channels() {
     if (editForm.channel_topic !== undefined) data.channel_topic = editForm.channel_topic;
     if (editForm.channel_password) data.channel_password = editForm.channel_password;
     editChannel.mutate({ cid: editTarget.cid, data }, {
-      onSuccess: () => { toast.success('Channel updated'); setEditTarget(null); },
-      onError: () => toast.error('Failed to update channel'),
+      onSuccess: () => { toast.success('频道已更新'); setEditTarget(null); },
+      onError: () => toast.error('更新频道失败'),
     });
   };
 
   const handleDrop = (draggedCid: number, targetCid: number) => {
     moveChannel.mutate({ cid: draggedCid, data: { cpid: targetCid } }, {
-      onSuccess: () => toast.success('Channel moved'),
-      onError: () => toast.error('Failed to move channel'),
+      onSuccess: () => toast.success('频道已移动'),
+      onError: () => toast.error('移动频道失败'),
     });
   };
 
@@ -309,14 +309,14 @@ export default function Channels() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Channels</h1>
+          <h1 className="text-xl font-semibold">频道</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {Array.isArray(channelData) ? channelData.length : 0} channels · {totalClients} clients online
+            {Array.isArray(channelData) ? channelData.length : 0} 个频道 · {totalClients} 个客户端在线
           </p>
         </div>
         {isAdmin && (
           <Button size="sm" onClick={() => setShowCreate(true)}>
-            <Plus className="h-4 w-4 mr-1" /> Create Channel
+            <Plus className="h-4 w-4 mr-1" /> 创建频道
           </Button>
         )}
       </div>
@@ -325,7 +325,7 @@ export default function Channels() {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <Volume2 className="h-4 w-4 text-primary" />
-            Channel Tree
+            频道树
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -353,17 +353,17 @@ export default function Channels() {
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Channel</DialogTitle>
+            <DialogTitle>创建频道</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs">Channel Name</Label>
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="New Channel" autoFocus />
+              <Label className="text-xs">频道名称</Label>
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="新建频道" autoFocus />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={createChannel.isPending}>Create</Button>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>取消</Button>
+            <Button onClick={handleCreate} disabled={createChannel.isPending}>创建</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -372,26 +372,26 @@ export default function Channels() {
       <Dialog open={!!editTarget} onOpenChange={(v) => { if (!v) setEditTarget(null); }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Channel</DialogTitle>
+            <DialogTitle>编辑频道</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs">Channel Name</Label>
+              <Label className="text-xs">频道名称</Label>
               <Input value={editForm.channel_name} onChange={(e) => setEditForm({ ...editForm, channel_name: e.target.value })} />
             </div>
             <div>
-              <Label className="text-xs">Topic</Label>
-              <Input value={editForm.channel_topic} onChange={(e) => setEditForm({ ...editForm, channel_topic: e.target.value })} placeholder="Optional" />
+              <Label className="text-xs">主题</Label>
+              <Input value={editForm.channel_topic} onChange={(e) => setEditForm({ ...editForm, channel_topic: e.target.value })} placeholder="可选" />
             </div>
             <div>
-              <Label className="text-xs">Password</Label>
-              <Input type="password" value={editForm.channel_password} onChange={(e) => setEditForm({ ...editForm, channel_password: e.target.value })} placeholder="Leave empty to keep current" />
+              <Label className="text-xs">密码</Label>
+              <Input type="password" value={editForm.channel_password} onChange={(e) => setEditForm({ ...editForm, channel_password: e.target.value })} placeholder="留空则保持当前值" />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditTarget(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEditTarget(null)}>取消</Button>
             <Button onClick={handleEditSave} disabled={!editForm.channel_name.trim() || editChannel.isPending}>
-              {editChannel.isPending ? 'Saving...' : 'Save'}
+              {editChannel.isPending ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -401,9 +401,9 @@ export default function Channels() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={() => setDeleteTarget(null)}
-        title="Delete Channel"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title="删除频道"
+        description={`确定要删除「${deleteTarget?.name}」吗？此操作无法撤销。`}
+        confirmLabel="删除"
         destructive
         onConfirm={handleDelete}
         loading={deleteChannel.isPending}

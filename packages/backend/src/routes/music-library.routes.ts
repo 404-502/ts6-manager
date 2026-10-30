@@ -61,7 +61,7 @@ musicLibraryRoutes.post('/upload', upload.single('file'), async (req: Request, r
     const prisma = req.app.locals.prisma;
     const configId = parseInt(req.params.configId as string);
     const file = req.file;
-    if (!file) throw new AppError(400, 'No file uploaded');
+    if (!file) throw new AppError(400, '未上传文件');
 
     // Extract duration via ffprobe
     let duration: number | null = null;
@@ -101,7 +101,7 @@ musicLibraryRoutes.delete('/songs/:id', async (req: Request, res: Response, next
     const prisma = req.app.locals.prisma;
     const id = parseInt(req.params.id as string);
     const song = await prisma.song.findUnique({ where: { id } });
-    if (!song) throw new AppError(404, 'Song not found');
+    if (!song) throw new AppError(404, '歌曲不存在');
 
     // Remove file from disk
     try {
@@ -119,7 +119,7 @@ musicLibraryRoutes.delete('/songs/:id', async (req: Request, res: Response, next
 musicLibraryRoutes.post('/youtube/search', async (req: Request, res: Response, next) => {
   try {
     const { query } = req.body;
-    if (!query) throw new AppError(400, 'query is required');
+    if (!query) throw new AppError(400, 'query 为必填项');
     const results = await searchYouTube(query, 10);
     res.json(results);
   } catch (err) { next(err); }
@@ -131,7 +131,7 @@ musicLibraryRoutes.post('/youtube/download', async (req: Request, res: Response,
     const prisma = req.app.locals.prisma;
     const configId = parseInt(req.params.configId as string);
     const { url } = req.body;
-    if (!url) throw new AppError(400, 'url is required');
+    if (!url) throw new AppError(400, 'url 为必填项');
 
     const { filePath, info } = await downloadYouTube(url, MUSIC_DIR);
     const fileStats = fs.statSync(filePath);
@@ -165,7 +165,7 @@ musicLibraryRoutes.post('/youtube/download', async (req: Request, res: Response,
 musicLibraryRoutes.post('/youtube/info', async (req: Request, res: Response, next) => {
   try {
     const { url } = req.body;
-    if (!url) throw new AppError(400, 'url is required');
+    if (!url) throw new AppError(400, 'url 为必填项');
     const info = await getYouTubeUrlInfo(url);
     res.json(info);
   } catch (err) { next(err); }
@@ -177,7 +177,7 @@ musicLibraryRoutes.post('/youtube/download-batch', async (req: Request, res: Res
     const prisma = req.app.locals.prisma;
     const configId = parseInt(req.params.configId as string);
     const { urls } = req.body;
-    if (!Array.isArray(urls) || urls.length === 0) throw new AppError(400, 'urls array is required');
+    if (!Array.isArray(urls) || urls.length === 0) throw new AppError(400, 'urls 数组为必填项');
 
     const results: any[] = [];
     const errors: string[] = [];

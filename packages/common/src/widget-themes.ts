@@ -75,10 +75,10 @@ export const WIDGET_THEMES: Record<WidgetTheme, WidgetThemePalette> = {
 };
 
 export const WIDGET_THEME_LABELS: Record<WidgetTheme, string> = {
-  dark: 'Dark',
-  light: 'Light',
-  transparent: 'Transparent',
-  neon: 'Neon / Cyberpunk',
-  military: 'Military / OD Green',
-  minimal: 'Minimal / Clean',
+  dark: '深色',
+  light: '浅色',
+  transparent: '透明',
+  neon: '霓虹 / 赛博朋克',
+  military: '军旅 / 橄榄绿',
+  minimal: '极简 / 清爽',
 };

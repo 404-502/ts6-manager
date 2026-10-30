@@ -55,7 +55,7 @@ export function createApp(): Express {
     max: 15,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'Too many attempts, please try again later' },
+    message: { error: '尝试次数过多，请稍后再试' },
   });
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/refresh', authLimiter);
@@ -67,7 +67,7 @@ export function createApp(): Express {
   // Bot webhook route (unauthenticated — called by external systems)
   app.all('/api/bots/webhook/:path(*)', (req, res) => {
     const engine = req.app.locals.botEngine;
-    if (!engine) return res.status(503).json({ error: 'Bot engine not running' });
+    if (!engine) return res.status(503).json({ error: '机器人引擎未运行' });
     engine.handleWebhookRequest(req, res);
   });
 

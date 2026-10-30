@@ -23,7 +23,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
-  columns, data, searchKey, searchPlaceholder = 'Search...', pageSize = 20,
+  columns, data, searchKey, searchPlaceholder = '搜索...', pageSize = 20,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -102,7 +102,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <tr>
                 <td colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  No results.
+                  暂无结果。
                 </td>
               </tr>
             )}
@@ -113,17 +113,17 @@ export function DataTable<TData, TValue>({
       {table.getPageCount() > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
-            {table.getFilteredRowModel().rows.length} result(s)
+            {table.getFilteredRowModel().rows.length} 条结果
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              Previous
+              上一页
             </Button>
             <span className="text-xs text-muted-foreground font-mono-data">
               {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
             </span>
             <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              Next
+              下一页
             </Button>
           </div>
         </div>

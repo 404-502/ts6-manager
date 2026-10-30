@@ -14,7 +14,7 @@ declare global {
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'No token provided' });
+    res.status(401).json({ error: '未提供访问令牌' });
     return;
   }
 
@@ -29,16 +29,16 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
       select: { enabled: true, role: true },
     }).then((user: { enabled: boolean; role: string } | null) => {
       if (!user || !user.enabled) {
-        res.status(401).json({ error: 'User account disabled or deleted' });
+        res.status(401).json({ error: '该用户账户已被停用或删除' });
         return;
       }
       // Use fresh role from DB instead of potentially stale JWT payload
       req.user = { ...payload, role: user.role as JwtPayload['role'] };
       next();
     }).catch(() => {
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: '服务器内部错误' });
     });
   } catch {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ error: '令牌无效或已过期' });
   }
 }

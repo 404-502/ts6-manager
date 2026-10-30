@@ -37,7 +37,7 @@ export default function SetupPage() {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('两次输入的密码不一致');
       return;
     }
 
@@ -50,7 +50,7 @@ export default function SetupPage() {
       });
       navigate('/login', { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Setup failed');
+      setError(err.response?.data?.error || '初始化失败');
     } finally {
       setLoading(false);
     }
@@ -65,20 +65,20 @@ export default function SetupPage() {
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-primary/10 border border-primary/20 mb-4">
             <ShieldCheck className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-xl font-semibold text-foreground">Initial Setup</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create your administrator account</p>
+          <h1 className="text-xl font-semibold text-foreground">初始设置</h1>
+          <p className="text-sm text-muted-foreground mt-1">创建您的管理员账户</p>
         </div>
 
         <Card className="border-border/50 backdrop-blur-sm">
           <CardHeader className="pb-4">
             <h2 className="text-sm font-medium text-center text-muted-foreground">
-              This is the first time setup. Create an admin account to get started.
+              这是首次使用设置。创建一个管理员账户即可开始使用。
             </h2>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-xs">Username</Label>
+                <Label htmlFor="username" className="text-xs">用户名</Label>
                 <Input
                   id="username"
                   value={username}
@@ -89,34 +89,34 @@ export default function SetupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="displayName" className="text-xs">Display Name</Label>
+                <Label htmlFor="displayName" className="text-xs">显示名称</Label>
                 <Input
                   id="displayName"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Administrator"
+                  placeholder="管理员"
                   autoComplete="name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs">Password</Label>
+                <Label htmlFor="password" className="text-xs">密码</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 chars, uppercase, lowercase, digit"
+                  placeholder="至少 8 位，含大小写字母和数字"
                   autoComplete="new-password"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-xs">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-xs">确认密码</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat password"
+                  placeholder="再次输入密码"
                   autoComplete="new-password"
                 />
               </div>
@@ -136,10 +136,10 @@ export default function SetupPage() {
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating account...
+                    正在创建账户...
                   </>
                 ) : (
-                  'Create Admin Account'
+                  '创建管理员账户'
                 )}
               </Button>
             </form>

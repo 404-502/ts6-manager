@@ -55,7 +55,7 @@ musicBotRoutes.get('/:id', async (req: Request, res: Response, next) => {
       where: { id },
       include: { serverConfig: { select: { id: true, name: true, host: true } } },
     });
-    if (!dbBot) throw new AppError(404, 'Music bot not found');
+    if (!dbBot) throw new AppError(404, '音乐机器人不存在');
 
     const bot = manager.getBot(id);
     res.json({
@@ -73,7 +73,7 @@ musicBotRoutes.post('/', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const { name, serverConfigId, nickname, serverPassword, defaultChannel, channelPassword, voicePort, volume, autoStart } = req.body;
-    if (!name || !serverConfigId) throw new AppError(400, 'name and serverConfigId are required');
+    if (!name || !serverConfigId) throw new AppError(400, 'name 和 serverConfigId 为必填项');
 
     const result = await manager.createBot({
       name,
@@ -167,7 +167,7 @@ musicBotRoutes.post('/:id/restart', async (req: Request, res: Response, next) =>
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const id = parseInt(req.params.id as string);
     const bot = manager.getBot(id);
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     await bot.restart();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -182,16 +182,16 @@ musicBotRoutes.post('/:id/play', async (req: Request, res: Response, next) => {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const id = parseInt(req.params.id as string);
     const { songId } = req.body;
-    if (!songId) throw new AppError(400, 'songId is required');
+    if (!songId) throw new AppError(400, 'songId 为必填项');
 
     const bot = manager.getBot(id);
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     if (bot.status !== 'connected' && bot.status !== 'playing' && bot.status !== 'paused') {
-      throw new AppError(400, 'Bot is not connected');
+      throw new AppError(400, '机器人未连接');
     }
 
     const song = await prisma.song.findUnique({ where: { id: parseInt(songId) } });
-    if (!song) throw new AppError(404, 'Song not found');
+    if (!song) throw new AppError(404, '歌曲不存在');
 
     const queueItem = {
       id: String(song.id),
@@ -218,12 +218,12 @@ musicBotRoutes.post('/:id/play-url', async (req: Request, res: Response, next) =
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const id = parseInt(req.params.id as string);
     const { url } = req.body;
-    if (!url) throw new AppError(400, 'url is required');
+    if (!url) throw new AppError(400, 'url 为必填项');
 
     const bot = manager.getBot(id);
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     if (bot.status !== 'connected' && bot.status !== 'playing' && bot.status !== 'paused') {
-      throw new AppError(400, 'Bot is not connected');
+      throw new AppError(400, '机器人未连接');
     }
 
     const { filePath, info } = await downloadYouTube(url, MUSIC_DIR);
@@ -271,7 +271,7 @@ musicBotRoutes.post('/:id/play-url', async (req: Request, res: Response, next) =
 
     res.json({ success: true, queueItem });
   } catch (err: any) {
-    next(new AppError(500, `Failed to play URL: ${err.message}`));
+    next(new AppError(500, `播放 URL 失败：${err.message}`));
   }
 });
 
@@ -282,16 +282,16 @@ musicBotRoutes.post('/:id/play-radio', async (req: Request, res: Response, next)
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const id = parseInt(req.params.id as string);
     const { stationId } = req.body;
-    if (!stationId) throw new AppError(400, 'stationId is required');
+    if (!stationId) throw new AppError(400, 'stationId 为必填项');
 
     const bot = manager.getBot(id);
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     if (bot.status !== 'connected' && bot.status !== 'playing' && bot.status !== 'paused') {
-      throw new AppError(400, 'Bot is not connected');
+      throw new AppError(400, '机器人未连接');
     }
 
     const station = await prisma.radioStation.findUnique({ where: { id: parseInt(stationId) } });
-    if (!station) throw new AppError(404, 'Radio station not found');
+    if (!station) throw new AppError(404, '电台不存在');
 
     const queueItem = {
       id: `radio_${station.id}`,
@@ -312,7 +312,7 @@ musicBotRoutes.post('/:id/pause', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.pause();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -323,7 +323,7 @@ musicBotRoutes.post('/:id/resume', async (req: Request, res: Response, next) => 
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.resume();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -334,7 +334,7 @@ musicBotRoutes.post('/:id/stop-playback', async (req: Request, res: Response, ne
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.stopAudio();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -345,7 +345,7 @@ musicBotRoutes.post('/:id/skip', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.skip();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -356,7 +356,7 @@ musicBotRoutes.post('/:id/previous', async (req: Request, res: Response, next) =
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.previous();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -367,7 +367,7 @@ musicBotRoutes.post('/:id/seek', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { seconds } = req.body;
     bot.seek(parseFloat(seconds) || 0);
     res.json({ success: true });
@@ -396,7 +396,7 @@ musicBotRoutes.get('/:id/state', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const progress = bot.playbackProgress;
     res.json({
@@ -422,7 +422,7 @@ musicBotRoutes.get('/:id/queue', async (req: Request, res: Response, next) => {
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     res.json({
       items: bot.queue.getAll(),
       shuffle: bot.queue.shuffle,
@@ -437,11 +437,11 @@ musicBotRoutes.post('/:id/queue', async (req: Request, res: Response, next) => {
     const prisma = req.app.locals.prisma;
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const { songId } = req.body;
     const song = await prisma.song.findUnique({ where: { id: parseInt(songId) } });
-    if (!song) throw new AppError(404, 'Song not found');
+    if (!song) throw new AppError(404, '歌曲不存在');
 
     bot.queue.add({
       id: String(song.id),
@@ -463,14 +463,14 @@ musicBotRoutes.post('/:id/queue/playlist', async (req: Request, res: Response, n
     const prisma = req.app.locals.prisma;
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const { playlistId, clearFirst } = req.body;
     const playlist = await prisma.playlist.findUnique({
       where: { id: parseInt(playlistId) },
       include: { songs: { include: { song: true }, orderBy: { position: 'asc' } } },
     });
-    if (!playlist) throw new AppError(404, 'Playlist not found');
+    if (!playlist) throw new AppError(404, '播放列表不存在');
 
     if (clearFirst) bot.queue.clear();
 
@@ -494,7 +494,7 @@ musicBotRoutes.delete('/:id/queue/:index', async (req: Request, res: Response, n
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const items = bot.queue.getAll();
     const index = parseInt(req.params.index as string);
@@ -510,7 +510,7 @@ musicBotRoutes.delete('/:id/queue', async (req: Request, res: Response, next) =>
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.queue.clear();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -521,7 +521,7 @@ musicBotRoutes.post('/:id/queue/shuffle', async (req: Request, res: Response, ne
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     bot.queue.setShuffle(req.body.enabled ?? true);
     res.json({ success: true, shuffle: bot.queue.shuffle });
   } catch (err) { next(err); }
@@ -532,9 +532,9 @@ musicBotRoutes.post('/:id/queue/repeat', async (req: Request, res: Response, nex
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const mode = req.body.mode ?? 'off';
-    if (!['off', 'track', 'queue'].includes(mode)) throw new AppError(400, 'Invalid repeat mode');
+    if (!['off', 'track', 'queue'].includes(mode)) throw new AppError(400, '循环模式无效');
     bot.queue.setRepeat(mode);
     res.json({ success: true, repeat: bot.queue.repeat });
   } catch (err) { next(err); }
@@ -545,11 +545,11 @@ musicBotRoutes.post('/:id/queue/:index/play', async (req: Request, res: Response
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const index = parseInt(req.params.index as string);
     const item = bot.queue.playAt(index);
-    if (!item) throw new AppError(400, 'Invalid queue index');
+    if (!item) throw new AppError(400, '队列索引无效');
 
     if (item.streamUrl) {
       await bot.playStream(item);
@@ -565,12 +565,12 @@ musicBotRoutes.put('/:id/queue/move', async (req: Request, res: Response, next) 
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
 
     const { from, to } = req.body;
-    if (typeof from !== 'number' || typeof to !== 'number') throw new AppError(400, 'from and to are required');
+    if (typeof from !== 'number' || typeof to !== 'number') throw new AppError(400, 'from 和 to 为必填项');
     const moved = bot.queue.move(from, to);
-    if (!moved) throw new AppError(400, 'Invalid indices');
+    if (!moved) throw new AppError(400, '索引无效');
     res.json({ success: true });
   } catch (err) { next(err); }
 });
@@ -582,9 +582,9 @@ musicBotRoutes.post('/:id/stream/start', async (req: Request, res: Response, nex
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { source, preset, framerate, bitrate } = req.body;
-    if (!source) throw new AppError(400, 'source is required');
+    if (!source) throw new AppError(400, 'source 为必填项');
     await bot.startVideoStream(source, preset, framerate, bitrate);
     res.json({ success: true, status: bot.videoStreamStatus });
   } catch (err) { next(err); }
@@ -595,7 +595,7 @@ musicBotRoutes.post('/:id/stream/stop', async (req: Request, res: Response, next
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     await bot.stopVideoStream();
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -606,9 +606,9 @@ musicBotRoutes.post('/:id/stream/source', async (req: Request, res: Response, ne
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { source } = req.body;
-    if (!source) throw new AppError(400, 'source is required');
+    if (!source) throw new AppError(400, 'source 为必填项');
     await bot.setVideoSource(source);
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -619,7 +619,7 @@ musicBotRoutes.get('/:id/stream/status', async (req: Request, res: Response, nex
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     res.json(bot.videoStreamStatus);
   } catch (err) { next(err); }
 });
@@ -629,7 +629,7 @@ musicBotRoutes.delete('/:id/stream/viewer/:clid', async (req: Request, res: Resp
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     await bot.kickVideoViewer(parseInt(req.params.clid as string));
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -640,9 +640,9 @@ musicBotRoutes.post('/:id/stream/webrtc/offer', async (req: Request, res: Respon
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const offer = await bot.getWebRtcOffer();
-    if (!offer) throw new AppError(400, 'No active video stream');
+    if (!offer) throw new AppError(400, '当前没有活跃的视频流');
     res.json(offer);
   } catch (err) { next(err); }
 });
@@ -652,9 +652,9 @@ musicBotRoutes.post('/:id/stream/webrtc/answer', async (req: Request, res: Respo
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { sdp } = req.body;
-    if (!sdp) throw new AppError(400, 'sdp is required');
+    if (!sdp) throw new AppError(400, 'sdp 为必填项');
     await bot.setWebRtcAnswer(sdp);
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -665,7 +665,7 @@ musicBotRoutes.post('/:id/stream/webrtc/ice', async (req: Request, res: Response
   try {
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(parseInt(req.params.id as string));
-    if (!bot) throw new AppError(404, 'Music bot not found');
+    if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { candidate, sdpMid, sdpMLineIndex } = req.body;
     await bot.addWebRtcIceCandidate(candidate, sdpMid, sdpMLineIndex ?? 0);
     res.json({ success: true });

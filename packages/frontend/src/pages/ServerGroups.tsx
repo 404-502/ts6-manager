@@ -26,7 +26,7 @@ export default function ServerGroups() {
   const [deleteTarget, setDeleteTarget] = useState<{ sgid: number; name: string } | null>(null);
   const [newName, setNewName] = useState('');
 
-  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Shield} title="No server selected" />;
+  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Shield} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   const groups = Array.isArray(data) ? data : [];
@@ -34,9 +34,9 @@ export default function ServerGroups() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Server Groups</h1>
+        <h1 className="text-xl font-semibold">服务器组</h1>
         <Button size="sm" onClick={() => setShowCreate(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Create Group
+          <Plus className="h-4 w-4 mr-1" /> 创建组
         </Button>
       </div>
 
@@ -44,7 +44,7 @@ export default function ServerGroups() {
         {/* Group List */}
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Groups ({groups.length})</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">组（{groups.length}）</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-[500px]">
@@ -79,7 +79,7 @@ export default function ServerGroups() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
-                Members
+                成员
                 {selectedGroup && <Badge variant="default" className="font-mono-data text-[10px]">SGID: {selectedGroup}</Badge>}
               </CardTitle>
               {selectedGroup && (
@@ -87,14 +87,14 @@ export default function ServerGroups() {
                   const g = groups.find((g: any) => g.sgid === selectedGroup);
                   if (g) setDeleteTarget({ sgid: g.sgid, name: g.name });
                 }}>
-                  <Trash2 className="h-3 w-3 mr-1" /> Delete Group
+                  <Trash2 className="h-3 w-3 mr-1" /> 删除组
                 </Button>
               )}
             </div>
           </CardHeader>
           <CardContent>
             {!selectedGroup ? (
-              <p className="text-sm text-muted-foreground text-center py-12">Select a group to view its members</p>
+              <p className="text-sm text-muted-foreground text-center py-12">选择一个组以查看其成员</p>
             ) : (
               <ScrollArea className="h-[440px]">
                 <div className="space-y-1">
@@ -111,7 +111,7 @@ export default function ServerGroups() {
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">No members in this group</p>
+                    <p className="text-sm text-muted-foreground text-center py-8">该组暂无成员</p>
                   )}
                 </div>
               </ScrollArea>
@@ -122,16 +122,16 @@ export default function ServerGroups() {
 
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Create Server Group</DialogTitle></DialogHeader>
-          <div><Label className="text-xs">Group Name</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="New Group" autoFocus /></div>
+          <DialogHeader><DialogTitle>创建服务器组</DialogTitle></DialogHeader>
+          <div><Label className="text-xs">组名称</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="新建组" autoFocus /></div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={() => { createGroup.mutate(newName, { onSuccess: () => { toast.success('Group created'); setShowCreate(false); setNewName(''); } }); }}>Create</Button>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>取消</Button>
+            <Button onClick={() => { createGroup.mutate(newName, { onSuccess: () => { toast.success('组已创建'); setShowCreate(false); setNewName(''); } }); }}>创建</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)} title="Delete Server Group" description={`Delete "${deleteTarget?.name}"?`} confirmLabel="Delete" destructive onConfirm={() => { if (deleteTarget) deleteGroup.mutate(deleteTarget.sgid, { onSuccess: () => { toast.success('Group deleted'); setDeleteTarget(null); setSelectedGroup(null); } }); }} />
+      <ConfirmDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)} title="删除服务器组" description={`删除「${deleteTarget?.name}」？`} confirmLabel="删除" destructive onConfirm={() => { if (deleteTarget) deleteGroup.mutate(deleteTarget.sgid, { onSuccess: () => { toast.success('组已删除'); setDeleteTarget(null); setSelectedGroup(null); } }); }} />
     </div>
   );
 }

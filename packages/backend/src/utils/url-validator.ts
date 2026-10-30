@@ -64,28 +64,28 @@ export async function validateUrl(
   try {
     parsed = new URL(url);
   } catch {
-    return { valid: false, error: 'Invalid URL format' };
+    return { valid: false, error: 'URL 格式无效' };
   }
 
   // Protocol check
   if (!allowedProtocols.includes(parsed.protocol)) {
-    return { valid: false, error: `Protocol "${parsed.protocol}" is not allowed. Use: ${allowedProtocols.join(', ')}` };
+    return { valid: false, error: `不允许使用协议 "${parsed.protocol}"。请使用：${allowedProtocols.join(', ')}` };
   }
 
   // Hostname checks
   const hostname = parsed.hostname.toLowerCase();
 
   if (BLOCKED_HOSTNAMES.has(hostname)) {
-    return { valid: false, error: `Hostname "${hostname}" is blocked` };
+    return { valid: false, error: `主机名 "${hostname}" 已被禁止访问` };
   }
 
   if (CLOUD_METADATA_IPS.has(hostname)) {
-    return { valid: false, error: 'Cloud metadata endpoint is blocked' };
+    return { valid: false, error: '云元数据端点已被禁止访问' };
   }
 
   // Check if hostname is a literal IP
   if (isPrivateIP(hostname)) {
-    return { valid: false, error: 'Private/reserved IP addresses are blocked' };
+    return { valid: false, error: '私有/保留 IP 地址已被禁止访问' };
   }
 
   // DNS resolution check (prevents DNS rebinding)
@@ -93,10 +93,10 @@ export async function validateUrl(
     try {
       const { address } = await lookup(hostname);
       if (isPrivateIP(address)) {
-        return { valid: false, error: `Hostname "${hostname}" resolves to a private IP (${address})` };
+        return { valid: false, error: `主机名 "${hostname}" 解析到私有 IP（${address}）` };
       }
       if (CLOUD_METADATA_IPS.has(address)) {
-        return { valid: false, error: `Hostname "${hostname}" resolves to a cloud metadata IP` };
+        return { valid: false, error: `主机名 "${hostname}" 解析到云元数据 IP` };
       }
     } catch {
       // DNS resolution failed — allow the request to proceed and let axios/ffmpeg handle the error

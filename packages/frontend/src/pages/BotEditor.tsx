@@ -36,65 +36,65 @@ interface NodeTypeDef {
 }
 
 const TRIGGER_NODES: NodeTypeDef[] = [
-  { type: 'trigger_event', label: 'TS Event', icon: Zap, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', handles: { inputs: [], outputs: ['out'] } },
-  { type: 'trigger_cron', label: 'Cron Timer', icon: Clock, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', handles: { inputs: [], outputs: ['out'] } },
+  { type: 'trigger_event', label: 'TS 事件', icon: Zap, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', handles: { inputs: [], outputs: ['out'] } },
+  { type: 'trigger_cron', label: 'Cron 定时器', icon: Clock, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', handles: { inputs: [], outputs: ['out'] } },
   { type: 'trigger_webhook', label: 'Webhook', icon: Webhook, color: 'bg-violet-500/20 text-violet-400 border-violet-500/30', handles: { inputs: [], outputs: ['out'] } },
-  { type: 'trigger_command', label: 'Chat Command', icon: Terminal, color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30', handles: { inputs: [], outputs: ['out'] } },
+  { type: 'trigger_command', label: '聊天命令', icon: Terminal, color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30', handles: { inputs: [], outputs: ['out'] } },
 ];
 
 const ACTION_NODES: NodeTypeDef[] = [
-  { type: 'action_message', label: 'Send Message', icon: MessageSquare, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_poke', label: 'Poke Client', icon: Bell, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_kick', label: 'Kick Client', icon: UserX, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_ban', label: 'Ban Client', icon: Ban, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_move', label: 'Move Client', icon: ArrowRightLeft, color: 'bg-orange-500/20 text-orange-400 border-orange-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_channelCreate', label: 'Create Channel', icon: FolderPlus, color: 'bg-green-500/20 text-green-400 border-green-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_channelEdit', label: 'Edit Channel', icon: PenLine, color: 'bg-green-500/20 text-green-400 border-green-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_channelDelete', label: 'Delete Channel', icon: FolderMinus, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_groupAdd', label: 'Add to Group', icon: Users, color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_groupRemove', label: 'Remove from Group', icon: Users, color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_message', label: '发送消息', icon: MessageSquare, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_poke', label: '戳一戳客户端', icon: Bell, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_kick', label: '踢出客户端', icon: UserX, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_ban', label: '封禁客户端', icon: Ban, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_move', label: '移动客户端', icon: ArrowRightLeft, color: 'bg-orange-500/20 text-orange-400 border-orange-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_channelCreate', label: '创建频道', icon: FolderPlus, color: 'bg-green-500/20 text-green-400 border-green-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_channelEdit', label: '编辑频道', icon: PenLine, color: 'bg-green-500/20 text-green-400 border-green-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_channelDelete', label: '删除频道', icon: FolderMinus, color: 'bg-red-500/20 text-red-400 border-red-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_groupAdd', label: '加入服务器组', icon: Users, color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_groupRemove', label: '移出服务器组', icon: Users, color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
   { type: 'action_webquery', label: 'WebQuery', icon: Terminal, color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
   { type: 'action_webhook', label: 'Webhook', icon: Send, color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_httpRequest', label: 'HTTP Request', icon: Globe, color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_httpRequest', label: 'HTTP 请求', icon: Globe, color: 'bg-sky-500/20 text-sky-400 border-sky-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
 ];
 
 const VOICE_ACTION_NODES: NodeTypeDef[] = [
-  { type: 'action_voicePlay', label: 'Voice Play', icon: Music, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceStop', label: 'Voice Stop', icon: Music, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceJoinChannel', label: 'Voice Join', icon: LogIn, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceLeaveChannel', label: 'Voice Leave', icon: LogOut, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceVolume', label: 'Voice Volume', icon: Volume2, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voicePauseResume', label: 'Voice Pause/Resume', icon: Pause, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceSkip', label: 'Voice Skip', icon: SkipForward, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceSeek', label: 'Voice Seek', icon: Navigation, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_voiceTts', label: 'Voice TTS', icon: Mic, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voicePlay', label: '语音播放', icon: Music, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceStop', label: '停止播放', icon: Music, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceJoinChannel', label: '加入语音频道', icon: LogIn, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceLeaveChannel', label: '离开语音频道', icon: LogOut, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceVolume', label: '语音音量', icon: Volume2, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voicePauseResume', label: '语音暂停/继续', icon: Pause, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceSkip', label: '语音跳过', icon: SkipForward, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceSeek', label: '语音定位', icon: Navigation, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_voiceTts', label: '语音合成 TTS', icon: Mic, color: 'bg-pink-500/20 text-pink-400 border-pink-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
 ];
 
 const SMART_ACTION_NODES: NodeTypeDef[] = [
-  { type: 'action_afkMover', label: 'AFK Mover', icon: Moon, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_idleKicker', label: 'Idle Kicker', icon: Timer, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_pokeGroup', label: 'Poke Group', icon: Megaphone, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_rankCheck', label: 'Rank Check', icon: Award, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_tempChannelCleanup', label: 'Temp Cleanup', icon: Trash2, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_animatedChannel', label: 'Animated Channel', icon: Sparkles, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: [], outputs: [] } },
+  { type: 'action_afkMover', label: 'AFK 移动', icon: Moon, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_idleKicker', label: '闲置踢出', icon: Timer, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_pokeGroup', label: '戳一戳组', icon: Megaphone, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_rankCheck', label: '等级检查', icon: Award, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_tempChannelCleanup', label: '临时频道清理', icon: Trash2, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_animatedChannel', label: '动态频道', icon: Sparkles, color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', handles: { inputs: [], outputs: [] } },
 ];
 
 const LOGIC_NODES: NodeTypeDef[] = [
-  { type: 'condition', label: 'Condition', icon: GitBranch, color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', handles: { inputs: ['in'], outputs: ['true', 'false'] } },
-  { type: 'delay', label: 'Delay', icon: Clock, color: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'variable', label: 'Set Variable', icon: Variable, color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'log', label: 'Log', icon: FileText, color: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
-  { type: 'action_generateCode', label: 'Generate Code', icon: Sparkles, color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'condition', label: '条件', icon: GitBranch, color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', handles: { inputs: ['in'], outputs: ['true', 'false'] } },
+  { type: 'delay', label: '延迟', icon: Clock, color: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'variable', label: '设置变量', icon: Variable, color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'log', label: '日志', icon: FileText, color: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
+  { type: 'action_generateCode', label: '生成代码', icon: Sparkles, color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', handles: { inputs: ['in'], outputs: ['out'] } },
 ];
 
 const ALL_NODE_TYPES: NodeTypeDef[] = [...TRIGGER_NODES, ...ACTION_NODES, ...VOICE_ACTION_NODES, ...SMART_ACTION_NODES, ...LOGIC_NODES];
 
 const NODE_CATEGORIES = [
-  { label: 'Triggers', nodes: TRIGGER_NODES },
-  { label: 'Actions', nodes: ACTION_NODES },
-  { label: 'Voice', nodes: VOICE_ACTION_NODES },
-  { label: 'Smart Actions', nodes: SMART_ACTION_NODES },
-  { label: 'Logic', nodes: LOGIC_NODES },
+  { label: '触发器', nodes: TRIGGER_NODES },
+  { label: '动作', nodes: ACTION_NODES },
+  { label: '语音', nodes: VOICE_ACTION_NODES },
+  { label: '智能动作', nodes: SMART_ACTION_NODES },
+  { label: '逻辑', nodes: LOGIC_NODES },
 ];
 
 function getNodeMeta(type: string): NodeTypeDef | undefined {
@@ -183,8 +183,8 @@ export default function BotEditor() {
       id: parseInt(botId),
       data: { name: botName, flowData: { nodes, edges } },
     }, {
-      onSuccess: () => toast.success('Flow saved'),
-      onError: () => toast.error('Failed to save flow'),
+      onSuccess: () => toast.success('流程已保存'),
+      onError: () => toast.error('保存流程失败'),
     });
   };
 
@@ -377,15 +377,15 @@ export default function BotEditor() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <Input value={botName} onChange={(e) => setBotName(e.target.value)} className="h-8 w-60 text-sm font-medium" />
-          <Badge variant="outline" className="text-[10px]">{nodes.length} nodes</Badge>
-          <Badge variant="outline" className="text-[10px]">{edges.length} edges</Badge>
+          <Badge variant="outline" className="text-[10px]">{nodes.length} 个节点</Badge>
+          <Badge variant="outline" className="text-[10px]">{edges.length} 条连线</Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowHelp(true)} title="Placeholder Reference">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowHelp(true)} title="占位符参考">
             <HelpCircle className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" className="h-8" onClick={handleSave} disabled={updateBot.isPending}>
-            <Save className="h-4 w-4 mr-1" /> Save
+            <Save className="h-4 w-4 mr-1" /> 保存
           </Button>
         </div>
       </div>
@@ -548,7 +548,7 @@ export default function BotEditor() {
                         height: HANDLE_R * 2,
                       }}
                       onClick={(e) => handleInputClick(e, node.id, port)}
-                      title={`Input: ${port}`}
+                      title={`输入：${port}`}
                     />
                   );
                 })}
@@ -576,7 +576,7 @@ export default function BotEditor() {
                         )}
                         style={{ width: HANDLE_R * 2, height: HANDLE_R * 2 }}
                         onMouseDown={(e) => handleOutputClick(e, node.id, port)}
-                        title={`Output: ${port}`}
+                        title={`输出：${port}`}
                       />
                       {outputs.length > 1 && (
                         <span className={cn(
@@ -596,7 +596,7 @@ export default function BotEditor() {
           {/* Connection hint */}
           {connectFrom && (
             <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-primary/20 border border-primary/30 text-primary text-xs px-3 py-1.5 rounded-full backdrop-blur-sm">
-              Click an input port or node to connect — ESC to cancel
+              点击输入端口或节点即可连接；按 ESC 取消
             </div>
           )}
         </div>
@@ -607,7 +607,7 @@ export default function BotEditor() {
             <ScrollArea className="h-full">
               <div className="p-3 space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold">Node Properties</p>
+                  <p className="text-xs font-semibold">节点属性</p>
                   <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive" onClick={() => deleteNode(selectedNodeData.id)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -616,7 +616,7 @@ export default function BotEditor() {
                 <Separator />
 
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Label</Label>
+                  <Label className="text-[10px] text-muted-foreground">标签</Label>
                   <Input
                     className="h-7 text-xs mt-1"
                     value={selectedNodeData.label}
@@ -625,7 +625,7 @@ export default function BotEditor() {
                 </div>
 
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Type</Label>
+                  <Label className="text-[10px] text-muted-foreground">类型</Label>
                   <div className={cn('mt-1 text-xs px-2 py-1 rounded border', nodeTypeMeta?.color || 'bg-muted/30')}>
                     {selectedNodeData.type.replace(/_/g, ' ')}
                   </div>
@@ -635,32 +635,32 @@ export default function BotEditor() {
                 {nodeTypeMeta && (
                   <div className="flex gap-2 text-[10px]">
                     {nodeTypeMeta.handles.inputs.length > 0 && (
-                      <Badge variant="secondary" className="text-[9px]">IN: {nodeTypeMeta.handles.inputs.join(', ')}</Badge>
+                      <Badge variant="secondary" className="text-[9px]">输入：{nodeTypeMeta.handles.inputs.join(', ')}</Badge>
                     )}
-                    <Badge variant="secondary" className="text-[9px]">OUT: {nodeTypeMeta.handles.outputs.join(', ')}</Badge>
+                    <Badge variant="secondary" className="text-[9px]">输出：{nodeTypeMeta.handles.outputs.join(', ')}</Badge>
                   </div>
                 )}
 
                 <Separator />
 
                 <div>
-                  <p className="text-[10px] font-semibold text-muted-foreground mb-2">CONFIGURATION</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground mb-2">配置</p>
 
                   {selectedNodeData.type === 'trigger_event' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Event Name</Label>
+                      <Label className="text-[10px] text-muted-foreground">事件名称</Label>
                       <Select
                         value={selectedNodeData.config.eventName || ''}
                         onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, eventName: v } } : n))}
                       >
-                        <SelectTrigger className="h-7 text-xs mt-1"><SelectValue placeholder="Select event..." /></SelectTrigger>
+                        <SelectTrigger className="h-7 text-xs mt-1"><SelectValue placeholder="选择事件..." /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="notifycliententerview">Client Enter</SelectItem>
-                          <SelectItem value="notifyclientleftview">Client Leave</SelectItem>
-                          <SelectItem value="notifytextmessage">Text Message</SelectItem>
-                          <SelectItem value="notifyclientmoved">Client Moved</SelectItem>
-                          <SelectItem value="notifyserveredited">Server Edited</SelectItem>
-                          <SelectItem value="notifychanneldescriptionchanged">Channel Desc Changed</SelectItem>
+                          <SelectItem value="notifycliententerview">客户端进入</SelectItem>
+                          <SelectItem value="notifyclientleftview">客户端离开</SelectItem>
+                          <SelectItem value="notifytextmessage">文本消息</SelectItem>
+                          <SelectItem value="notifyclientmoved">客户端切换频道</SelectItem>
+                          <SelectItem value="notifyserveredited">服务器已编辑</SelectItem>
+                          <SelectItem value="notifychanneldescriptionchanged">频道描述变更</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -669,7 +669,7 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'trigger_cron' && (
                     <>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Cron Expression</Label>
+                        <Label className="text-[10px] text-muted-foreground">Cron 表达式</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
                           placeholder="*/5 * * * *"
@@ -678,7 +678,7 @@ export default function BotEditor() {
                         />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Timezone</Label>
+                        <Label className="text-[10px] text-muted-foreground">时区</Label>
                         <Select
                           value={selectedNodeData.config.timezone || 'UTC'}
                           onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, timezone: v } } : n))}
@@ -703,7 +703,7 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'trigger_webhook' && (
                     <>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Webhook Path</Label>
+                        <Label className="text-[10px] text-muted-foreground">Webhook 路径</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
                           placeholder="my-hook"
@@ -712,7 +712,7 @@ export default function BotEditor() {
                         />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">HTTP Method</Label>
+                        <Label className="text-[10px] text-muted-foreground">HTTP 方法</Label>
                         <Select
                           value={selectedNodeData.config.method || 'POST'}
                           onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, method: v } } : n))}
@@ -725,15 +725,15 @@ export default function BotEditor() {
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Secret (optional)</Label>
+                        <Label className="text-[10px] text-muted-foreground">密钥（可选）</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
-                          placeholder="Leave empty for no auth"
+                          placeholder="留空表示不校验"
                           type="password"
                           value={selectedNodeData.config.secret || ''}
                           onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, secret: e.target.value } } : n))}
                         />
-                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">Validated via X-Webhook-Secret header or ?secret= query param</p>
+                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">通过 X-Webhook-Secret 请求头或 ?secret= 查询参数校验</p>
                       </div>
                     </>
                   )}
@@ -741,7 +741,7 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'trigger_command' && (
                   <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Command</Label>
+                        <Label className="text-[10px] text-muted-foreground">命令</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
                           placeholder="!help"
@@ -759,7 +759,7 @@ export default function BotEditor() {
                       </div>
 
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Listen Channel ID (optional)</Label>
+                        <Label className="text-[10px] text-muted-foreground">监听频道 ID（可选）</Label>
                         <Input
                           type="number"
                           className="h-7 text-xs mt-1 font-mono-data"
@@ -776,7 +776,7 @@ export default function BotEditor() {
                           }
                         />
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                          Commands are only received while a ServerQuery client is in that channel.
+                          仅当 ServerQuery 客户端处于该频道时才会接收到命令。
                         </p>
                       </div>
                     </div>
@@ -785,37 +785,37 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_message' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Target Mode</Label>
+                        <Label className="text-[10px] text-muted-foreground">目标模式</Label>
                         <Select
                           value={selectedNodeData.config.targetMode || 'client'}
                           onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, targetMode: v } } : n))}
                         >
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="client">Client</SelectItem>
-                            <SelectItem value="channel">Channel</SelectItem>
-                            <SelectItem value="server">Server</SelectItem>
+                            <SelectItem value="client">客户端</SelectItem>
+                            <SelectItem value="channel">频道</SelectItem>
+                            <SelectItem value="server">服务器</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       {selectedNodeData.config.targetMode !== 'server' && (
                         <div>
                           <Label className="text-[10px] text-muted-foreground">
-                            {selectedNodeData.config.targetMode === 'channel' ? 'Channel ID' : 'Client ID'}
+                            {selectedNodeData.config.targetMode === 'channel' ? '频道 ID' : '客户端 ID'}
                           </Label>
                           <Input
                             className="h-7 text-xs mt-1 font-mono-data"
-                            placeholder={selectedNodeData.config.targetMode === 'channel' ? 'Channel ID or {{event.ctid}}' : 'Client ID or {{event.clid}}'}
+                            placeholder={selectedNodeData.config.targetMode === 'channel' ? '频道 ID 或 {{event.ctid}}' : '客户端 ID 或 {{event.clid}}'}
                             value={selectedNodeData.config.target || ''}
                             onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, target: e.target.value } } : n))}
                           />
                         </div>
                       )}
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Message</Label>
+                        <Label className="text-[10px] text-muted-foreground">消息</Label>
                         <Textarea
                           className="min-h-[120px] text-xs mt-1 resize-y font-mono-data"
-                          placeholder={"Dies ist die HelpList:\n\n!create - erstellt einen Channel\n!delete - löscht deinen Channel\n!help - zeigt diese Liste"}
+                          placeholder={"这里是帮助列表：\n\n!create - 创建一个频道\n!delete - 删除你的频道\n!help - 显示此列表"}
                           value={selectedNodeData.config.message || ''}
                           onChange={(e) =>
                             setNodes((prev) =>
@@ -828,7 +828,7 @@ export default function BotEditor() {
                           }
                         />
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                          Tipp: Zeilenumbrüche werden übernommen.
+                          提示：换行符会被保留。
                         </p>
                       </div>
                     </div>
@@ -837,21 +837,21 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_kick' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Kick From</Label>
+                        <Label className="text-[10px] text-muted-foreground">踢出范围</Label>
                         <Select
                           value={selectedNodeData.config.reasonid || '5'}
                           onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reasonid: v } } : n))}
                         >
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="4">Channel</SelectItem>
-                            <SelectItem value="5">Server</SelectItem>
+                            <SelectItem value="4">频道</SelectItem>
+                            <SelectItem value="5">服务器</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Reason</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Kicked by bot" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">原因</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="被机器人踢出" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
@@ -859,22 +859,22 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_ban' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Duration (seconds, 0=permanent)</Label>
+                        <Label className="text-[10px] text-muted-foreground">时长（秒，0 表示永久）</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="3600" value={selectedNodeData.config.time || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, time: parseInt(e.target.value) || 0 } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Reason</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Banned by bot" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">原因</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="被机器人封禁" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_move' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Target Channel ID (or template)</Label>
+                      <Label className="text-[10px] text-muted-foreground">目标频道 ID（或模板）</Label>
                       <Input
                         className="h-7 text-xs mt-1 font-mono-data"
-                        placeholder="94  or  {{temp.lastCreatedChannelId}}"
+                        placeholder="94  或  {{temp.lastCreatedChannelId}}"
                         value={selectedNodeData.config.cid ?? ''}
                         onChange={(e) =>
                           setNodes((prev) =>
@@ -887,33 +887,33 @@ export default function BotEditor() {
                         }
                       />
                       <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                        Example: 94 or {"{{temp.lastCreatedChannelId}}"}
+                        示例：94 或 {"{{temp.lastCreatedChannelId}}"}
                       </p>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_poke' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Message</Label>
-                      <Input className="h-7 text-xs mt-1" placeholder="Hey {{event.client_nickname}}!" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
+                      <Label className="text-[10px] text-muted-foreground">消息</Label>
+                      <Input className="h-7 text-xs mt-1" placeholder="嘿 {{event.client_nickname}}！" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_channelCreate' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Name</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道名称</Label>
                         <Input className="h-7 text-xs mt-1" placeholder="[cspacer]Info" value={selectedNodeData.config.channel_name || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channel_name: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Parent Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">父频道 ID</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="0" value={selectedNodeData.config.cpid || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, cpid: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Password (optional)</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道密码（可选）</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
-                          placeholder="secret or {{temp.channelPassword}}"
+                          placeholder="密码 或 {{temp.channelPassword}}"
                           value={selectedNodeData.config.channel_password || ''}
                           onChange={(e) =>
                             setNodes((prev) =>
@@ -927,12 +927,12 @@ export default function BotEditor() {
                         />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Temporary</Label>
+                        <Label className="text-[10px] text-muted-foreground">临时频道</Label>
                         <Select value={selectedNodeData.config.channel_flag_temporary || '0'} onValueChange={(v) => setNodes((prev) => prev.map((n) => { if (n.id !== selectedNode) return n; const cfg: any = { ...n.config }; if (v === '1') { cfg.channel_flag_temporary = '1'; delete cfg.channel_flag_semi_permanent; } else { cfg.channel_flag_temporary = '0'; cfg.channel_flag_semi_permanent = '1'; } return { ...n, config: cfg }; }) ) }>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="0">Permanent</SelectItem>
-                            <SelectItem value="1">Temporary</SelectItem>
+                            <SelectItem value="0">永久</SelectItem>
+                            <SelectItem value="1">临时</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -942,26 +942,26 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_channelEdit' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="42" value={selectedNodeData.config.channelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Name</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道名称</Label>
                         <Input className="h-7 text-xs mt-1" placeholder="[cspacer]{{time.time}}" value={selectedNodeData.config.channel_name || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channel_name: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Topic</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Optional" value={selectedNodeData.config.channel_topic || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channel_topic: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">频道主题</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="可选" value={selectedNodeData.config.channel_topic || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channel_topic: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Description</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道描述</Label>
                         <Textarea className="text-xs mt-1 min-h-[60px] font-mono-data" placeholder="{{temp.apiResult}}" value={selectedNodeData.config.channel_description || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channel_description: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Password (optional)</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道密码（可选）</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
-                          placeholder="secret or {{temp.channelPassword}}"
+                          placeholder="密码 或 {{temp.channelPassword}}"
                           value={selectedNodeData.config.channel_password || ''}
                           onChange={(e) =>
                             setNodes((prev) =>
@@ -974,7 +974,7 @@ export default function BotEditor() {
                           }
                         />
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                          Leave empty to keep unchanged.
+                          留空表示保持不变。
                         </p>
                       </div>
                     </div>
@@ -983,16 +983,16 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_channelDelete' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="42" value={selectedNodeData.config.channelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Force Delete</Label>
+                        <Label className="text-[10px] text-muted-foreground">强制删除</Label>
                         <Select value={selectedNodeData.config.force ? '1' : '0'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, force: v === '1' } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="0">No</SelectItem>
-                            <SelectItem value="1">Yes (delete sub-channels)</SelectItem>
+                            <SelectItem value="0">否</SelectItem>
+                            <SelectItem value="1">是（同时删除子频道）</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1001,7 +1001,7 @@ export default function BotEditor() {
 
                   {(selectedNodeData.type === 'action_groupAdd' || selectedNodeData.type === 'action_groupRemove') && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Server Group ID</Label>
+                      <Label className="text-[10px] text-muted-foreground">服务器组 ID</Label>
                       <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="6" value={selectedNodeData.config.groupId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, groupId: e.target.value } } : n))} />
                     </div>
                   )}
@@ -1009,13 +1009,13 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_webquery' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Command</Label>
+                        <Label className="text-[10px] text-muted-foreground">命令</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="serverinfo" value={selectedNodeData.config.command || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, command: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Store As (temp variable)</Label>
+                        <Label className="text-[10px] text-muted-foreground">存储为（临时变量）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="server" value={selectedNodeData.config.storeAs || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, storeAs: e.target.value } } : n))} />
-                        <p className="text-[9px] text-muted-foreground mt-1">Access via {'{{temp.server.virtualserver_name}}'}</p>
+                        <p className="text-[9px] text-muted-foreground mt-1">通过 {'{{temp.server.virtualserver_name}}'} 访问</p>
                       </div>
                     </div>
                   )}
@@ -1027,7 +1027,7 @@ export default function BotEditor() {
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="https://example.com/hook" value={selectedNodeData.config.url || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, url: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Method</Label>
+                        <Label className="text-[10px] text-muted-foreground">请求方法</Label>
                         <Select value={selectedNodeData.config.method || 'POST'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, method: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -1038,11 +1038,11 @@ export default function BotEditor() {
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Body (JSON)</Label>
+                        <Label className="text-[10px] text-muted-foreground">请求体（JSON）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder='{"key":"value"}' value={selectedNodeData.config.body || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, body: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Store As (temp variable)</Label>
+                        <Label className="text-[10px] text-muted-foreground">存储为（临时变量）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="response" value={selectedNodeData.config.storeAs || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, storeAs: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1055,7 +1055,7 @@ export default function BotEditor() {
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="https://api.example.com/check" value={selectedNodeData.config.url || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, url: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Method</Label>
+                        <Label className="text-[10px] text-muted-foreground">请求方法</Label>
                         <Select value={selectedNodeData.config.method || 'GET'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, method: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -1067,7 +1067,7 @@ export default function BotEditor() {
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Headers (JSON)</Label>
+                        <Label className="text-[10px] text-muted-foreground">请求头（JSON）</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
                           placeholder='{"Authorization":"Bearer xxx"}'
@@ -1079,14 +1079,14 @@ export default function BotEditor() {
                             setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, headersRaw: raw, headers: parsed ?? n.config.headers } } : n));
                           }}
                         />
-                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">Key-value pairs as JSON object. Supports {'{{placeholders}}'}.</p>
+                        <p className="text-[9px] text-muted-foreground/60 mt-0.5">以 JSON 对象形式提供的键值对，支持 {'{{placeholders}}'}。</p>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Body (JSON)</Label>
+                        <Label className="text-[10px] text-muted-foreground">请求体（JSON）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder='{"ip":"{{event.connection_client_ip}}"}' value={selectedNodeData.config.body || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, body: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Store As (temp variable)</Label>
+                        <Label className="text-[10px] text-muted-foreground">存储为（临时变量）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="apiResult" value={selectedNodeData.config.storeAs || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, storeAs: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1095,15 +1095,15 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_afkMover' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">AFK Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">AFK 频道 ID</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="10" value={selectedNodeData.config.afkChannelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, afkChannelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Idle Threshold (seconds)</Label>
+                        <Label className="text-[10px] text-muted-foreground">闲置阈值（秒）</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="300" value={selectedNodeData.config.idleThresholdSeconds || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, idleThresholdSeconds: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Exempt Group IDs (comma-separated)</Label>
+                        <Label className="text-[10px] text-muted-foreground">豁免组 ID（逗号分隔）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="6,7" value={selectedNodeData.config.exemptGroupIds || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, exemptGroupIds: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1112,15 +1112,15 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_idleKicker' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Idle Threshold (seconds)</Label>
+                        <Label className="text-[10px] text-muted-foreground">闲置阈值（秒）</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="1800" value={selectedNodeData.config.idleThresholdSeconds || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, idleThresholdSeconds: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Kick Reason</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Idle timeout" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">踢出原因</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="闲置超时" value={selectedNodeData.config.reason || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, reason: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Exempt Group IDs (comma-separated)</Label>
+                        <Label className="text-[10px] text-muted-foreground">豁免组 ID（逗号分隔）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="6,7" value={selectedNodeData.config.exemptGroupIds || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, exemptGroupIds: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1129,34 +1129,34 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_pokeGroup' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Server Group ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">服务器组 ID</Label>
                         <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="6" value={selectedNodeData.config.groupId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, groupId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Message</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Support needed!" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">消息</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="需要支持！" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_rankCheck' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Ranks (JSON)</Label>
+                      <Label className="text-[10px] text-muted-foreground">等级规则（JSON）</Label>
                       <Input className="h-7 text-xs mt-1 font-mono-data" placeholder='[{"hours":10,"groupId":"7"},{"hours":50,"groupId":"8"}]' value={selectedNodeData.config.ranks || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, ranks: e.target.value } } : n))} />
-                      <p className="text-[9px] text-muted-foreground mt-1">Array of {'{hours, groupId}'} — highest eligible rank is assigned</p>
+                      <p className="text-[9px] text-muted-foreground mt-1">{'{hours, groupId}'} 数组 —— 将分配符合条件中的最高等级</p>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_tempChannelCleanup' && (
                     <>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Parent Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">父频道 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="19" value={selectedNodeData.config.parentChannelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, parentChannelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Protected Channel IDs (comma-separated)</Label>
+                        <Label className="text-[10px] text-muted-foreground">受保护频道 ID（逗号分隔）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="20,21" value={selectedNodeData.config.protectedChannelIds || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, protectedChannelIds: e.target.value } } : n))} />
-                        <p className="text-[9px] text-muted-foreground mt-1">Channels under the parent that should NOT be deleted (e.g. the lobby)</p>
+                        <p className="text-[9px] text-muted-foreground mt-1">父频道下不应被删除的频道（例如大厅）</p>
                       </div>
                     </>
                   )}
@@ -1164,46 +1164,46 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_animatedChannel' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">频道 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="42" value={selectedNodeData.config.channelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Display Text</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Welcome to MyServer" value={selectedNodeData.config.text || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, text: e.target.value } } : n))} />
-                        <p className="text-[9px] text-muted-foreground mt-1">Supports {'{{time.time}}'}, {'{{time.date}}'}, etc.</p>
+                        <Label className="text-[10px] text-muted-foreground">显示文本</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="欢迎来到我的服务器" value={selectedNodeData.config.text || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, text: e.target.value } } : n))} />
+                        <p className="text-[9px] text-muted-foreground mt-1">支持 {'{{time.time}}'}、{'{{time.date}}'} 等</p>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Animation Style</Label>
+                        <Label className="text-[10px] text-muted-foreground">动画样式</Label>
                         <Select value={selectedNodeData.config.style || 'scroll'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, style: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="scroll">Scroll Left (Marquee)</SelectItem>
-                            <SelectItem value="typewriter">Typewriter</SelectItem>
-                            <SelectItem value="bounce">Bounce</SelectItem>
-                            <SelectItem value="blink">Blink</SelectItem>
-                            <SelectItem value="wave">Wave (Decorative)</SelectItem>
-                            <SelectItem value="alternateCase">Alternate Case</SelectItem>
+                            <SelectItem value="scroll">向左滚动（跑马灯）</SelectItem>
+                            <SelectItem value="typewriter">打字机</SelectItem>
+                            <SelectItem value="bounce">弹跳</SelectItem>
+                            <SelectItem value="blink">闪烁</SelectItem>
+                            <SelectItem value="wave">波浪（装饰）</SelectItem>
+                            <SelectItem value="alternateCase">大小写交替</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Speed</Label>
+                        <Label className="text-[10px] text-muted-foreground">速度</Label>
                         <Select value={selectedNodeData.config.intervalSeconds || '3'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, intervalSeconds: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="0.25">Insane (0.25s)</SelectItem>
-                            <SelectItem value="0.5">Ultra (0.5s)</SelectItem>
-                            <SelectItem value="1">Very Fast (1s)</SelectItem>
-                            <SelectItem value="2">Fast (2s)</SelectItem>
-                            <SelectItem value="3">Medium (3s)</SelectItem>
-                            <SelectItem value="5">Slow (5s)</SelectItem>
+                            <SelectItem value="0.25">疯狂（0.25 秒）</SelectItem>
+                            <SelectItem value="0.5">极快（0.5 秒）</SelectItem>
+                            <SelectItem value="1">很快（1 秒）</SelectItem>
+                            <SelectItem value="2">快速（2 秒）</SelectItem>
+                            <SelectItem value="3">中速（3 秒）</SelectItem>
+                            <SelectItem value="5">慢速（5 秒）</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Prefix</Label>
+                        <Label className="text-[10px] text-muted-foreground">前缀</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="[cspacer]" value={selectedNodeData.config.prefix ?? '[cspacer]'} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, prefix: e.target.value } } : n))} />
-                        <p className="text-[9px] text-muted-foreground mt-1">TS3 channel name prefix (e.g. [cspacer] for centered spacer)</p>
+                        <p className="text-[9px] text-muted-foreground mt-1">TS3 频道名前缀（例如 [cspacer] 用于居中占位）</p>
                       </div>
                     </div>
                   )}
@@ -1212,47 +1212,47 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voicePlay' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
-                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1 or {{var.botId}}" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
+                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1 或 {{var.botId}}" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Song ID</Label>
-                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="Song ID to play" value={selectedNodeData.config.songId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, songId: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">歌曲 ID</Label>
+                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="要播放的歌曲 ID" value={selectedNodeData.config.songId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, songId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Playlist ID (alternative)</Label>
-                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="Load playlist instead" value={selectedNodeData.config.playlistId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, playlistId: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">播放列表 ID（备选）</Label>
+                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="改为加载播放列表" value={selectedNodeData.config.playlistId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, playlistId: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_voiceStop' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
-                      <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1 or {{var.botId}}" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
+                      <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
+                      <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1 或 {{var.botId}}" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_voiceJoinChannel' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel ID</Label>
-                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="Channel ID or {{event.ctid}}" value={selectedNodeData.config.channelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelId: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">频道 ID</Label>
+                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="频道 ID 或 {{event.ctid}}" value={selectedNodeData.config.channelId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Channel Password (optional)</Label>
-                        <Input className="h-7 text-xs mt-1" type="password" placeholder="Optional" value={selectedNodeData.config.channelPassword || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelPassword: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">频道密码（可选）</Label>
+                        <Input className="h-7 text-xs mt-1" type="password" placeholder="可选" value={selectedNodeData.config.channelPassword || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, channelPassword: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'action_voiceLeaveChannel' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                      <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                       <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                     </div>
                   )}
@@ -1260,12 +1260,12 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voiceVolume' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Volume (0-100)</Label>
-                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="50 or {{event.volume}}" value={selectedNodeData.config.volume || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, volume: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">音量（0-100）</Label>
+                        <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="50 或 {{event.volume}}" value={selectedNodeData.config.volume || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, volume: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
@@ -1273,17 +1273,17 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voicePauseResume' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Action</Label>
+                        <Label className="text-[10px] text-muted-foreground">操作</Label>
                         <Select value={selectedNodeData.config.action || 'toggle'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, action: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pause">Pause</SelectItem>
-                            <SelectItem value="resume">Resume</SelectItem>
-                            <SelectItem value="toggle">Toggle</SelectItem>
+                            <SelectItem value="pause">暂停</SelectItem>
+                            <SelectItem value="resume">继续播放</SelectItem>
+                            <SelectItem value="toggle">切换</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1293,16 +1293,16 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voiceSkip' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Direction</Label>
+                        <Label className="text-[10px] text-muted-foreground">方向</Label>
                         <Select value={selectedNodeData.config.direction || 'next'} onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, direction: v } } : n))}>
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="next">Next</SelectItem>
-                            <SelectItem value="previous">Previous</SelectItem>
+                            <SelectItem value="next">下一首</SelectItem>
+                            <SelectItem value="previous">上一首</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1312,11 +1312,11 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voiceSeek' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Position (seconds)</Label>
+                        <Label className="text-[10px] text-muted-foreground">位置（秒）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="30" value={selectedNodeData.config.position || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, position: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1325,37 +1325,37 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_voiceTts' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Bot ID</Label>
+                        <Label className="text-[10px] text-muted-foreground">机器人 ID</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="1" value={selectedNodeData.config.botId || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, botId: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Text</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Hello {{event.client_nickname}}" value={selectedNodeData.config.text || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, text: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">文本</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="你好 {{event.client_nickname}}" value={selectedNodeData.config.text || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, text: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Language (optional)</Label>
+                        <Label className="text-[10px] text-muted-foreground">语言（可选）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="en" value={selectedNodeData.config.language || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, language: e.target.value } } : n))} />
                       </div>
-                      <p className="text-[9px] text-muted-foreground/60">TTS engine not yet configured — placeholder only</p>
+                      <p className="text-[9px] text-muted-foreground/60">TTS 引擎尚未配置——仅为占位</p>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'condition' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Expression</Label>
+                      <Label className="text-[10px] text-muted-foreground">表达式</Label>
                       <Input
                         className="h-7 text-xs mt-1 font-mono-data"
                         placeholder='event.client_type == 0'
                         value={selectedNodeData.config.expression || ''}
                         onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, expression: e.target.value } } : n))}
                       />
-                      <p className="text-[9px] text-muted-foreground mt-1">True → green output, False → red output</p>
+                      <p className="text-[9px] text-muted-foreground mt-1">真 → 绿色输出，假 → 红色输出</p>
                     </div>
                   )}
 
                   {selectedNodeData.type === 'delay' && (
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Delay (ms)</Label>
+                      <Label className="text-[10px] text-muted-foreground">延迟（毫秒）</Label>
                       <Input type="number" className="h-7 text-xs mt-1 font-mono-data" placeholder="5000" value={selectedNodeData.config.delayMs || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, delayMs: parseInt(e.target.value) || 0 } } : n))} />
                     </div>
                   )}
@@ -1363,11 +1363,11 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'variable' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Variable Name</Label>
+                        <Label className="text-[10px] text-muted-foreground">变量名</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="myVar" value={selectedNodeData.config.varName || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, varName: e.target.value } } : n))} />
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Value (Expression)</Label>
+                        <Label className="text-[10px] text-muted-foreground">值（表达式）</Label>
                         <Input className="h-7 text-xs mt-1 font-mono-data" placeholder="event.clid" value={selectedNodeData.config.varValue || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, varValue: e.target.value } } : n))} />
                       </div>
                     </div>
@@ -1376,7 +1376,7 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'action_generateCode' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Length</Label>
+                        <Label className="text-[10px] text-muted-foreground">长度</Label>
                         <Input
                           type="number"
                           className="h-7 text-xs mt-1 font-mono-data"
@@ -1395,7 +1395,7 @@ export default function BotEditor() {
                       </div>
 
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Store As</Label>
+                        <Label className="text-[10px] text-muted-foreground">存储为</Label>
                         <Input
                           className="h-7 text-xs mt-1 font-mono-data"
                           placeholder="code"
@@ -1411,12 +1411,12 @@ export default function BotEditor() {
                           }
                         />
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                          Use as: {'{{temp.'}{(selectedNodeData.config.storeAs ?? 'code')}{'}}'}
+                          可引用为：{'{{temp.'}{(selectedNodeData.config.storeAs ?? 'code')}{'}}'}
                         </p>
                       </div>
 
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Characters</Label>
+                        <Label className="text-[10px] text-muted-foreground">字符类型</Label>
                         <Select
                           value={(selectedNodeData.config.numericOnly ?? true) ? 'digits' : 'alnum'}
                           onValueChange={(v) =>
@@ -1433,8 +1433,8 @@ export default function BotEditor() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="digits">Digits only</SelectItem>
-                            <SelectItem value="alnum">Alphanumeric</SelectItem>
+                            <SelectItem value="digits">仅数字</SelectItem>
+                            <SelectItem value="alnum">字母与数字</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1444,23 +1444,23 @@ export default function BotEditor() {
                   {selectedNodeData.type === 'log' && (
                     <div className="space-y-2">
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Log Level</Label>
+                        <Label className="text-[10px] text-muted-foreground">日志级别</Label>
                         <Select
                           value={selectedNodeData.config.level || 'info'}
                           onValueChange={(v) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, level: v } } : n))}
                         >
                           <SelectTrigger className="h-7 text-xs mt-1"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="debug">Debug</SelectItem>
-                            <SelectItem value="info">Info</SelectItem>
-                            <SelectItem value="warn">Warning</SelectItem>
-                            <SelectItem value="error">Error</SelectItem>
+                            <SelectItem value="debug">调试</SelectItem>
+                            <SelectItem value="info">信息</SelectItem>
+                            <SelectItem value="warn">警告</SelectItem>
+                            <SelectItem value="error">错误</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-[10px] text-muted-foreground">Message</Label>
-                        <Input className="h-7 text-xs mt-1" placeholder="Client joined: {{event.client_nickname}}" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
+                        <Label className="text-[10px] text-muted-foreground">消息</Label>
+                        <Input className="h-7 text-xs mt-1" placeholder="客户端已加入：{{event.client_nickname}}" value={selectedNodeData.config.message || ''} onChange={(e) => setNodes((prev) => prev.map((n) => n.id === selectedNode ? { ...n, config: { ...n.config, message: e.target.value } } : n))} />
                       </div>
                     </div>
                   )}
@@ -1470,7 +1470,7 @@ export default function BotEditor() {
 
                 {/* Connections overview */}
                 <div>
-                  <p className="text-[10px] font-semibold text-muted-foreground mb-1">CONNECTIONS</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground mb-1">连线</p>
                   <div className="space-y-1">
                     {edges.filter((e) => e.source === selectedNodeData.id).map((edge) => {
                       const target = nodes.find((n) => n.id === edge.target);
@@ -1499,7 +1499,7 @@ export default function BotEditor() {
                       );
                     })}
                     {edges.filter((e) => e.source === selectedNodeData.id || e.target === selectedNodeData.id).length === 0 && (
-                      <p className="text-[10px] text-muted-foreground/50">No connections</p>
+                      <p className="text-[10px] text-muted-foreground/50">暂无连线</p>
                     )}
                   </div>
                 </div>

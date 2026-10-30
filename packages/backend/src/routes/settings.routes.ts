@@ -24,7 +24,7 @@ const upload = multer({
 // Admin-only guard
 function requireAdmin(req: Request, _res: Response, next: Function) {
   if ((req as any).user?.role !== 'admin') {
-    return next(new AppError(403, 'Admin access required'));
+    return next(new AppError(403, '需要管理员权限'));
   }
   next();
 }
@@ -48,7 +48,7 @@ settingsRoutes.post('/yt-cookies', requireAdmin, upload.single('cookies'), (req:
       // Check if raw text was sent in body
       const text = req.body?.text;
       if (!text || typeof text !== 'string') {
-        throw new AppError(400, 'No cookie file or text provided');
+        throw new AppError(400, '未提供 Cookie 文件或内容');
       }
       fs.mkdirSync(COOKIE_DIR, { recursive: true });
       fs.writeFileSync(COOKIE_PATH, text, 'utf-8');

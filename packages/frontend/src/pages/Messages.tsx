@@ -20,7 +20,7 @@ export default function Messages() {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: ['messages', c, s], queryFn: () => messagesApi.list(c!, s!), enabled: !!c && !!s });
   const deleteMutation = useMutation({ mutationFn: (msgid: number) => messagesApi.delete(c!, s!, msgid), onSuccess: () => qc.invalidateQueries({ queryKey: ['messages', c, s] }) });
-  const sendMutation = useMutation({ mutationFn: (data: any) => messagesApi.send(c!, s!, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['messages', c, s] }); toast.success('Message sent'); } });
+  const sendMutation = useMutation({ mutationFn: (data: any) => messagesApi.send(c!, s!, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['messages', c, s] }); toast.success('消息已发送'); } });
 
   const [showCompose, setShowCompose] = useState(false);
   const [showView, setShowView] = useState<any>(null);
@@ -31,12 +31,12 @@ export default function Messages() {
   const messages = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
   const columns: ColumnDef<any>[] = useMemo(() => [
-    { accessorKey: 'senderName', header: 'From', cell: ({ getValue }) => <span className="font-medium">{(getValue() as string) || '-'}</span> },
-    { accessorKey: 'subject', header: 'Subject' },
-    { accessorKey: 'timestamp', header: 'Date', cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{timeAgo(getValue() as number)}</span> },
-    { accessorKey: 'flag_read', header: 'Status', cell: ({ getValue }) => (
+    { accessorKey: 'senderName', header: '发件人', cell: ({ getValue }) => <span className="font-medium">{(getValue() as string) || '-'}</span> },
+    { accessorKey: 'subject', header: '主题' },
+    { accessorKey: 'timestamp', header: '日期', cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{timeAgo(getValue() as number)}</span> },
+    { accessorKey: 'flag_read', header: '状态', cell: ({ getValue }) => (
       <span className={`text-xs px-1.5 py-0.5 rounded ${getValue() ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary font-medium'}`}>
-        {getValue() ? 'Read' : 'Unread'}
+        {getValue() ? '已读' : '未读'}
       </span>
     )},
     {
@@ -47,7 +47,7 @@ export default function Messages() {
             <Eye className="h-3.5 w-3.5" />
           </Button>
           <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => {
-            deleteMutation.mutate(row.original.msgid, { onSuccess: () => toast.success('Message deleted') });
+            deleteMutation.mutate(row.original.msgid, { onSuccess: () => toast.success('消息已删除') });
           }}>
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -56,41 +56,41 @@ export default function Messages() {
     },
   ], [deleteMutation]);
 
-  if (!c || !s) return <EmptyState icon={Mail} title="No server selected" />;
+  if (!c || !s) return <EmptyState icon={Mail} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   const handleSend = () => {
     sendMutation.mutate({ cluid: toCluid, subject, message: body }, {
       onSuccess: () => { setShowCompose(false); setToCluid(''); setSubject(''); setBody(''); },
-      onError: () => toast.error('Failed to send message'),
+      onError: () => toast.error('发送消息失败'),
     });
   };
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Offline Messages</h1>
-        <Button size="sm" onClick={() => setShowCompose(true)}><Plus className="h-4 w-4 mr-1" /> Compose</Button>
+        <h1 className="text-xl font-semibold">离线消息</h1>
+        <Button size="sm" onClick={() => setShowCompose(true)}><Plus className="h-4 w-4 mr-1" /> 撰写</Button>
       </div>
 
-      <DataTable columns={columns} data={messages} searchKey="subject" searchPlaceholder="Search messages..." />
+      <DataTable columns={columns} data={messages} searchKey="subject" searchPlaceholder="搜索消息..." />
 
       {/* View Message Dialog */}
       <Dialog open={!!showView} onOpenChange={() => setShowView(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{showView?.subject || 'Message'}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{showView?.subject || '消息'}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>From: <span className="text-foreground font-medium">{showView?.senderName}</span></span>
+              <span>发件人：<span className="text-foreground font-medium">{showView?.senderName}</span></span>
               <span className="text-border">|</span>
               <span>{showView?.timestamp && timeAgo(showView.timestamp)}</span>
             </div>
             <div className="rounded-md bg-muted/30 border border-border p-3 text-sm min-h-[100px] whitespace-pre-wrap">
-              {showView?.message || showView?.subject || 'No content'}
+              {showView?.message || showView?.subject || '无内容'}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowView(null)}>Close</Button>
+            <Button variant="outline" onClick={() => setShowView(null)}>关闭</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -98,15 +98,15 @@ export default function Messages() {
       {/* Compose Dialog */}
       <Dialog open={showCompose} onOpenChange={setShowCompose}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Compose Message</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>撰写消息</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <div><Label className="text-xs">Recipient Client UID</Label><Input value={toCluid} onChange={(e) => setToCluid(e.target.value)} placeholder="Client unique ID" /></div>
-            <div><Label className="text-xs">Subject</Label><Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Message subject" /></div>
-            <div><Label className="text-xs">Message</Label><Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Message body..." rows={5} /></div>
+            <div><Label className="text-xs">收件客户端 UID</Label><Input value={toCluid} onChange={(e) => setToCluid(e.target.value)} placeholder="客户端唯一 ID" /></div>
+            <div><Label className="text-xs">主题</Label><Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="消息主题" /></div>
+            <div><Label className="text-xs">消息</Label><Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="消息正文..." rows={5} /></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCompose(false)}>Cancel</Button>
-            <Button onClick={handleSend} disabled={!toCluid || !subject}>Send</Button>
+            <Button variant="outline" onClick={() => setShowCompose(false)}>取消</Button>
+            <Button onClick={handleSend} disabled={!toCluid || !subject}>发送</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

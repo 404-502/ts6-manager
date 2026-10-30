@@ -5,9 +5,9 @@ function formatUptime(seconds: number): string {
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}d ${h}h`;
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
+  if (d > 0) return `${d}天 ${h}小时`;
+  if (h > 0) return `${h}小时 ${m}分`;
+  return `${m}分`;
 }
 
 function SpacerChannel({ node, theme }: { node: WidgetChannelNodeType; theme: WidgetTheme }) {
@@ -102,8 +102,8 @@ function ChannelNode({ node, depth, showClients, theme }: {
           }} />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {client.nickname}
-            {client.isAway && <span style={{ color: t.textSecondary }}> [away]</span>}
-            {client.isMuted && <span style={{ color: t.textSecondary }}> [muted]</span>}
+            {client.isAway && <span style={{ color: t.textSecondary }}> [离开]</span>}
+            {client.isMuted && <span style={{ color: t.textSecondary }}> [已静音]</span>}
           </span>
         </div>
       ))}
@@ -154,7 +154,7 @@ export function WidgetRenderer({ data }: { data: WidgetData }) {
                 marginRight: '8px',
                 textDecoration: 'none',
               }}
-              title="Click to join server"
+              title="点击加入服务器"
             >
               {data.serverName}
             </a>
@@ -182,7 +182,7 @@ export function WidgetRenderer({ data }: { data: WidgetData }) {
             flexShrink: 0,
             letterSpacing: '0.5px',
           }}>
-            ONLINE
+            在线
           </span>
         </div>
         <div style={{
@@ -192,8 +192,8 @@ export function WidgetRenderer({ data }: { data: WidgetData }) {
           display: 'flex',
           gap: '14px',
         }}>
-          <span>{data.onlineUsers} / {data.maxClients} users</span>
-          <span>{formatUptime(data.uptime)} uptime</span>
+          <span>{data.onlineUsers} / {data.maxClients} 位用户</span>
+          <span>运行时长 {formatUptime(data.uptime)}</span>
         </div>
       </div>
 
@@ -221,7 +221,7 @@ export function WidgetRenderer({ data }: { data: WidgetData }) {
         fontSize: '9px',
         opacity: 0.6,
       }}>
-        TS6 WebUI Widget
+        TS6 WebUI 小组件
       </div>
     </div>
   );

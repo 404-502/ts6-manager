@@ -10,12 +10,12 @@ export default function NotFound() {
       <div className="h-16 w-16 rounded-2xl bg-muted/30 flex items-center justify-center">
         <FileQuestion className="h-8 w-8 text-muted-foreground" />
       </div>
-      <h1 className="text-2xl font-semibold">Page Not Found</h1>
+      <h1 className="text-2xl font-semibold">页面未找到</h1>
       <p className="text-sm text-muted-foreground max-w-sm">
-        The page you're looking for doesn't exist or has been moved.
+        您要访问的页面不存在或已被移动。
       </p>
       <Button variant="outline" onClick={() => navigate('/dashboard')}>
-        Back to Dashboard
+        返回仪表盘
       </Button>
     </div>
   );

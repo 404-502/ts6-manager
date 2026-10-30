@@ -414,7 +414,7 @@ export class BotEngine {
 
     // H6: Return same 404 for not-found and invalid-secret (prevent enumeration)
     if (matching.length === 0) {
-      res.status(404).json({ error: 'Not found' });
+      res.status(404).json({ error: '未找到' });
       return;
     }
 
@@ -446,7 +446,7 @@ export class BotEngine {
 
     // Same response regardless of reason (not found / wrong secret)
     if (triggered === 0) {
-      res.status(404).json({ error: 'Not found' });
+      res.status(404).json({ error: '未找到' });
       return;
     }
 

@@ -21,10 +21,10 @@ setupRoutes.post('/init', async (req: Request, res: Response, next) => {
 
     // Only allow if no users exist
     const userCount = await prisma.user.count();
-    if (userCount > 0) throw new AppError(403, 'Setup already completed');
+    if (userCount > 0) throw new AppError(403, '初始化已完成');
 
     const { username, password, displayName } = req.body;
-    if (!username || !password) throw new AppError(400, 'Username and password are required');
+    if (!username || !password) throw new AppError(400, '用户名和密码为必填项');
 
     const pwError = validatePassword(password);
     if (pwError) throw new AppError(400, pwError);
@@ -39,6 +39,6 @@ setupRoutes.post('/init', async (req: Request, res: Response, next) => {
       },
     });
 
-    res.status(201).json({ success: true, message: 'Admin account created. You can now log in.' });
+    res.status(201).json({ success: true, message: '管理员账户已创建，现在可以登录了。' });
   } catch (err) { next(err); }
 });

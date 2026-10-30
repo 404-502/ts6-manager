@@ -15,19 +15,19 @@ export default function Complaints() {
 
   const complaints = useMemo(() => (Array.isArray(data) ? data : []), [data]);
   const columns: ColumnDef<any>[] = useMemo(() => [
-    { accessorKey: 'fname', header: 'From' },
-    { accessorKey: 'tname', header: 'About' },
-    { accessorKey: 'message', header: 'Message' },
-    { accessorKey: 'timestamp', header: 'When', cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{timeAgo(getValue() as number)}</span> },
+    { accessorKey: 'fname', header: '来自' },
+    { accessorKey: 'tname', header: '关于' },
+    { accessorKey: 'message', header: '消息' },
+    { accessorKey: 'timestamp', header: '时间', cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{timeAgo(getValue() as number)}</span> },
   ], []);
 
-  if (!c || !s) return <EmptyState icon={MessageSquareWarning} title="No server selected" />;
+  if (!c || !s) return <EmptyState icon={MessageSquareWarning} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold">Complaints</h1>
-      <DataTable columns={columns} data={complaints} searchKey="message" searchPlaceholder="Search complaints..." />
+      <h1 className="text-xl font-semibold">投诉</h1>
+      <DataTable columns={columns} data={complaints} searchKey="message" searchPlaceholder="搜索投诉..." />
     </div>
   );
 }

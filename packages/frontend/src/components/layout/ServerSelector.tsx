@@ -31,7 +31,7 @@ export function ServerSelector() {
         onValueChange={(v) => setServer(parseInt(v))}
       >
         <SelectTrigger className="w-[180px] h-8 text-xs">
-          <SelectValue placeholder="Select server..." />
+          <SelectValue placeholder="选择服务器..." />
         </SelectTrigger>
         <SelectContent>
           {servers?.map((s: any) => (
@@ -50,7 +50,7 @@ export function ServerSelector() {
             onValueChange={(v) => setSid(parseInt(v))}
           >
             <SelectTrigger className="w-[160px] h-8 text-xs">
-              <SelectValue placeholder="Virtual server..." />
+              <SelectValue placeholder="虚拟服务器..." />
             </SelectTrigger>
             <SelectContent>
               {virtualServers.map((vs: any) => (

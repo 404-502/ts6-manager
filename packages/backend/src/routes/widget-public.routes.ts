@@ -88,7 +88,7 @@ widgetPublicRoutes.get('/:token/data', async (req: Request, res: Response, next)
   try {
     const token = req.params.token as string;
     const data = await getWidgetData(token, req);
-    if (!data) return res.status(404).json({ error: 'Widget not found or server offline' });
+    if (!data) return res.status(404).json({ error: '小组件不存在或服务器离线' });
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Cache-Control', 'public, max-age=45');
     res.json(data);
@@ -100,7 +100,7 @@ widgetPublicRoutes.get('/:token/image.svg', async (req: Request, res: Response, 
   try {
     const token = req.params.token as string;
     const data = await getWidgetData(token, req);
-    if (!data) return res.status(404).send('Widget not found');
+    if (!data) return res.status(404).send('小组件不存在');
     const svg = renderWidgetSvg(data);
     res.setHeader('Content-Type', 'image/svg+xml');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -114,7 +114,7 @@ widgetPublicRoutes.get('/:token/image.png', async (req: Request, res: Response, 
   try {
     const token = req.params.token as string;
     const data = await getWidgetData(token, req);
-    if (!data) return res.status(404).send('Widget not found');
+    if (!data) return res.status(404).send('小组件不存在');
     const svg = renderWidgetSvg(data);
 
     let pngBuffer: Buffer;
@@ -152,12 +152,12 @@ widgetPublicRoutes.get('/player/:botId/data', async (req: Request, res: Response
     const botId = parseInt(String(req.params.botId));
     const token = req.query.token as string;
     if (!token || token !== playerWidgetToken(botId)) {
-      return res.status(403).json({ error: 'Invalid token' });
+      return res.status(403).json({ error: '令牌无效' });
     }
 
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(botId);
-    if (!bot) return res.status(404).json({ error: 'Bot not found' });
+    if (!bot) return res.status(404).json({ error: '机器人不存在' });
 
     const nowPlaying = bot.nowPlaying;
     const progress = bot.playbackProgress;
@@ -182,12 +182,12 @@ widgetPublicRoutes.get('/player/:botId/bbcode', async (req: Request, res: Respon
     const botId = parseInt(String(req.params.botId));
     const token = req.query.token as string;
     if (!token || token !== playerWidgetToken(botId)) {
-      return res.status(403).json({ error: 'Invalid token' });
+      return res.status(403).json({ error: '令牌无效' });
     }
 
     const manager: VoiceBotManager = req.app.locals.voiceBotManager;
     const bot = manager.getBot(botId);
-    if (!bot) return res.status(404).send('Bot not found');
+    if (!bot) return res.status(404).send('机器人不存在');
 
     const nowPlaying = bot.nowPlaying;
     const progress = bot.playbackProgress;

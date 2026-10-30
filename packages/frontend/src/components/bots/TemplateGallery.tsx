@@ -64,7 +64,7 @@ export function TemplateGallery({ open, onOpenChange, onSelect }: TemplateGaller
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
               )}
-              {selected ? `Configure: ${selected.name}` : 'Flow Templates'}
+              {selected ? `配置：${selected.name}` : '流程模板'}
             </DialogTitle>
           </DialogHeader>
         </div>
@@ -123,7 +123,7 @@ export function TemplateGallery({ open, onOpenChange, onSelect }: TemplateGaller
                 <p className="text-xs text-muted-foreground">{selected.description}</p>
 
                 {selected.configFields.length === 0 ? (
-                  <p className="text-xs text-muted-foreground/60">No configuration needed — ready to create.</p>
+                  <p className="text-xs text-muted-foreground/60">无需配置，可直接创建。</p>
                 ) : (
                   <div className="space-y-3">
                     {selected.configFields.map((field) => (
@@ -161,9 +161,9 @@ export function TemplateGallery({ open, onOpenChange, onSelect }: TemplateGaller
 
             <div className="p-6 pt-2">
               <DialogFooter>
-                <Button variant="outline" size="sm" onClick={handleBack}>Back</Button>
+                <Button variant="outline" size="sm" onClick={handleBack}>返回</Button>
                 <Button size="sm" onClick={handleCreate} disabled={selected.configFields.length > 0 && !isValid}>
-                  Create Bot
+                  创建机器人
                 </Button>
               </DialogFooter>
             </div>

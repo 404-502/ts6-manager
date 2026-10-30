@@ -24,7 +24,7 @@ botRoutes.get('/:botId', async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const bot = await prisma.botFlow.findUnique({ where: { id: parseInt(String(req.params.botId)) } });
-    if (!bot) throw new AppError(404, 'Bot flow not found');
+    if (!bot) throw new AppError(404, '机器人流程不存在');
     res.json({
       ...bot,
       flowData: JSON.parse(bot.flowData),
@@ -39,13 +39,13 @@ botRoutes.post('/', requireRole('admin'), async (req: Request, res: Response, ne
 
     const parsedConfigId = parseInt(serverConfigId);
     if (!name || isNaN(parsedConfigId)) {
-      return res.status(400).json({ error: 'Name and valid serverConfigId are required' });
+      return res.status(400).json({ error: '名称和有效的 serverConfigId 为必填项' });
     }
 
     // Verify server config exists
     const serverConfig = await prisma.tsServerConfig.findUnique({ where: { id: parsedConfigId } });
     if (!serverConfig) {
-      return res.status(400).json({ error: `Server config ${parsedConfigId} does not exist` });
+      return res.status(400).json({ error: `服务器配置 ${parsedConfigId} 不存在` });
     }
 
     const bot = await prisma.botFlow.create({

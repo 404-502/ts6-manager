@@ -11,7 +11,7 @@ export function requireServerAccess() {
 
     const configId = parseInt(req.params.configId as string);
     if (isNaN(configId)) {
-      res.status(400).json({ error: 'Invalid server config ID' });
+      res.status(400).json({ error: '服务器配置 ID 无效' });
       return;
     }
 
@@ -26,7 +26,7 @@ export function requireServerAccess() {
     });
 
     if (!access) {
-      res.status(403).json({ error: 'No access to this server' });
+      res.status(403).json({ error: '无权访问该服务器' });
       return;
     }
 

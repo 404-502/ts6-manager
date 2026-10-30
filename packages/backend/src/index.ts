@@ -51,7 +51,7 @@ async function main() {
         jwt.verify(token, config.jwtSecret, { algorithms: ['HS256'] });
         done(true);
       } catch {
-        done(false, 401, 'Invalid token');
+        done(false, 401, '令牌无效');
       }
     },
   });

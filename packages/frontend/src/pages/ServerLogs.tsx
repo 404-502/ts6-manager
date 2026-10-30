@@ -52,40 +52,40 @@ export default function ServerLogs() {
       });
   }, [data, filter, levelFilter]);
 
-  if (!c || !s) return <EmptyState icon={ScrollText} title="No server selected" />;
+  if (!c || !s) return <EmptyState icon={ScrollText} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Server Logs</h1>
+        <h1 className="text-xl font-semibold">服务器日志</h1>
         <Button size="sm" variant="outline" onClick={() => refetch()} disabled={isFetching}>
-          <RefreshCw className={cn('h-4 w-4 mr-1', isFetching && 'animate-spin')} /> Refresh
+          <RefreshCw className={cn('h-4 w-4 mr-1', isFetching && 'animate-spin')} /> 刷新
         </Button>
       </div>
 
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Filter logs..." value={filter} onChange={(e) => setFilter(e.target.value)} className="pl-8 h-9" />
+          <Input placeholder="筛选日志..." value={filter} onChange={(e) => setFilter(e.target.value)} className="pl-8 h-9" />
         </div>
         <Select value={levelFilter} onValueChange={setLevelFilter}>
           <SelectTrigger className="w-[130px] h-9 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All Levels</SelectItem>
-            <SelectItem value="ERROR">Error</SelectItem>
-            <SelectItem value="WARNING">Warning</SelectItem>
-            <SelectItem value="INFO">Info</SelectItem>
-            <SelectItem value="DEBUG">Debug</SelectItem>
+            <SelectItem value="ALL">全部级别</SelectItem>
+            <SelectItem value="ERROR">错误</SelectItem>
+            <SelectItem value="WARNING">警告</SelectItem>
+            <SelectItem value="INFO">信息</SelectItem>
+            <SelectItem value="DEBUG">调试</SelectItem>
           </SelectContent>
         </Select>
         <Select value={lines} onValueChange={setLines}>
           <SelectTrigger className="w-[120px] h-9 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="50">50 lines</SelectItem>
-            <SelectItem value="100">100 lines</SelectItem>
-            <SelectItem value="250">250 lines</SelectItem>
-            <SelectItem value="500">500 lines</SelectItem>
+            <SelectItem value="50">50 行</SelectItem>
+            <SelectItem value="100">100 行</SelectItem>
+            <SelectItem value="250">250 行</SelectItem>
+            <SelectItem value="500">500 行</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -94,7 +94,7 @@ export default function ServerLogs() {
         <ScrollArea className="h-[calc(100vh-260px)]">
           <div className="p-3 space-y-0.5">
             {logs.length === 0 ? (
-              <p className="text-center text-muted-foreground text-sm py-10">No log entries found.</p>
+              <p className="text-center text-muted-foreground text-sm py-10">未找到日志记录。</p>
             ) : (
               logs.map((entry, i) => (
                 <div key={i} className="flex items-start gap-2 py-0.5 group hover:bg-muted/10 rounded px-1">
@@ -111,7 +111,7 @@ export default function ServerLogs() {
         </ScrollArea>
       </div>
 
-      <p className="text-xs text-muted-foreground">{logs.length} entries shown</p>
+      <p className="text-xs text-muted-foreground">已显示 {logs.length} 条记录</p>
     </div>
   );
 }

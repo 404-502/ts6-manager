@@ -1,106 +1,112 @@
-#### DISCLAIMER: 
+#### 声明：
 ![AI Assisted](https://img.shields.io/badge/AI%20Assisted-Project-00ADD8?style=for-the-badge&logo=dependabot&logoColor=white)
 
-# TS6 Manager
+# TS6 Manager 汉化版
 
-Web-based management interface for TeamSpeak servers. Control virtual servers, channels, clients, permissions, music bots, automated workflows, and embeddable server widgets — all from your browser.
+> 本仓库是 [clusterzx/ts6-manager](https://github.com/clusterzx/ts6-manager.git) 的简体中文汉化版，Web 界面已全部翻译为中文。
 
-Built on the **WebQuery HTTP API** (the ServerQuery replacement in modern TeamSpeak builds). Telnet is not used or supported.
+TeamSpeak 服务器的 Web 管理界面。在浏览器中即可管理虚拟服务器、频道、客户端、权限、音乐机器人、自动化流程，以及可嵌入的服务器小组件。
+
+基于 **WebQuery HTTP API**（现代 TeamSpeak 版本中 ServerQuery 的替代方案）构建，不使用也不支持 Telnet。
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-## Screenshots
+## 界面截图
 
-### Dashboard
-Live overview of your server: online users, channel count, uptime, ping, bandwidth graph, and server capacity at a glance.
+### 仪表盘
+
+服务器实时概览：在线用户、频道数量、运行时长、延迟、带宽曲线与服务器容量，一目了然。
 
 ![Dashboard](docs/dashboard.png)
 
-### Music Bots
-Run multiple music bots per server. Each bot has its own queue, volume control, and playback state. Supports radio streams, YouTube, and a local music library. Users in the bot's channel can control it via text commands (`!radio`, `!play`, `!vol`, etc.).
+### 音乐机器人
+
+每台服务器可运行多个音乐机器人，每个机器人拥有独立的播放队列、音量控制与播放状态。支持电台流、YouTube 与本地音乐库。机器人所在频道的用户可通过文字命令（`!radio`、`!play`、`!vol` 等）控制播放。
 
 ![Music Bots](docs/musicbots.png)
 
-### Bot Flow Engine
-Visual node-based editor for building automated server workflows. Drag triggers, conditions, and actions onto the canvas, connect them, and deploy. Supports TS3 events, cron schedules, webhooks, and chat commands as triggers.
+### 机器人流程引擎
+
+可视化节点编辑器，用于搭建服务器自动化流程。将触发器、条件与动作拖到画布上，连线后即可部署。支持 TS3 事件、cron 定时计划、Webhook 与聊天命令作为触发器。
 
 ![Flow Editor](docs/flow-editor.png)
 
-### Flow Templates
-Get started quickly with pre-built flow templates. Covers common use cases like temporary channel creation, AFK movers, idle kickers, online counters, and group protection. One click to import, then customize to your needs.
+### 流程模板
+
+通过预置流程模板快速上手，覆盖创建临时频道、AFK 移动、闲置踢出、在线人数统计、服务器组保护等常见场景。一键导入后按需修改即可。
 
 ![Flow Templates](docs/flow-templates.png)
 
-## Features
+## 功能特性
 
-### Server Management
-- Dashboard with live server stats, bandwidth graph, and capacity overview
-- Virtual server list with start/stop controls
-- Channel tree with drag-and-drop ordering
-- Client list with kick, ban, move, poke actions
-- Server & channel group management
-- Permission editor (server, channel, client, group-level)
-- Ban list management
-- Token / privilege key management
-- Complaint viewer
-- Offline message system
-- Server log viewer with filtering
-- Channel file browser with upload/download
-- Instance-level settings
+### 服务器管理
+- 仪表盘：实时服务器状态、带宽曲线与容量概览
+- 虚拟服务器列表，支持启动/停止
+- 频道树，支持拖拽排序
+- 客户端列表，支持踢出、封禁、移动、戳一戳
+- 服务器组与频道组管理
+- 权限编辑器（服务器、频道、客户端、服务器组各级别）
+- 封禁列表管理
+- 令牌 / 权限密钥管理
+- 投诉查看器
+- 离线消息系统
+- 服务器日志查看器，支持筛选
+- 频道文件浏览器，支持上传/下载
+- 实例级设置
 
-### Music Bots
-- Multiple bots per server, each with independent queue and playback
-- Radio station streaming with ICY metadata and live title updates
-- YouTube playback via yt-dlp (search, download, queue)
-- Music library management (upload, organize, playlists)
-- Volume control, pause, skip, previous, shuffle, repeat
-- Stereo audio support with stable 20ms pacing
-- Auto-reconnect with exponential backoff on disconnect
-- In-channel text commands for hands-free control
-- Music request history tracking
+### 音乐机器人
+- 单台服务器可运行多个机器人，各自独立队列与播放
+- 电台流播放，支持 ICY 元数据与实时曲目标题更新
+- 通过 yt-dlp 播放 YouTube（搜索、下载、加入队列）
+- 音乐库管理（上传、整理、播放列表）
+- 音量控制、暂停、跳过、上一首、随机播放、循环
+- 立体声音频，采用稳定的 20ms 节奏控制
+- 断线后按指数退避自动重连
+- 频道内文字命令，无需切出即可控制
+- 音乐点播历史记录
 
-### Video Streaming
-- Live video streaming from YouTube, Twitch, or direct URLs to TeamSpeak channels
-- WebRTC-based with Go sidecar relay (Pion) for low-latency delivery
-- Quality presets (480p, 720p, 1080p)
-- In-browser preview with WebRTC playback
-- A/V synchronization via RTCP Sender Reports
-- Runs as a Docker sidecar container alongside the backend
+### 视频串流
+- 将 YouTube、Twitch 或直链视频实时推送到 TeamSpeak 频道
+- 基于 WebRTC，配合 Go sidecar 中继（Pion）实现低延迟分发
+- 画质预设（480p、720p、1080p）
+- 浏览器内 WebRTC 预览播放
+- 通过 RTCP Sender Reports 实现音画同步
+- 以 Docker sidecar 容器形式与后端并行运行
 
-### Bot Flow Engine
-- Visual flow editor with drag-and-drop node canvas
-- Triggers: TS3 events, cron schedules, webhooks (with mandatory secrets), chat commands (global or channel-specific)
-- Actions: kick, ban, move, message, poke, channel create/edit/delete, HTTP requests, WebQuery commands
-- Conditions, variables, delays, loops, logging
-- Animated channel names (rotating text on a timer)
-- Placeholder system with filters and expressions
-- Pre-built templates for common automation tasks
+### 机器人流程引擎
+- 可视化流程编辑器，支持拖拽式节点画布
+- 触发器：TS3 事件、cron 定时计划、Webhook（强制校验密钥）、聊天命令（全局或指定频道）
+- 动作：踢出、封禁、移动、发送消息、戳一戳、频道创建/编辑/删除、HTTP 请求、WebQuery 命令
+- 条件、变量、延迟、循环、日志记录
+- 动态频道名（定时滚动文字）
+- 占位符系统，支持过滤器与表达式
+- 常见自动化任务的内置模板
 
-### Server Widgets
-- Embeddable server status banner for websites and forums
-- Token-based public access (no authentication required)
-- Available as live page, SVG, or PNG image
-- Dark and light themes
-- Configurable: show/hide channel tree and client list
+### 服务器小组件
+- 可嵌入网站与论坛的服务器状态横幅
+- 基于令牌的公开访问（无需登录鉴权）
+- 提供实时页面、SVG 或 PNG 图片三种形式
+- 深色与浅色主题
+- 可配置显示/隐藏频道树与客户端列表
 
-### Security
-- Setup wizard for initial admin account (no default credentials)
-- AES-256-GCM encryption for stored credentials (API keys, SSH passwords)
-- SSRF protection on all outbound HTTP requests and FFmpeg URLs
-- Rate limiting on authentication endpoints
-- JWT access + refresh token rotation with reuse detection
-- Role-based access control (admin / viewer)
-- Per-server access control for multi-tenant setups
-- WebQuery command whitelist in bot flows (blocks destructive commands)
-- Authenticated WebSocket connections
-- Password complexity requirements
+### 安全
+- 首次使用设置向导创建管理员账户（无默认凭据）
+- 存储的凭据（API 密钥、SSH 密码）采用 AES-256-GCM 加密
+- 所有出站 HTTP 请求与 FFmpeg URL 均具备 SSRF 防护
+- 认证接口限流
+- JWT 访问令牌 + 刷新令牌轮换，含重用检测
+- 基于角色的访问控制（管理员 / 查看者）
+- 多租户场景下的按服务器访问控制
+- 机器人流程中的 WebQuery 命令白名单（拦截破坏性命令）
+- 需鉴权的 WebSocket 连接
+- 密码复杂度要求
 
-### Settings & Administration
-- yt-dlp cookie file management for accessing age-restricted or member-only YouTube content
-- Upload cookies via file or paste directly in the UI
-- Admin-only settings panel
+### 设置与运维
+- yt-dlp cookie 文件管理，用于访问有年龄限制或仅会员可见的 YouTube 内容
+- 支持上传 cookie 文件或直接在界面中粘贴
+- 仅管理员可见的设置面板
 
-## Architecture
+## 系统架构
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌─────────────────┐
@@ -123,73 +129,75 @@ Get started quickly with pre-built flow templates. Covers common use cases like 
 Public:  /widget/:token  ──▶  SVG / PNG / JSON (no auth)
 ```
 
-**Four packages** in a pnpm monorepo:
+pnpm monorepo 共 **四个包**：
 
-| Package | Description |
+| 包名 | 说明 |
 |---------|-------------|
-| `@ts6/common` | Shared types, constants, utilities |
-| `@ts6/backend` | Express API, WebQuery client, bot engine, voice bots, widgets |
-| `@ts6/frontend` | React SPA with Vite, TailwindCSS, shadcn/ui |
-| `sidecar` | Go WebRTC media relay (Pion) for video streaming |
+| `@ts6/common` | 共享类型、常量与工具函数 |
+| `@ts6/backend` | Express API、WebQuery 客户端、机器人引擎、语音机器人、小组件 |
+| `@ts6/frontend` | 基于 Vite、TailwindCSS、shadcn/ui 的 React SPA |
+| `sidecar` | Go 编写的 WebRTC 媒体中继（Pion），用于视频串流 |
 
-The backend proxies all TeamSpeak API calls. The frontend never has direct access to API keys or server credentials.
+所有 TeamSpeak API 调用均由后端代理，前端始终无法直接接触 API 密钥或服务器凭据。
 
-## Tech Stack
+## 技术栈
 
-**Frontend:** React 18, Vite, TailwindCSS, shadcn/ui, TanStack Query + Table, React Flow, Recharts, Zustand
+**前端：** React 18、Vite、TailwindCSS、shadcn/ui、TanStack Query + Table、React Flow、Recharts、Zustand
 
-**Backend:** Node.js, Express, Prisma (SQLite), JWT authentication, WebQuery HTTP client, SSH event listener
+**后端：** Node.js、Express、Prisma（SQLite）、JWT 认证、WebQuery HTTP 客户端、SSH 事件监听
 
-**Voice/Audio:** Custom TS3 voice protocol client (UDP), Opus encoding, FFmpeg, yt-dlp
+**语音/音频：** 自研 TS3 语音协议客户端（UDP）、Opus 编码、FFmpeg、yt-dlp
 
-**Video Streaming:** Go sidecar with Pion WebRTC v4, RTCP Sender Reports for A/V sync
+**视频串流：** Go sidecar，Pion WebRTC v4，通过 RTCP Sender Reports 实现音画同步
 
-## Quick Start (Docker)
+## 快速开始（Docker）
 
-1. Download the [`docker-compose.yml`](docker-compose.yml)
-2. Create a `.env` file next to it:
+1. 下载 [`docker-compose.yml`](docker-compose.yml)
+2. 在同级目录创建 `.env` 文件：
 
 ```env
 JWT_SECRET=your-random-secret-at-least-32-characters
 ENCRYPTION_KEY=another-random-secret-for-credential-encryption
 ```
 
-Generate secure values:
+生成安全随机值：
 
 ```bash
 echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 echo "ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 ```
 
-3. Start the stack:
+3. 启动服务：
 
 ```bash
 docker compose up -d
 ```
 
-4. Open `http://localhost:3000/setup` and create your admin account
-5. Log in, then add your TeamSpeak server connection under **Settings → Connections** (host, WebQuery port, API key)
+> 注意：`docker-compose.yml` 拉取的是上游的预构建镜像（英文界面）。如需中文界面，请改用下方的[从源码构建](#从源码构建)方式。
 
-> `JWT_SECRET` is **required** — the backend will refuse to start in production without it.
-> `ENCRYPTION_KEY` is optional but recommended — if not set, `JWT_SECRET` is used as fallback for credential encryption.
+4. 打开 `http://localhost:3000/setup`，创建管理员账户
+5. 登录后，在 **设置 → 连接** 中添加 TeamSpeak 服务器连接（主机、WebQuery 端口、API 密钥）
 
-### Building from Source
+> `JWT_SECRET` 为**必填项** —— 生产环境下缺失该变量后端将拒绝启动。
+> `ENCRYPTION_KEY` 可选但强烈建议设置 —— 若未设置，将回退使用 `JWT_SECRET` 作为凭据加密密钥。
+
+### 从源码构建
 
 ```bash
-git clone https://github.com/clusterzx/ts6-manager.git
+git clone https://github.com/404-502/ts6-manager.git
 cd ts6-manager
 echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 echo "ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 docker compose -f docker-compose.local.yml up -d --build
 ```
 
-### Coolify / Reverse Proxy
+### Coolify / 反向代理
 
-Use [`docker-compose.coolify.yml`](docker-compose.coolify.yml) as a starting point. Key differences from the standard compose:
+可将 [`docker-compose.coolify.yml`](docker-compose.coolify.yml) 作为配置起点。与标准 compose 的关键差异：
 
-- No `ports` section — the reverse proxy handles routing
-- Set the domain on the **frontend** service in Coolify (port 80)
-- If your TS server runs in a separate Docker network, add it as an external network on the backend service:
+- 没有 `ports` 段 —— 由反向代理负责路由
+- 在 Coolify 中为 **frontend** 服务设置域名（端口 80）
+- 若 TS 服务器运行在独立的 Docker 网络中，需将其作为外部网络挂到 backend 服务上：
 
 ```yaml
 services:
@@ -204,84 +212,84 @@ networks:
     name: your-ts-server-network-id
 ```
 
-## Development
+## 开发
 
-Requires: Node.js 20+, pnpm 9+
+环境要求：Node.js 20+、pnpm 9+
 
 ```bash
 pnpm install
-pnpm dev          # starts backend + frontend in parallel
+pnpm dev          # 并行启动后端与前端
 ```
 
-Backend runs on `:3001`, frontend on `:5173` (Vite dev server).
+后端运行于 `:3001`，前端运行于 `:5173`（Vite 开发服务器）。
 
-### Database
+### 数据库
 
-Prisma with SQLite. On first run:
+使用 Prisma + SQLite。首次运行：
 
 ```bash
 cd packages/backend
 npx prisma migrate deploy
 ```
 
-The Docker images handle migrations automatically on startup.
+Docker 镜像会在启动时自动执行数据库迁移。
 
-## Environment Variables
+## 环境变量
 
-| Variable | Default | Description |
+| 变量 | 默认值 | 说明 |
 |----------|---------|-------------|
-| `JWT_SECRET` | — | **Required.** Secret for JWT signing. Must be set in production. |
-| `ENCRYPTION_KEY` | — | Optional. Dedicated key for AES-256-GCM credential encryption. Falls back to `JWT_SECRET` if not set. |
-| `PORT` | `3001` | Backend port |
-| `DATABASE_URL` | `file:./data/ts6webui.db` | SQLite database path |
-| `JWT_ACCESS_EXPIRY` | `15m` | Access token lifetime |
-| `JWT_REFRESH_EXPIRY` | `7d` | Refresh token lifetime |
-| `FRONTEND_URL` | `http://localhost:3000` | CORS origin |
-| `MUSIC_DIR` | `/data/music` | Directory for downloaded music files |
-| `SIDECAR_URL` | — | Optional. Full URL of the WebRTC sidecar service (e.g. `http://ts6-sidecar:9800`). Set in Docker when sidecar runs as a separate container. |
-| `YT_COOKIE_FILE` | — | Optional. Path to a Netscape-format cookies.txt file for yt-dlp. Can also be managed via **Settings → YouTube** in the UI. |
+| `JWT_SECRET` | — | **必填。** JWT 签名密钥，生产环境必须设置。 |
+| `ENCRYPTION_KEY` | — | 可选。AES-256-GCM 凭据加密的专用密钥，未设置时回退使用 `JWT_SECRET`。 |
+| `PORT` | `3001` | 后端端口 |
+| `DATABASE_URL` | `file:./data/ts6webui.db` | SQLite 数据库路径 |
+| `JWT_ACCESS_EXPIRY` | `15m` | 访问令牌有效期 |
+| `JWT_REFRESH_EXPIRY` | `7d` | 刷新令牌有效期 |
+| `FRONTEND_URL` | `http://localhost:3000` | CORS 来源 |
+| `MUSIC_DIR` | `/data/music` | 音乐文件下载目录 |
+| `SIDECAR_URL` | — | 可选。WebRTC sidecar 服务的完整 URL（如 `http://ts6-sidecar:9800`），sidecar 作为独立容器运行时需设置。 |
+| `YT_COOKIE_FILE` | — | 可选。yt-dlp 使用的 Netscape 格式 cookies.txt 文件路径，也可通过界面中的 **设置 → YouTube** 管理。 |
 
-## Environment Variables Sidecar(VideoStreaming)
+## 环境变量 Sidecar（视频串流）
 
-| Variable | Default | Description |
+| 变量 | 默认值 | 说明 |
 |----------|---------|-------------|
-| `VIDEO_QUEUE_SIZE` | `2048` | Size of the video RTP queue |
-| `AUDIO_QUEUE_SIZE` | `4096` | Size of the audio RTP queue |
-| `SYNC_PLAYOUT_BUFFER_MS` | `4` | Small playout buffer used by the adaptive pacing logic |
-| `SYNC_VIDEO_BIAS_MS` | `4` | Optional extra holdback for video to fine-tune sync |
-| `AUDIO_DELAY_MS` | `0` | Legacy / manual audio delay option With the current pacing logic this is typically expected to stay at 0 |
-| `SIDECAR_DEBUG_LOGS` | `1` | Enables verbose debug logging for high-frequency runtime details |
-| `VIDEO_READ_RTP_BUFFER` | `4194304` | UDP OS-socketbuffer for video port |
-| `AUDIO_READ_RTP_BUFFER` | `1048576` | UDP OS-socketbuffer for audio port |
-| `VIDEO_BUFSIZE` | `1M` | FFmpeg Video Buffer |
+| `VIDEO_QUEUE_SIZE` | `2048` | 视频 RTP 队列大小 |
+| `AUDIO_QUEUE_SIZE` | `4096` | 音频 RTP 队列大小 |
+| `SYNC_PLAYOUT_BUFFER_MS` | `4` | 供自适应节奏控制使用的小型播放缓冲区 |
+| `SYNC_VIDEO_BIAS_MS` | `4` | 可选的视频额外延迟，用于微调同步 |
+| `AUDIO_DELAY_MS` | `0` | 旧版 / 手动音频延迟选项。在当前节奏控制逻辑下通常应保持为 0 |
+| `SIDECAR_DEBUG_LOGS` | `1` | 开启高频运行时细节的详细调试日志 |
+| `VIDEO_READ_RTP_BUFFER` | `4194304` | 视频端口的 UDP 系统套接字缓冲区 |
+| `AUDIO_READ_RTP_BUFFER` | `1048576` | 音频端口的 UDP 系统套接字缓冲区 |
+| `VIDEO_BUFSIZE` | `1M` | FFmpeg 视频缓冲区 |
 
-## Music Bot Text Commands
+## 音乐机器人文字命令
 
-When a music bot is connected to a channel, users in that channel can control it via chat:
+当音乐机器人连接到某频道后，该频道内的用户可通过聊天控制它：
 
-| Command | Description |
+| 命令 | 说明 |
 |---------|-------------|
-| `!radio` | List available radio stations |
-| `!radio <id>` | Play a radio station |
-| `!play <url>` | Play from YouTube URL |
-| `!play` | Resume paused playback |
-| `!stop` | Stop playback |
-| `!pause` | Toggle pause/resume |
-| `!skip` / `!next` | Next track in queue |
-| `!prev` | Previous track |
-| `!vol` | Show current volume |
-| `!vol <0-100>` | Set volume |
-| `!np` | Show current track |
+| `!radio` | 列出可用电台 |
+| `!radio <id>` | 播放指定电台 |
+| `!play <url>` | 通过 YouTube URL 播放 |
+| `!play` | 继续暂停的播放 |
+| `!stop` | 停止播放 |
+| `!pause` | 切换暂停/继续 |
+| `!skip` / `!next` | 播放队列中的下一首 |
+| `!prev` | 上一首 |
+| `!vol` | 显示当前音量 |
+| `!vol <0-100>` | 设置音量 |
+| `!np` | 显示当前曲目 |
 
-## Requirements
+## 运行要求
 
-- TeamSpeak server with **WebQuery HTTP** enabled (not raw/telnet)
-- WebQuery API key (generated via `apikeyadd` or server admin tools)
-- SSH access to the TS server (only needed for bot flow event triggers)
-- `yt-dlp` and `ffmpeg` installed on the backend (included in the Docker image)
+- TeamSpeak 服务器已启用 **WebQuery HTTP**（非 raw/telnet 模式）
+- WebQuery API 密钥（通过 `apikeyadd` 或服务器管理工具生成）
+- 对 TS 服务器的 SSH 访问权限（仅机器人流程的事件触发器需要）
+- 后端已安装 `yt-dlp` 与 `ffmpeg`（Docker 镜像中已内置）
 
 
 
-## License
+## 许可证
 
 MIT

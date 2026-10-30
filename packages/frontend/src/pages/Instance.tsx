@@ -36,11 +36,11 @@ export default function Instance() {
 
   const editMutation = useMutation({
     mutationFn: (data: any) => serversApi.instanceEdit(c!, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['instance-info', c] }); toast.success('Instance settings updated'); setEditFields({}); },
-    onError: () => toast.error('Failed to update instance settings'),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['instance-info', c] }); toast.success('实例设置已更新'); setEditFields({}); },
+    onError: () => toast.error('更新实例设置失败'),
   });
 
-  if (!c) return <EmptyState icon={Cpu} title="No server selected" />;
+  if (!c) return <EmptyState icon={Cpu} title="未选择服务器" />;
   if (loadingInfo || loadingHost) return <PageLoader />;
 
   const instanceData = Array.isArray(info) ? info[0] : info;
@@ -48,15 +48,15 @@ export default function Instance() {
   const versionData = Array.isArray(version) ? version[0] : version;
 
   const editableFields = [
-    { key: 'serverinstance_guest_serverquery_group', label: 'Guest ServerQuery Group', type: 'number' },
-    { key: 'serverinstance_template_serveradmin_group', label: 'Template Server Admin Group', type: 'number' },
-    { key: 'serverinstance_template_serverdefault_group', label: 'Template Server Default Group', type: 'number' },
-    { key: 'serverinstance_template_channeldefault_group', label: 'Template Channel Default Group', type: 'number' },
-    { key: 'serverinstance_template_channeladmin_group', label: 'Template Channel Admin Group', type: 'number' },
-    { key: 'serverinstance_filetransfer_port', label: 'File Transfer Port', type: 'number' },
-    { key: 'serverinstance_serverquery_flood_commands', label: 'Flood Commands', type: 'number' },
-    { key: 'serverinstance_serverquery_flood_time', label: 'Flood Time (sec)', type: 'number' },
-    { key: 'serverinstance_serverquery_flood_ban_time', label: 'Flood Ban Time (sec)', type: 'number' },
+    { key: 'serverinstance_guest_serverquery_group', label: '访客 ServerQuery 组', type: 'number' },
+    { key: 'serverinstance_template_serveradmin_group', label: '模板服务器管理员组', type: 'number' },
+    { key: 'serverinstance_template_serverdefault_group', label: '模板服务器默认组', type: 'number' },
+    { key: 'serverinstance_template_channeldefault_group', label: '模板频道默认组', type: 'number' },
+    { key: 'serverinstance_template_channeladmin_group', label: '模板频道管理员组', type: 'number' },
+    { key: 'serverinstance_filetransfer_port', label: '文件传输端口', type: 'number' },
+    { key: 'serverinstance_serverquery_flood_commands', label: '泛洪命令数', type: 'number' },
+    { key: 'serverinstance_serverquery_flood_time', label: '泛洪时间（秒）', type: 'number' },
+    { key: 'serverinstance_serverquery_flood_ban_time', label: '泛洪封禁时间（秒）', type: 'number' },
   ];
 
   const handleSave = () => {
@@ -68,43 +68,43 @@ export default function Instance() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold">Instance</h1>
+      <h1 className="text-xl font-semibold">实例</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Version Card */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2"><Server className="h-4 w-4 text-primary" /> Version</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Server className="h-4 w-4 text-primary" /> 版本</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <InfoRow label="Version" value={versionData?.version} />
-            <InfoRow label="Build" value={versionData?.build} />
-            <InfoRow label="Platform" value={versionData?.platform} />
+            <InfoRow label="版本" value={versionData?.version} />
+            <InfoRow label="构建号" value={versionData?.build} />
+            <InfoRow label="平台" value={versionData?.platform} />
           </CardContent>
         </Card>
 
         {/* Host Info Card */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2"><Globe className="h-4 w-4 text-primary" /> Host</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Globe className="h-4 w-4 text-primary" /> 主机</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <InfoRow label="Uptime" value={hostData?.instance_uptime ? formatUptime(hostData.instance_uptime) : '-'} />
-            <InfoRow label="Bytes Sent" value={hostData?.connection_bytes_sent_total ? formatBytes(hostData.connection_bytes_sent_total) : '-'} />
-            <InfoRow label="Bytes Received" value={hostData?.connection_bytes_received_total ? formatBytes(hostData.connection_bytes_received_total) : '-'} />
-            <InfoRow label="Virtual Servers" value={hostData?.virtualservers_total_maxclients ? `${hostData.virtualservers_total_clients_online || 0} / ${hostData.virtualservers_total_maxclients}` : '-'} />
+            <InfoRow label="运行时长" value={hostData?.instance_uptime ? formatUptime(hostData.instance_uptime) : '-'} />
+            <InfoRow label="已发送字节" value={hostData?.connection_bytes_sent_total ? formatBytes(hostData.connection_bytes_sent_total) : '-'} />
+            <InfoRow label="已接收字节" value={hostData?.connection_bytes_received_total ? formatBytes(hostData.connection_bytes_received_total) : '-'} />
+            <InfoRow label="虚拟服务器" value={hostData?.virtualservers_total_maxclients ? `${hostData.virtualservers_total_clients_online || 0} / ${hostData.virtualservers_total_maxclients}` : '-'} />
           </CardContent>
         </Card>
 
         {/* Database Info Card */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2"><Cpu className="h-4 w-4 text-primary" /> Database</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Cpu className="h-4 w-4 text-primary" /> 数据库</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <InfoRow label="DB Plugin" value={instanceData?.serverinstance_database_version} />
-            <InfoRow label="FT Port" value={instanceData?.serverinstance_filetransfer_port} />
-            <InfoRow label="Permissions Version" value={instanceData?.serverinstance_permissions_version} />
+            <InfoRow label="数据库插件" value={instanceData?.serverinstance_database_version} />
+            <InfoRow label="文件传输端口" value={instanceData?.serverinstance_filetransfer_port} />
+            <InfoRow label="权限版本" value={instanceData?.serverinstance_permissions_version} />
           </CardContent>
         </Card>
       </div>
@@ -113,9 +113,9 @@ export default function Instance() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium">Instance Settings</CardTitle>
+            <CardTitle className="text-sm font-medium">实例设置</CardTitle>
             <Button size="sm" onClick={handleSave} disabled={Object.keys(editFields).length === 0 || editMutation.isPending}>
-              <Save className="h-4 w-4 mr-1" /> Save Changes
+              <Save className="h-4 w-4 mr-1" /> 保存更改
             </Button>
           </div>
         </CardHeader>

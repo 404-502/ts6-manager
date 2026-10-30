@@ -14,7 +14,7 @@ interface ConfirmDialogProps {
 
 export function ConfirmDialog({
   open, onOpenChange, title, description,
-  confirmLabel = 'Confirm', destructive, onConfirm, loading,
+  confirmLabel = '确认', destructive, onConfirm, loading,
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -25,14 +25,14 @@ export function ConfirmDialog({
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancel
+            取消
           </Button>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? 'Processing...' : confirmLabel}
+            {loading ? '处理中...' : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

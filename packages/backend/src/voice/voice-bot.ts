@@ -362,7 +362,7 @@ export class VoiceBot extends EventEmitter {
 
   async play(item: QueueItem): Promise<void> {
     if (this._status !== 'connected' && this._status !== 'playing' && this._status !== 'paused') {
-      throw new Error('Bot is not connected');
+      throw new Error('机器人未连接');
     }
 
     this.stopIcyPolling();
@@ -388,7 +388,7 @@ export class VoiceBot extends EventEmitter {
 
   async playStream(item: QueueItem): Promise<void> {
     if (this._status !== 'connected' && this._status !== 'playing' && this._status !== 'paused') {
-      throw new Error('Bot is not connected');
+      throw new Error('机器人未连接');
     }
     if (!item.streamUrl) {
       throw new Error('No streamUrl provided');
@@ -764,7 +764,7 @@ export class VoiceBot extends EventEmitter {
   /** Start video streaming to TS6 via WebRTC */
   async startVideoStream(source: string, preset?: string, framerate?: number, bitrate?: string): Promise<void> {
     if (this._status !== 'connected' && this._status !== 'playing' && this._status !== 'paused') {
-      throw new Error('Bot is not connected');
+      throw new Error('机器人未连接');
     }
     if (this._videoStreaming) {
       throw new Error('Video stream already active');
@@ -921,7 +921,7 @@ export class VoiceBot extends EventEmitter {
   /** Change video source while streaming */
   async setVideoSource(source: string): Promise<void> {
     if (!this._videoStreaming || !this.sidecarHttp) {
-      throw new Error('No active video stream');
+      throw new Error('当前没有活跃的视频流');
     }
     this._videoSource = source;
     const currentPreset = STREAM_PRESETS[this._videoPreset] || STREAM_PRESETS[DEFAULT_PRESET];
@@ -941,7 +941,7 @@ export class VoiceBot extends EventEmitter {
   /** Kick a viewer from the video stream */
   async kickVideoViewer(clid: number): Promise<void> {
     if (!this._videoStreaming || !this.signaling || !this._activeStreamId) {
-      throw new Error('No active video stream');
+      throw new Error('当前没有活跃的视频流');
     }
     try { await this.sidecarHttp?.closePeer(String(clid)); } catch { /* ignore */ }
     this.signaling.sendRemoveClient(clid, this._activeStreamId);

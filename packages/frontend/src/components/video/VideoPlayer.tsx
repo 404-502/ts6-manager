@@ -77,7 +77,7 @@ export function VideoPlayer({ botId, streaming }: VideoPlayerProps) {
       await pc.setLocalDescription(answer);
       await musicBotsApi.webrtcAnswer(botId, answer.sdp!);
     } catch (err: any) {
-      setError(err.message || 'Failed to connect');
+      setError(err.message || '连接失败');
       cleanup();
     }
   }, [botId, cleanup]);
@@ -98,7 +98,7 @@ export function VideoPlayer({ botId, streaming }: VideoPlayerProps) {
   if (!streaming) {
     return (
       <div className="flex items-center justify-center bg-black/50 rounded-lg aspect-video max-w-xl">
-        <p className="text-muted-foreground text-sm">No active video stream</p>
+        <p className="text-muted-foreground text-sm">当前没有进行中的视频流</p>
       </div>
     );
   }
@@ -114,7 +114,7 @@ export function VideoPlayer({ botId, streaming }: VideoPlayerProps) {
       />
       {!connected && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-          <p className="text-white text-sm animate-pulse">Connecting to stream...</p>
+          <p className="text-white text-sm animate-pulse">正在连接视频流...</p>
         </div>
       )}
       {error && (
@@ -124,14 +124,14 @@ export function VideoPlayer({ botId, streaming }: VideoPlayerProps) {
             onClick={connect}
             className="text-xs text-blue-400 hover:text-blue-300 underline"
           >
-            Retry
+            重试
           </button>
         </div>
       )}
       {connected && (
         <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/60 px-2 py-1 rounded text-xs">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-white">LIVE</span>
+          <span className="text-white">直播中</span>
         </div>
       )}
     </div>

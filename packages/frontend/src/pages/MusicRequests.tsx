@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { Music, ExternalLink, Clock } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
 export default function MusicRequests() {
@@ -17,7 +18,7 @@ export default function MusicRequests() {
         enabled: !!c,
     });
 
-    if (!c) return <EmptyState icon={Music} title="No server selected" />;
+    if (!c) return <EmptyState icon={Music} title="未选择服务器" />;
     if (isLoading) return <PageLoader />;
 
     return (
@@ -25,10 +26,10 @@ export default function MusicRequests() {
             <div className="flex items-center justify-between shrink-0">
                 <div>
                     <h1 className="text-xl font-semibold flex items-center gap-2">
-                        <Music className="w-5 h-5 text-primary" /> Music Request History
+                        <Music className="w-5 h-5 text-primary" /> 点歌历史
                     </h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        History of songs requested via the <code className="text-xs bg-muted px-1 rounded text-primary">!play</code> command on this server.
+                        本服务器通过 <code className="text-xs bg-muted px-1 rounded text-primary">!play</code> 命令点播的歌曲历史记录。
                     </p>
                 </div>
             </div>
@@ -38,8 +39,8 @@ export default function MusicRequests() {
                     <div className="absolute inset-0 flex items-center justify-center">
                         <EmptyState
                             icon={Music}
-                            title="No music requests yet"
-                            description="When users request songs using the !play command, they will appear here as a history log."
+                            title="暂无点歌记录"
+                            description="当用户使用 !play 命令点歌后，记录会作为历史日志显示在这里。"
                         />
                     </div>
                 ) : (
@@ -71,7 +72,7 @@ export default function MusicRequests() {
                                         <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground/80">
                                             <span className="flex items-center gap-1.5 font-mono-data">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                Requested {formatDistanceToNow(new Date(req.requestedAt), { addSuffix: true })}
+                                                {formatDistanceToNow(new Date(req.requestedAt), { addSuffix: true, locale: zhCN })} 点播
                                             </span>
                                         </div>
                                     </div>

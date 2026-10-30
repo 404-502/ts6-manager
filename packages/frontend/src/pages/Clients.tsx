@@ -36,7 +36,7 @@ export default function Clients() {
     const cols: ColumnDef<any>[] = [
       {
         accessorKey: 'client_nickname',
-        header: 'Nickname',
+        header: '昵称',
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-mono-data text-primary">
@@ -48,21 +48,21 @@ export default function Clients() {
       },
       {
         accessorKey: 'client_country',
-        header: 'Country',
+        header: '国家',
         cell: ({ getValue }) => <span className="font-mono-data text-xs">{(getValue() as string) || '-'}</span>,
       },
       {
         accessorKey: 'client_idle_time',
-        header: 'Idle',
+        header: '空闲',
         cell: ({ getValue }) => <span className="font-mono-data text-xs text-muted-foreground">{formatUptime(Math.floor((getValue() as number) / 1000))}</span>,
       },
       {
         accessorKey: 'client_away',
-        header: 'Status',
+        header: '状态',
         cell: ({ row }) => {
-          if (row.original.client_away) return <Badge variant="warning" className="text-[10px]">Away</Badge>;
-          if (row.original.client_input_muted) return <Badge variant="secondary" className="text-[10px]">Muted</Badge>;
-          return <Badge variant="success" className="text-[10px]">Active</Badge>;
+          if (row.original.client_away) return <Badge variant="warning" className="text-[10px]">离开</Badge>;
+          if (row.original.client_input_muted) return <Badge variant="secondary" className="text-[10px]">已静音</Badge>;
+          return <Badge variant="success" className="text-[10px]">在线</Badge>;
         },
       },
     ];
@@ -81,19 +81,19 @@ export default function Clients() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => { setPokeTarget({ clid: c.clid, name: c.client_nickname }); setPokeMsg(''); }}>
-                  <Zap className="mr-2 h-4 w-4" /> Poke
+                  <Zap className="mr-2 h-4 w-4" /> 戳一戳
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => {
-                  kickClient.mutate({ clid: c.clid, reasonid: 5, reasonmsg: 'Kicked by admin' });
-                  toast.success(`Kicked ${c.client_nickname}`);
+                  kickClient.mutate({ clid: c.clid, reasonid: 5, reasonmsg: '被管理员踢出' });
+                  toast.success(`已踢出 ${c.client_nickname}`);
                 }}>
-                  <LogOut className="mr-2 h-4 w-4" /> Kick from Server
+                  <LogOut className="mr-2 h-4 w-4" /> 踢出服务器
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => {
-                  banClient.mutate({ clid: c.clid, time: 3600, banreason: 'Banned by admin' });
-                  toast.success(`Banned ${c.client_nickname}`);
+                  banClient.mutate({ clid: c.clid, time: 3600, banreason: '被管理员封禁' });
+                  toast.success(`已封禁 ${c.client_nickname}`);
                 }}>
-                  <Ban className="mr-2 h-4 w-4" /> Ban (1 hour)
+                  <Ban className="mr-2 h-4 w-4" /> 封禁（1 小时）
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -104,40 +104,40 @@ export default function Clients() {
     return cols;
   }, [isAdmin, kickClient, banClient]);
 
-  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Users} title="No server selected" />;
+  if (!selectedConfigId || !selectedSid) return <EmptyState icon={Users} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Clients</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{clients.length} online</p>
+          <h1 className="text-xl font-semibold">客户端</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{clients.length} 人在线</p>
         </div>
       </div>
 
-      <DataTable columns={columns} data={clients} searchKey="client_nickname" searchPlaceholder="Search clients..." />
+      <DataTable columns={columns} data={clients} searchKey="client_nickname" searchPlaceholder="搜索客户端..." />
 
       {/* Poke Dialog */}
       <Dialog open={!!pokeTarget} onOpenChange={() => setPokeTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Poke {pokeTarget?.name}</DialogTitle>
+            <DialogTitle>戳一戳 {pokeTarget?.name}</DialogTitle>
           </DialogHeader>
           <div>
-            <Label className="text-xs">Message</Label>
-            <Input value={pokeMsg} onChange={(e) => setPokeMsg(e.target.value)} placeholder="Hey!" autoFocus />
+            <Label className="text-xs">消息</Label>
+            <Input value={pokeMsg} onChange={(e) => setPokeMsg(e.target.value)} placeholder="嘿！" autoFocus />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPokeTarget(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setPokeTarget(null)}>取消</Button>
             <Button onClick={() => {
               if (pokeTarget && pokeMsg) {
                 pokeClient.mutate({ clid: pokeTarget.clid, msg: pokeMsg });
-                toast.success(`Poked ${pokeTarget.name}`);
+                toast.success(`已戳 ${pokeTarget.name}`);
                 setPokeTarget(null);
               }
             }}>
-              <Zap className="h-4 w-4 mr-1" /> Poke
+              <Zap className="h-4 w-4 mr-1" /> 戳一戳
             </Button>
           </DialogFooter>
         </DialogContent>

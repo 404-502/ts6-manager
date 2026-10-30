@@ -52,11 +52,11 @@ radioStationRoutes.post('/', async (req: Request, res: Response, next) => {
     const prisma = req.app.locals.prisma;
     const configId = parseInt(req.params.configId as string);
     const { name, url, genre, imageUrl } = req.body;
-    if (!name || !url) throw new AppError(400, 'name and url are required');
+    if (!name || !url) throw new AppError(400, 'name 和 url 为必填项');
 
     // C4: Validate radio station URL
     const urlCheck = await validateUrl(url, { allowedProtocols: ['http:', 'https:'] });
-    if (!urlCheck.valid) throw new AppError(400, `Invalid URL: ${urlCheck.error}`);
+    if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
 
     const station = await prisma.radioStation.create({
       data: {

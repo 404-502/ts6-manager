@@ -87,11 +87,11 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Video Stream</CardTitle>
+            <CardTitle className="text-base">视频流</CardTitle>
             {isStreaming && (
               <Badge variant="destructive" className="gap-1">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                LIVE
+                直播中
               </Badge>
             )}
           </div>
@@ -99,17 +99,17 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
         <CardContent className="space-y-4">
           {!isBotConnected && (
             <p className="text-sm text-muted-foreground">
-              Bot must be connected to start video streaming.
+              Bot 必须先连接才能开始视频推流。
             </p>
           )}
 
           {isBotConnected && (
             <>
               <div className="space-y-2">
-                <Label>Source URL</Label>
+                <Label>源地址</Label>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="https://youtube.com/watch?v=... or direct video URL"
+                    placeholder="https://youtube.com/watch?v=... 或直链视频地址"
                     value={sourceUrl}
                     onChange={(e) => setSourceUrl(e.target.value)}
                     disabled={startStream.isPending}
@@ -121,19 +121,19 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                       variant="outline"
                       className="shrink-0"
                     >
-                      Switch
+                      切换源
                     </Button>
                   ) : null}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  YouTube, direct video URLs (MP4, HLS), or local file paths
+                  支持 YouTube、直链视频地址（MP4、HLS）或本地文件路径
                 </p>
               </div>
 
               {!isStreaming && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Quality Preset</Label>
+                    <Label>画质预设</Label>
                     <div className="flex gap-2">
                       {PRESETS.map((p) => (
                         <Button
@@ -149,7 +149,7 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Frame Rate (FPS)</Label>
+                    <Label>帧率（FPS）</Label>
                     <div className="flex gap-2">
                       {FPS_OPTIONS.map((fps) => (
                         <Button
@@ -164,14 +164,14 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Video Bitrate</Label>
+                    <Label>视频码率</Label>
                     <Input
                       value={bitrate}
                       onChange={(e) => setBitrate(e.target.value)}
-                      placeholder="e.g. 1500k, 2500k, 4500k"
+                      placeholder="例如 1500k、2500k、4500k"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Examples: 1500k, 2500k, 4500k, 6000k
+                      例如：1500k、2500k、4500k、6000k
                     </p>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                     onClick={handleStart}
                     disabled={!sourceUrl.trim() || startStream.isPending}
                   >
-                    {startStream.isPending ? 'Starting...' : 'Start Stream'}
+                    {startStream.isPending ? '启动中...' : '开始推流'}
                   </Button>
                 ) : (
                   <Button
@@ -191,7 +191,7 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                     variant="destructive"
                     disabled={stopStream.isPending}
                   >
-                    {stopStream.isPending ? 'Stopping...' : 'Stop Stream'}
+                    {stopStream.isPending ? '停止中...' : '停止推流'}
                   </Button>
                 )}
               </div>
@@ -212,23 +212,23 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
       {isBotConnected && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Live Preview</CardTitle>
+            <CardTitle className="text-base">实时预览</CardTitle>
           </CardHeader>
           <CardContent>
             <VideoPlayer botId={botId} streaming={isStreaming} />
             {isStreaming && streamStatus && (
               <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                <span>Preset: <strong>{streamStatus.preset}</strong></span>
-                <span>FPS: <strong>{streamStatus.framerate}</strong></span>
-                <span>Bitrate: <strong>{streamStatus.bitrate}</strong></span>
+                <span>预设：<strong>{streamStatus.preset}</strong></span>
+                <span>帧率：<strong>{streamStatus.framerate}</strong></span>
+                <span>码率：<strong>{streamStatus.bitrate}</strong></span>
                 {streamStatus.source && (
                   <span className="truncate max-w-xs">
-                    Source: <strong>{streamStatus.source}</strong>
+                    源：<strong>{streamStatus.source}</strong>
                   </span>
                 )}
                 {streamStatus.startedAt && (
                   <span>
-                    Uptime: <strong>{formatDuration(Date.now() - streamStatus.startedAt)}</strong>
+                    运行时长：<strong>{formatDuration(Date.now() - streamStatus.startedAt)}</strong>
                   </span>
                 )}
               </div>
@@ -243,13 +243,13 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">
-                Viewers ({streamStatus.viewerCount})
+                观看者（{streamStatus.viewerCount}）
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             {streamStatus.viewers.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No viewers connected</p>
+              <p className="text-sm text-muted-foreground">暂无观看者连接</p>
             ) : (
               <div className="space-y-2">
                 {streamStatus.viewers.map((viewer: any) => {
@@ -265,9 +265,9 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                         <span className={`w-2 h-2 rounded-full ${
                           viewer.iceState === 'connected' ? 'bg-green-500' : 'bg-yellow-500'
                         }`} />
-                        <span className="text-sm">Client #{viewer.clid}</span>
+                        <span className="text-sm">客户端 #{viewer.clid}</span>
                         <span className="text-xs text-muted-foreground">
-                          {mins > 0 ? `${mins}m ${secs}s` : `${secs}s`}
+                          {mins > 0 ? `${mins}分 ${secs}秒` : `${secs}秒`}
                         </span>
                       </div>
                       <Button
@@ -276,7 +276,7 @@ export function VideoStreamTab({ botId, botStatus }: VideoStreamTabProps) {
                         className="h-7 text-xs text-red-500 hover:text-red-400"
                         onClick={() => kickViewer.mutate({ botId, clid: viewer.clid })}
                       >
-                        Kick
+                        踢出
                       </Button>
                     </div>
                   );

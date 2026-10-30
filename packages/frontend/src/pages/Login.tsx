@@ -32,18 +32,18 @@ export default function Login() {
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-primary/10 border border-primary/20 mb-4">
             <span className="text-primary font-bold text-xl font-mono-data text-glow">TS</span>
           </div>
-          <h1 className="text-xl font-semibold text-foreground">TeamSpeak 6 Manager</h1>
-          <p className="text-sm text-muted-foreground mt-1">Server Administration Panel</p>
+          <h1 className="text-xl font-semibold text-foreground">TeamSpeak 6 管理器</h1>
+          <p className="text-sm text-muted-foreground mt-1">服务器管理面板</p>
         </div>
 
         <Card className="border-border/50 backdrop-blur-sm">
           <CardHeader className="pb-4">
-            <h2 className="text-sm font-medium text-center text-muted-foreground">Sign in to continue</h2>
+            <h2 className="text-sm font-medium text-center text-muted-foreground">登录以继续</h2>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-xs">Username</Label>
+                <Label htmlFor="username" className="text-xs">用户名</Label>
                 <Input
                   id="username"
                   value={username}
@@ -54,7 +54,7 @@ export default function Login() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs">Password</Label>
+                <Label htmlFor="password" className="text-xs">密码</Label>
                 <Input
                   id="password"
                   type="password"
@@ -68,7 +68,7 @@ export default function Login() {
               {login.isError && (
                 <div className="flex items-center gap-2 text-destructive text-xs bg-destructive/10 rounded-md px-3 py-2">
                   <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                  <span>Invalid credentials. Please try again.</span>
+                  <span>用户名或密码错误，请重试。</span>
                 </div>
               )}
 
@@ -76,10 +76,10 @@ export default function Login() {
                 {login.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Signing in...
+                    登录中...
                   </>
                 ) : (
-                  'Sign In'
+                  '登录'
                 )}
               </Button>
             </form>

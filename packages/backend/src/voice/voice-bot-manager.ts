@@ -194,7 +194,7 @@ export class VoiceBotManager extends EventEmitter {
 
     // Get server config for host
     const serverConfig = await this.prisma.tsServerConfig.findUnique({ where: { id: data.serverConfigId } });
-    if (!serverConfig) throw new Error('Server config not found');
+    if (!serverConfig) throw new Error('服务器配置不存在');
 
     const dbBot = await this.prisma.musicBot.create({
       data: {

@@ -13,54 +13,54 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const navSections = [
   {
-    label: 'Overview',
+    label: '概览',
     items: [
-      { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { to: '/servers', icon: Server, label: 'Virtual Servers', adminOnly: true },
+      { to: '/dashboard', icon: LayoutDashboard, label: '仪表盘' },
+      { to: '/servers', icon: Server, label: '虚拟服务器', adminOnly: true },
     ],
   },
   {
-    label: 'Management',
+    label: '管理',
     items: [
-      { to: '/channels', icon: Hash, label: 'Channels' },
-      { to: '/clients', icon: Users, label: 'Clients' },
-      { to: '/server-groups', icon: Shield, label: 'Server Groups', adminOnly: true },
-      { to: '/channel-groups', icon: ShieldCheck, label: 'Channel Groups', adminOnly: true },
-      { to: '/permissions', icon: Lock, label: 'Permissions', adminOnly: true },
+      { to: '/channels', icon: Hash, label: '频道' },
+      { to: '/clients', icon: Users, label: '客户端' },
+      { to: '/server-groups', icon: Shield, label: '服务器组', adminOnly: true },
+      { to: '/channel-groups', icon: ShieldCheck, label: '频道组', adminOnly: true },
+      { to: '/permissions', icon: Lock, label: '权限', adminOnly: true },
     ],
   },
   {
-    label: 'Security',
+    label: '安全',
     adminOnly: true,
     items: [
-      { to: '/bans', icon: Ban, label: 'Bans', adminOnly: true },
-      { to: '/tokens', icon: KeyRound, label: 'Tokens', adminOnly: true },
+      { to: '/bans', icon: Ban, label: '封禁', adminOnly: true },
+      { to: '/tokens', icon: KeyRound, label: '令牌', adminOnly: true },
     ],
   },
   {
-    label: 'Content',
+    label: '内容',
     adminOnly: true,
     items: [
-      { to: '/files', icon: FolderOpen, label: 'Files', adminOnly: true },
-      { to: '/complaints', icon: MessageSquareWarning, label: 'Complaints', adminOnly: true },
-      { to: '/messages', icon: Mail, label: 'Messages', adminOnly: true },
+      { to: '/files', icon: FolderOpen, label: '文件', adminOnly: true },
+      { to: '/complaints', icon: MessageSquareWarning, label: '投诉', adminOnly: true },
+      { to: '/messages', icon: Mail, label: '消息', adminOnly: true },
     ],
   },
   {
-    label: 'System',
+    label: '系统',
     adminOnly: true,
     items: [
-      { to: '/logs', icon: ScrollText, label: 'Server Logs', adminOnly: true },
-      { to: '/instance', icon: Cpu, label: 'Instance', adminOnly: true },
-      { to: '/music-requests', icon: ListMusic, label: 'Music Request History', adminOnly: true },
+      { to: '/logs', icon: ScrollText, label: '服务器日志', adminOnly: true },
+      { to: '/instance', icon: Cpu, label: '实例', adminOnly: true },
+      { to: '/music-requests', icon: ListMusic, label: '音乐点播历史', adminOnly: true },
     ],
   },
   {
-    label: 'Automation',
+    label: '自动化',
     adminOnly: true,
     items: [
-      { to: '/bots', icon: Bot, label: 'Bot Flows', adminOnly: true },
-      { to: '/music-bots', icon: Music, label: 'Music Bots', adminOnly: true },
+      { to: '/bots', icon: Bot, label: '机器人流程', adminOnly: true },
+      { to: '/music-bots', icon: Music, label: '音乐机器人', adminOnly: true },
     ],
   },
 ];
@@ -161,7 +161,7 @@ export function Sidebar() {
             )}
           >
             <Settings className="h-4 w-4" />
-            {!sidebarCollapsed && <span>Settings</span>}
+            {!sidebarCollapsed && <span>设置</span>}
           </NavLink>
 
           <button
@@ -172,7 +172,7 @@ export function Sidebar() {
             )}
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            {!sidebarCollapsed && <span>Collapse</span>}
+            {!sidebarCollapsed && <span>收起</span>}
           </button>
         </div>
       </aside>

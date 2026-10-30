@@ -32,7 +32,7 @@ serverRoutes.get('/', async (req: Request, res: Response, next) => {
 serverRoutes.post('/', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const { name, host, webqueryPort, apiKey, useHttps, sshPort, sshUsername, sshPassword } = req.body;
-    if (!name || !host || !apiKey) throw new AppError(400, 'Name, host, and API key are required');
+    if (!name || !host || !apiKey) throw new AppError(400, '名称、主机和 API 密钥为必填项');
 
     const prisma = req.app.locals.prisma;
     // H8: Encrypt sensitive fields at rest
@@ -64,7 +64,7 @@ serverRoutes.get('/:configId', async (req: Request, res: Response, next) => {
     const server = await prisma.tsServerConfig.findUnique({
       where: { id: parseInt(String(req.params.configId)) },
     });
-    if (!server) throw new AppError(404, 'Server config not found');
+    if (!server) throw new AppError(404, '服务器配置不存在');
 
     res.json({
       id: server.id, name: server.name, host: server.host,
@@ -127,7 +127,7 @@ serverRoutes.post('/:configId/test', requireRole('admin'), async (req: Request, 
     const server = await prisma.tsServerConfig.findUnique({
       where: { id: parseInt(String(req.params.configId)) },
     });
-    if (!server) throw new AppError(404, 'Server config not found');
+    if (!server) throw new AppError(404, '服务器配置不存在');
 
     const client = new WebQueryClient(server.host, server.webqueryPort, decrypt(server.apiKey), server.useHttps);
     const ok = await client.testConnection();

@@ -34,12 +34,12 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
 
   if (err instanceof TSApiError) {
     res.status(502).json({
-      error: 'TeamSpeak API Error',
+      error: 'TeamSpeak API 错误',
       code: err.code,
       details: err.message,
     });
     return;
   }
 
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: '服务器内部错误' });
 }

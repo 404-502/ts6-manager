@@ -18,19 +18,19 @@ import { toast } from 'sonner';
 
 // Permission categories based on TS3 naming convention
 const PERM_CATEGORIES: Record<string, string> = {
-  b_virtualserver: 'Virtual Server',
-  b_serverinstance: 'Server Instance',
+  b_virtualserver: '虚拟服务器',
+  b_serverinstance: '服务器实例',
   b_serverquery: 'Server Query',
-  b_channel: 'Channel',
-  b_client: 'Client',
-  b_group: 'Group',
-  b_ft: 'File Transfer',
-  i_channel: 'Channel (Values)',
-  i_group: 'Group (Values)',
-  i_client: 'Client (Values)',
-  i_ft: 'File Transfer (Values)',
-  i_max: 'Limits',
-  i_needed: 'Needed Powers',
+  b_channel: '频道',
+  b_client: '客户端',
+  b_group: '组',
+  b_ft: '文件传输',
+  i_channel: '频道（数值型）',
+  i_group: '组（数值型）',
+  i_client: '客户端（数值型）',
+  i_ft: '文件传输（数值型）',
+  i_max: '限制',
+  i_needed: '所需权限值',
 };
 
 function getCategoryKey(permsid: string): string {
@@ -66,10 +66,10 @@ interface PendingChange {
 }
 
 const LAYERS: { key: PermLayer; label: string; icon: React.ElementType }[] = [
-  { key: 'server-group', label: 'Server Groups', icon: Shield },
-  { key: 'channel-group', label: 'Channel Groups', icon: Users },
-  { key: 'channel', label: 'Channel', icon: Hash },
-  { key: 'client', label: 'Client', icon: User },
+  { key: 'server-group', label: '服务器组', icon: Shield },
+  { key: 'channel-group', label: '频道组', icon: Users },
+  { key: 'channel', label: '频道', icon: Hash },
+  { key: 'client', label: '客户端', icon: User },
 ];
 
 export default function Permissions() {
@@ -243,14 +243,14 @@ export default function Permissions() {
       }
     },
     onSuccess: () => {
-      toast.success('Permissions saved');
+      toast.success('权限已保存');
       setChanges(new Map());
       qc.invalidateQueries({ queryKey: ['entity-perms', c, s, layer, entityId] });
     },
-    onError: () => toast.error('Failed to save permissions'),
+    onError: () => toast.error('保存权限失败'),
   });
 
-  if (!c || !s) return <EmptyState icon={Lock} title="No server selected" />;
+  if (!c || !s) return <EmptyState icon={Lock} title="未选择服务器" />;
   if (loadingDefs) return <PageLoader />;
 
   const entities = (() => {
@@ -280,15 +280,15 @@ export default function Permissions() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Permissions</h1>
+        <h1 className="text-xl font-semibold">权限</h1>
         {changes.size > 0 && (
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="font-mono-data">{changes.size} change(s)</Badge>
+            <Badge variant="secondary" className="font-mono-data">{changes.size} 项变更</Badge>
             <Button variant="outline" size="sm" onClick={() => setChanges(new Map())}>
-              <X className="h-3.5 w-3.5 mr-1" /> Discard
+              <X className="h-3.5 w-3.5 mr-1" /> 放弃
             </Button>
             <Button size="sm" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
-              <Save className="h-3.5 w-3.5 mr-1" /> Save
+              <Save className="h-3.5 w-3.5 mr-1" /> 保存
             </Button>
           </div>
         )}
@@ -318,7 +318,7 @@ export default function Permissions() {
         <Card className="col-span-3">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Select {LAYERS.find((l) => l.key === layer)?.label.replace(/s$/, '')}
+              选择{LAYERS.find((l) => l.key === layer)?.label}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -340,7 +340,7 @@ export default function Permissions() {
                   </button>
                 ))}
                 {entities.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-4">No entities found</p>
+                  <p className="text-xs text-muted-foreground text-center py-4">未找到对象</p>
                 )}
               </div>
             </ScrollArea>
@@ -352,13 +352,13 @@ export default function Permissions() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {entityId ? `Permissions` : 'Select an entity'}
+                {entityId ? `权限` : '选择一个对象'}
               </CardTitle>
               {entityId && (
                 <div className="relative w-64">
                   <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
-                    placeholder="Search permissions..."
+                    placeholder="搜索权限..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="pl-7 h-8 text-xs"
@@ -371,7 +371,7 @@ export default function Permissions() {
             <ScrollArea className="h-[500px]">
               {!entityId ? (
                 <div className="flex items-center justify-center h-[400px]">
-                  <p className="text-sm text-muted-foreground">Select an entity from the left panel</p>
+                  <p className="text-sm text-muted-foreground">从左侧面板选择一个对象</p>
                 </div>
               ) : loadingPerms ? (
                 <div className="flex items-center justify-center h-[400px]">
@@ -393,10 +393,10 @@ export default function Permissions() {
                         <div className="ml-4 border-l border-border/50 pl-2">
                           {/* Header */}
                           <div className="grid grid-cols-12 gap-2 px-2 py-1 text-[10px] text-muted-foreground uppercase tracking-wider">
-                            <div className="col-span-5">Permission</div>
-                            <div className="col-span-2 text-center">Value</div>
-                            <div className="col-span-1 text-center">Skip</div>
-                            <div className="col-span-1 text-center">Negate</div>
+                            <div className="col-span-5">权限</div>
+                            <div className="col-span-2 text-center">值</div>
+                            <div className="col-span-1 text-center">跳过</div>
+                            <div className="col-span-1 text-center">取反</div>
                             <div className="col-span-3"></div>
                           </div>
                           {perms.map((perm) => {
@@ -464,7 +464,7 @@ export default function Permissions() {
                                           ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                                           : 'border-border/50',
                                       )}
-                                      title="Skip"
+                                      title="跳过"
                                     >
                                       {isSet && effective?.permskip ? 'S' : ''}
                                     </button>
@@ -484,7 +484,7 @@ export default function Permissions() {
                                           ? 'bg-destructive/20 border-destructive text-destructive'
                                           : 'border-border/50',
                                       )}
-                                      title="Negate"
+                                      title="取反"
                                     >
                                       {isSet && effective?.permnegated ? 'N' : ''}
                                     </button>
@@ -495,13 +495,13 @@ export default function Permissions() {
                                     <button
                                       onClick={() => removePerm(perm.permsid)}
                                       className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                      title="Remove permission"
+                                      title="移除权限"
                                     >
                                       <Minus className="h-3 w-3" />
                                     </button>
                                   )}
                                   {isChanged && (
-                                    <span className="text-[9px] text-primary font-mono-data">modified</span>
+                                    <span className="text-[9px] text-primary font-mono-data">已修改</span>
                                   )}
                                 </div>
                               </div>
@@ -513,7 +513,7 @@ export default function Permissions() {
                   ))}
                   {categories.size === 0 && (
                     <div className="flex items-center justify-center h-[300px]">
-                      <p className="text-sm text-muted-foreground">No permissions match your search</p>
+                      <p className="text-sm text-muted-foreground">没有匹配搜索的权限</p>
                     </div>
                   )}
                 </div>

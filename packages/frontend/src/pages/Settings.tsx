@@ -25,13 +25,13 @@ export default function Settings() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold">Settings</h1>
+      <h1 className="text-xl font-semibold">设置</h1>
 
       <Tabs defaultValue="account">
         <TabsList>
-          {isAdmin && <TabsTrigger value="connections"><Server className="h-3.5 w-3.5 mr-1" /> Connections</TabsTrigger>}
-          <TabsTrigger value="account"><Lock className="h-3.5 w-3.5 mr-1" /> Account</TabsTrigger>
-          {isAdmin && <TabsTrigger value="users"><Users className="h-3.5 w-3.5 mr-1" /> Users</TabsTrigger>}
+          {isAdmin && <TabsTrigger value="connections"><Server className="h-3.5 w-3.5 mr-1" /> 连接</TabsTrigger>}
+          <TabsTrigger value="account"><Lock className="h-3.5 w-3.5 mr-1" /> 账户</TabsTrigger>
+          {isAdmin && <TabsTrigger value="users"><Users className="h-3.5 w-3.5 mr-1" /> 用户</TabsTrigger>}
           {isAdmin && <TabsTrigger value="youtube"><Youtube className="h-3.5 w-3.5 mr-1" /> YouTube</TabsTrigger>}
         </TabsList>
 
@@ -72,22 +72,22 @@ function AccountTab() {
 
   const handleSubmit = () => {
     if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+      toast.error('新密码长度至少为 6 个字符');
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('两次输入的密码不一致');
       return;
     }
     changePassword.mutate(undefined, {
       onSuccess: () => {
-        toast.success('Password changed successfully');
+        toast.success('密码修改成功');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
       },
       onError: (err: any) => {
-        const msg = err?.response?.data?.error || 'Failed to change password';
+        const msg = err?.response?.data?.error || '修改密码失败';
         toast.error(msg);
       },
     });
@@ -97,27 +97,27 @@ function AccountTab() {
     <div className="max-w-md">
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Change Password</CardTitle>
+          <CardTitle className="text-sm font-medium">修改密码</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <Label className="text-xs">Current Password</Label>
-            <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Enter current password" />
+            <Label className="text-xs">当前密码</Label>
+            <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="请输入当前密码" />
           </div>
           <div>
-            <Label className="text-xs">New Password</Label>
-            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 6 characters" />
+            <Label className="text-xs">新密码</Label>
+            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="至少 6 个字符" />
           </div>
           <div>
-            <Label className="text-xs">Confirm New Password</Label>
-            <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password" />
+            <Label className="text-xs">确认新密码</Label>
+            <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="请再次输入新密码" />
           </div>
           <Button
             onClick={handleSubmit}
             disabled={!currentPassword || !newPassword || !confirmPassword || changePassword.isPending}
             className="w-full mt-1"
           >
-            {changePassword.isPending ? 'Changing...' : 'Change Password'}
+            {changePassword.isPending ? '修改中...' : '修改密码'}
           </Button>
         </CardContent>
       </Card>
@@ -148,13 +148,13 @@ function ConnectionsTab() {
     const payload = { ...form, webqueryPort: parseInt(form.webqueryPort), sshPort: parseInt(form.sshPort) };
     if (editId) {
       updateServer.mutate({ id: editId, data: payload }, {
-        onSuccess: () => { toast.success('Connection updated'); setEditId(null); setShowAdd(false); resetForm(); },
-        onError: () => toast.error('Failed to update'),
+        onSuccess: () => { toast.success('连接已更新'); setEditId(null); setShowAdd(false); resetForm(); },
+        onError: () => toast.error('更新失败'),
       });
     } else {
       createServer.mutate(payload, {
-        onSuccess: () => { toast.success('Connection added'); setShowAdd(false); resetForm(); },
-        onError: () => toast.error('Failed to create'),
+        onSuccess: () => { toast.success('连接已添加'); setShowAdd(false); resetForm(); },
+        onError: () => toast.error('创建失败'),
       });
     }
   };
@@ -177,8 +177,8 @@ function ConnectionsTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Manage TeamSpeak server connections</p>
-        <Button size="sm" onClick={() => { resetForm(); setEditId(null); setShowAdd(true); }}><Plus className="h-4 w-4 mr-1" /> Add Connection</Button>
+        <p className="text-sm text-muted-foreground">管理 TeamSpeak 服务器连接</p>
+        <Button size="sm" onClick={() => { resetForm(); setEditId(null); setShowAdd(true); }}><Plus className="h-4 w-4 mr-1" /> 添加连接</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,28 +188,28 @@ function ConnectionsTab() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium">{server.name}</CardTitle>
                 <Badge variant={server.enabled ? 'default' : 'secondary'} className="text-[10px]">
-                  {server.enabled ? 'Enabled' : 'Disabled'}
+                  {server.enabled ? '已启用' : '已禁用'}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <span className="text-muted-foreground">Host</span>
+                <span className="text-muted-foreground">主机</span>
                 <span className="font-mono-data">{server.host}:{server.webqueryPort}</span>
-                <span className="text-muted-foreground">Protocol</span>
+                <span className="text-muted-foreground">协议</span>
                 <span>{server.useHttps ? 'HTTPS' : 'HTTP'}</span>
                 <span className="text-muted-foreground">SSH</span>
                 <span className="font-mono-data">{server.sshPort || '-'}</span>
               </div>
               <div className="flex items-center gap-1 pt-2">
                 <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => testServer.mutate(server.id, {
-                  onSuccess: () => toast.success('Connection successful'),
-                  onError: () => toast.error('Connection failed'),
+                  onSuccess: () => toast.success('连接成功'),
+                  onError: () => toast.error('连接失败'),
                 })}>
-                  <TestTube className="h-3 w-3 mr-1" /> Test
+                  <TestTube className="h-3 w-3 mr-1" /> 测试
                 </Button>
                 <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => openEdit(server)}>
-                  <Pencil className="h-3 w-3 mr-1" /> Edit
+                  <Pencil className="h-3 w-3 mr-1" /> 编辑
                 </Button>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeleteId(server.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
@@ -223,30 +223,30 @@ function ConnectionsTab() {
       {/* Add/Edit Dialog */}
       <Dialog open={showAdd} onOpenChange={(v) => { if (!v) { setShowAdd(false); setEditId(null); resetForm(); } else setShowAdd(true); }}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{editId ? 'Edit Connection' : 'Add Connection'}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editId ? '编辑连接' : '添加连接'}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <div><Label className="text-xs">Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="My TS Server" /></div>
+            <div><Label className="text-xs">名称</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="我的 TS 服务器" /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div><Label className="text-xs">Host</Label><Input value={form.host} onChange={(e) => setForm({ ...form, host: e.target.value })} placeholder="127.0.0.1" /></div>
-              <div><Label className="text-xs">WebQuery Port</Label><Input type="number" value={form.webqueryPort} onChange={(e) => setForm({ ...form, webqueryPort: e.target.value })} /></div>
+              <div><Label className="text-xs">主机</Label><Input value={form.host} onChange={(e) => setForm({ ...form, host: e.target.value })} placeholder="127.0.0.1" /></div>
+              <div><Label className="text-xs">WebQuery 端口</Label><Input type="number" value={form.webqueryPort} onChange={(e) => setForm({ ...form, webqueryPort: e.target.value })} /></div>
             </div>
             <div>
-              <Label className="text-xs">API Key</Label>
-              <Input value={form.apiKey} onChange={(e) => setForm({ ...form, apiKey: e.target.value })} placeholder={editId ? '(unchanged — enter new key to update)' : 'WebQuery API Key'} type="password" />
+              <Label className="text-xs">API 密钥</Label>
+              <Input value={form.apiKey} onChange={(e) => setForm({ ...form, apiKey: e.target.value })} placeholder={editId ? '（未修改，输入新密钥以更新）' : 'WebQuery API 密钥'} type="password" />
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={form.useHttps} onCheckedChange={(v) => setForm({ ...form, useHttps: v })} />
-              <Label className="text-xs">Use HTTPS</Label>
+              <Label className="text-xs">使用 HTTPS</Label>
             </div>
             <div className="grid grid-cols-3 gap-3">
-              <div><Label className="text-xs">SSH Port</Label><Input type="number" value={form.sshPort} onChange={(e) => setForm({ ...form, sshPort: e.target.value })} /></div>
-              <div><Label className="text-xs">SSH User</Label><Input value={form.sshUsername} onChange={(e) => setForm({ ...form, sshUsername: e.target.value })} placeholder="serveradmin" /></div>
-              <div><Label className="text-xs">SSH Password</Label><Input type="password" value={form.sshPassword} onChange={(e) => setForm({ ...form, sshPassword: e.target.value })} /></div>
+              <div><Label className="text-xs">SSH 端口</Label><Input type="number" value={form.sshPort} onChange={(e) => setForm({ ...form, sshPort: e.target.value })} /></div>
+              <div><Label className="text-xs">SSH 用户</Label><Input value={form.sshUsername} onChange={(e) => setForm({ ...form, sshUsername: e.target.value })} placeholder="serveradmin" /></div>
+              <div><Label className="text-xs">SSH 密码</Label><Input type="password" value={form.sshPassword} onChange={(e) => setForm({ ...form, sshPassword: e.target.value })} /></div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setShowAdd(false); setEditId(null); resetForm(); }}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!form.name || !form.host || !form.apiKey}>{editId ? 'Update' : 'Add'}</Button>
+            <Button variant="outline" onClick={() => { setShowAdd(false); setEditId(null); resetForm(); }}>取消</Button>
+            <Button onClick={handleSave} disabled={!form.name || !form.host || !form.apiKey}>{editId ? '更新' : '添加'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -254,9 +254,9 @@ function ConnectionsTab() {
       <ConfirmDialog
         open={deleteId !== null}
         onOpenChange={() => setDeleteId(null)}
-        title="Delete Connection?"
-        description="This will remove the server connection. Bots linked to this server will stop working."
-        onConfirm={() => { if (deleteId) deleteServer.mutate(deleteId, { onSuccess: () => { toast.success('Connection deleted'); setDeleteId(null); } }); }}
+        title="删除连接？"
+        description="此操作将移除该服务器连接。关联到此服务器的机器人将停止工作。"
+        onConfirm={() => { if (deleteId) deleteServer.mutate(deleteId, { onSuccess: () => { toast.success('连接已删除'); setDeleteId(null); } }); }}
         destructive
       />
     </div>
@@ -282,52 +282,52 @@ function UsersTab() {
 
   const handleCreate = () => {
     createUser.mutate(form, {
-      onSuccess: () => { toast.success('User created'); setShowAdd(false); setForm({ username: '', password: '', displayName: '', role: 'viewer' }); },
-      onError: () => toast.error('Failed to create user'),
+      onSuccess: () => { toast.success('用户已创建'); setShowAdd(false); setForm({ username: '', password: '', displayName: '', role: 'viewer' }); },
+      onError: () => toast.error('创建用户失败'),
     });
   };
 
   const handleRoleChange = (userId: number, role: string) => {
     updateUser.mutate({ id: userId, data: { role } }, {
-      onSuccess: () => toast.success('Role updated'),
-      onError: () => toast.error('Failed to update role'),
+      onSuccess: () => toast.success('角色已更新'),
+      onError: () => toast.error('更新角色失败'),
     });
   };
 
   const handleToggleEnabled = (userId: number, enabled: boolean) => {
     updateUser.mutate({ id: userId, data: { enabled } }, {
-      onSuccess: () => toast.success(enabled ? 'User enabled' : 'User disabled'),
-      onError: () => toast.error('Failed to update status'),
+      onSuccess: () => toast.success(enabled ? '用户已启用' : '用户已禁用'),
+      onError: () => toast.error('更新状态失败'),
     });
   };
 
   const handleResetPassword = () => {
     if (!resetPwUserId || resetPwValue.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('密码长度至少为 6 个字符');
       return;
     }
     updateUser.mutate({ id: resetPwUserId, data: { password: resetPwValue } }, {
-      onSuccess: () => { toast.success('Password reset successfully'); setResetPwUserId(null); setResetPwValue(''); },
-      onError: () => toast.error('Failed to reset password'),
+      onSuccess: () => { toast.success('密码重置成功'); setResetPwUserId(null); setResetPwValue(''); },
+      onError: () => toast.error('重置密码失败'),
     });
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Manage webapp users and roles</p>
-        <Button size="sm" onClick={() => setShowAdd(true)}><Plus className="h-4 w-4 mr-1" /> Add User</Button>
+        <p className="text-sm text-muted-foreground">管理 Web 应用用户与角色</p>
+        <Button size="sm" onClick={() => setShowAdd(true)}><Plus className="h-4 w-4 mr-1" /> 添加用户</Button>
       </div>
 
       <div className="rounded-md border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              <th className="h-10 px-3 text-left font-medium text-muted-foreground">Username</th>
-              <th className="h-10 px-3 text-left font-medium text-muted-foreground">Display Name</th>
-              <th className="h-10 px-3 text-left font-medium text-muted-foreground">Role</th>
-              <th className="h-10 px-3 text-left font-medium text-muted-foreground">Status</th>
-              <th className="h-10 px-3 text-right font-medium text-muted-foreground">Actions</th>
+              <th className="h-10 px-3 text-left font-medium text-muted-foreground">用户名</th>
+              <th className="h-10 px-3 text-left font-medium text-muted-foreground">显示名称</th>
+              <th className="h-10 px-3 text-left font-medium text-muted-foreground">角色</th>
+              <th className="h-10 px-3 text-left font-medium text-muted-foreground">状态</th>
+              <th className="h-10 px-3 text-right font-medium text-muted-foreground">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -339,15 +339,15 @@ function UsersTab() {
                   <td className="px-3 py-2.5">{u.displayName}</td>
                   <td className="px-3 py-2.5">
                     {isProtected ? (
-                      <Badge variant="default" className="text-[10px] capitalize">{u.role}</Badge>
+                      <Badge variant="default" className="text-[10px] capitalize">{u.role === 'admin' ? '管理员' : '查看者'}</Badge>
                     ) : (
                       <Select value={u.role} onValueChange={(v) => handleRoleChange(u.id, v)}>
                         <SelectTrigger className="h-7 w-[110px] text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="viewer">Viewer</SelectItem>
+                          <SelectItem value="admin">管理员</SelectItem>
+                          <SelectItem value="viewer">查看者</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -355,7 +355,7 @@ function UsersTab() {
                   <td className="px-3 py-2.5">
                     {isProtected ? (
                       <span className="inline-flex items-center gap-1 text-xs text-emerald-400">
-                        <Check className="h-3 w-3" /> Active
+                        <Check className="h-3 w-3" /> 已激活
                       </span>
                     ) : (
                       <Switch
@@ -366,7 +366,7 @@ function UsersTab() {
                   </td>
                   <td className="px-3 py-2.5 text-right">
                     <div className="inline-flex items-center gap-0.5">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" title="Reset Password" onClick={() => { setResetPwUserId(u.id); setResetPwValue(''); }}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" title="重置密码" onClick={() => { setResetPwUserId(u.id); setResetPwValue(''); }}>
                         <KeyRound className="h-3.5 w-3.5" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeleteId(u.id)} disabled={isProtected}>
@@ -384,25 +384,25 @@ function UsersTab() {
       {/* Add User Dialog */}
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Add User</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>添加用户</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <div><Label className="text-xs">Username</Label><Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="johndoe" /></div>
-            <div><Label className="text-xs">Display Name</Label><Input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} placeholder="John Doe" /></div>
-            <div><Label className="text-xs">Password</Label><Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="********" /></div>
+            <div><Label className="text-xs">用户名</Label><Input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="johndoe" /></div>
+            <div><Label className="text-xs">显示名称</Label><Input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} placeholder="张三" /></div>
+            <div><Label className="text-xs">密码</Label><Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="********" /></div>
             <div>
-              <Label className="text-xs">Role</Label>
+              <Label className="text-xs">角色</Label>
               <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="admin">管理员</SelectItem>
+                  <SelectItem value="viewer">查看者</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={!form.username || !form.password}>Create</Button>
+            <Button variant="outline" onClick={() => setShowAdd(false)}>取消</Button>
+            <Button onClick={handleCreate} disabled={!form.username || !form.password}>创建</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -411,21 +411,21 @@ function UsersTab() {
       <Dialog open={resetPwUserId !== null} onOpenChange={(v) => { if (!v) { setResetPwUserId(null); setResetPwValue(''); } }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-sm">Reset Password</DialogTitle>
+            <DialogTitle className="text-sm">重置密码</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground">
-              Set a new password for <span className="font-medium text-foreground">{userList.find((u: any) => u.id === resetPwUserId)?.username}</span>
+              为 <span className="font-medium text-foreground">{userList.find((u: any) => u.id === resetPwUserId)?.username}</span> 设置新密码
             </p>
             <div>
-              <Label className="text-xs">New Password</Label>
-              <Input type="password" value={resetPwValue} onChange={(e) => setResetPwValue(e.target.value)} placeholder="Min. 6 characters" />
+              <Label className="text-xs">新密码</Label>
+              <Input type="password" value={resetPwValue} onChange={(e) => setResetPwValue(e.target.value)} placeholder="至少 6 个字符" />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setResetPwUserId(null); setResetPwValue(''); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setResetPwUserId(null); setResetPwValue(''); }}>取消</Button>
             <Button onClick={handleResetPassword} disabled={resetPwValue.length < 6 || updateUser.isPending}>
-              {updateUser.isPending ? 'Resetting...' : 'Reset Password'}
+              {updateUser.isPending ? '重置中...' : '重置密码'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -434,9 +434,9 @@ function UsersTab() {
       <ConfirmDialog
         open={deleteId !== null}
         onOpenChange={() => setDeleteId(null)}
-        title="Delete User?"
-        description="This user will be permanently deleted."
-        onConfirm={() => { if (deleteId) deleteUser.mutate(deleteId, { onSuccess: () => { toast.success('User deleted'); setDeleteId(null); } }); }}
+        title="删除用户？"
+        description="该用户将被永久删除。"
+        onConfirm={() => { if (deleteId) deleteUser.mutate(deleteId, { onSuccess: () => { toast.success('用户已删除'); setDeleteId(null); } }); }}
         destructive
       />
     </div>
@@ -456,30 +456,30 @@ function YouTubeTab() {
   const uploadFile = useMutation({
     mutationFn: (file: File) => settingsApi.uploadYtCookieFile(file),
     onSuccess: () => {
-      toast.success('Cookie file uploaded');
+      toast.success('Cookie 文件已上传');
       qc.invalidateQueries({ queryKey: ['yt-cookie-status'] });
     },
-    onError: () => toast.error('Failed to upload cookie file'),
+    onError: () => toast.error('上传 Cookie 文件失败'),
   });
 
   const uploadText = useMutation({
     mutationFn: (text: string) => settingsApi.uploadYtCookieText(text),
     onSuccess: () => {
-      toast.success('Cookies saved');
+      toast.success('Cookie 已保存');
       setCookieText('');
       setPasteMode(false);
       qc.invalidateQueries({ queryKey: ['yt-cookie-status'] });
     },
-    onError: () => toast.error('Failed to save cookies'),
+    onError: () => toast.error('保存 Cookie 失败'),
   });
 
   const deleteCookies = useMutation({
     mutationFn: () => settingsApi.deleteYtCookies(),
     onSuccess: () => {
-      toast.success('Cookie file removed');
+      toast.success('Cookie 文件已移除');
       qc.invalidateQueries({ queryKey: ['yt-cookie-status'] });
     },
-    onError: () => toast.error('Failed to remove cookies'),
+    onError: () => toast.error('移除 Cookie 失败'),
   });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -497,22 +497,22 @@ function YouTubeTab() {
     <div className="max-w-lg space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">YouTube Cookies</CardTitle>
+          <CardTitle className="text-sm font-medium">YouTube Cookie</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-xs text-muted-foreground">
-            Upload a cookies.txt file to access age-restricted or member-only YouTube content.
-            You can export cookies from your browser using extensions like
-            {' '}<span className="font-medium">Get cookies.txt LOCALLY</span> (Chrome/Firefox).
+            上传 cookies.txt 文件以访问有年龄限制或仅会员可用的 YouTube 内容。
+            你可以使用
+            {' '}<span className="font-medium">Get cookies.txt LOCALLY</span> 等浏览器扩展导出 Cookie（Chrome/Firefox）。
           </p>
 
           {/* Status */}
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${status?.active ? 'bg-green-500' : 'bg-zinc-500'}`} />
             <span className="text-sm">
-              {isLoading ? 'Loading...' : status?.active
-                ? `Cookies active (${formatSize(status.size)})`
-                : 'No cookies configured'}
+              {isLoading ? '加载中...' : status?.active
+                ? `Cookie 已生效（${formatSize(status.size)}）`
+                : '未配置 Cookie'}
             </span>
           </div>
 
@@ -532,7 +532,7 @@ function YouTubeTab() {
               disabled={uploadFile.isPending}
             >
               <Upload className="h-3.5 w-3.5 mr-1" />
-              {uploadFile.isPending ? 'Uploading...' : 'Upload cookies.txt'}
+              {uploadFile.isPending ? '上传中...' : '上传 cookies.txt'}
             </Button>
             <Button
               variant="outline"
@@ -540,7 +540,7 @@ function YouTubeTab() {
               onClick={() => setPasteMode(!pasteMode)}
             >
               <FileText className="h-3.5 w-3.5 mr-1" />
-              Paste cookies
+              粘贴 Cookie
             </Button>
             {status?.active && (
               <Button
@@ -551,7 +551,7 @@ function YouTubeTab() {
                 disabled={deleteCookies.isPending}
               >
                 <Trash2 className="h-3.5 w-3.5 mr-1" />
-                Remove
+                移除
               </Button>
             )}
           </div>
@@ -571,10 +571,10 @@ function YouTubeTab() {
                   onClick={() => uploadText.mutate(cookieText)}
                   disabled={!cookieText.trim() || uploadText.isPending}
                 >
-                  {uploadText.isPending ? 'Saving...' : 'Save'}
+                  {uploadText.isPending ? '保存中...' : '保存'}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => { setPasteMode(false); setCookieText(''); }}>
-                  Cancel
+                  取消
                 </Button>
               </div>
             </div>

@@ -11,17 +11,17 @@ export default function ChannelGroups() {
   const { selectedConfigId, selectedSid } = useServerStore();
   const { data, isLoading } = useChannelGroups();
 
-  if (!selectedConfigId || !selectedSid) return <EmptyState icon={ShieldCheck} title="No server selected" />;
+  if (!selectedConfigId || !selectedSid) return <EmptyState icon={ShieldCheck} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
 
   const groups = Array.isArray(data) ? data : [];
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold">Channel Groups</h1>
+      <h1 className="text-xl font-semibold">频道组</h1>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Groups ({groups.length})</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">组（{groups.length}）</CardTitle>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[500px]">
@@ -34,7 +34,7 @@ export default function ChannelGroups() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="text-[10px] font-mono-data">CGID: {g.cgid}</Badge>
-                    <Badge variant="outline" className="text-[10px] font-mono-data">Type: {g.type}</Badge>
+                    <Badge variant="outline" className="text-[10px] font-mono-data">类型：{g.type}</Badge>
                   </div>
                 </div>
               ))}

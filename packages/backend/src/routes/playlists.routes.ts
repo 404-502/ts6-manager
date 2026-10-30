@@ -40,7 +40,7 @@ playlistRoutes.get('/:id', async (req: Request, res: Response, next) => {
         },
       },
     });
-    if (!playlist) throw new AppError(404, 'Playlist not found');
+    if (!playlist) throw new AppError(404, '播放列表不存在');
 
     res.json({
       id: playlist.id,
@@ -68,7 +68,7 @@ playlistRoutes.post('/', async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const { name, musicBotId } = req.body;
-    if (!name) throw new AppError(400, 'name is required');
+    if (!name) throw new AppError(400, 'name 为必填项');
 
     const playlist = await prisma.playlist.create({
       data: {
@@ -115,7 +115,7 @@ playlistRoutes.post('/:id/songs', async (req: Request, res: Response, next) => {
     const prisma = req.app.locals.prisma;
     const playlistId = parseInt(req.params.id as string);
     const { songId } = req.body;
-    if (!songId) throw new AppError(400, 'songId is required');
+    if (!songId) throw new AppError(400, 'songId 为必填项');
 
     // Get next position
     const maxPos = await prisma.playlistSong.aggregate({
@@ -157,7 +157,7 @@ playlistRoutes.put('/:id/songs/reorder', async (req: Request, res: Response, nex
     const prisma = req.app.locals.prisma;
     const playlistId = parseInt(req.params.id as string);
     const { songIds } = req.body;
-    if (!Array.isArray(songIds)) throw new AppError(400, 'songIds array is required');
+    if (!Array.isArray(songIds)) throw new AppError(400, 'songIds 数组为必填项');
 
     // Update positions in a transaction
     await prisma.$transaction(

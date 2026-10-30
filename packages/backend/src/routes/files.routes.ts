@@ -19,7 +19,7 @@ async function sshExecute(
   params: Record<string, string>,
 ): Promise<Record<string, string>[]> {
   const engine: BotEngine = req.app.locals.botEngine;
-  if (!engine) throw new AppError(503, 'Bot engine not available');
+  if (!engine) throw new AppError(503, '机器人引擎不可用');
 
   const bridge = engine.getEventBridge();
   const configId = getConfigId(req);
@@ -63,7 +63,7 @@ fileRoutes.get('/:cid', async (req: Request, res: Response, next) => {
       return res.json([]);
     }
     if (err.message?.includes('SSH not connected') || err.message?.includes('SSH credentials')) {
-      return next(new AppError(400, 'SSH credentials not configured for this server. File browsing requires SSH access because WebQuery HTTP does not support ft* commands.'));
+      return next(new AppError(400, '该服务器未配置 SSH 凭据。文件浏览需要 SSH 访问，因为 WebQuery HTTP 不支持 ft* 系列命令。'));
     }
     next(err);
   }
