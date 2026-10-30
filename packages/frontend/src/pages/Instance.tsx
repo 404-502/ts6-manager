@@ -48,7 +48,7 @@ export default function Instance() {
   const versionData = Array.isArray(version) ? version[0] : version;
 
   const editableFields = [
-    { key: 'serverinstance_guest_serverquery_group', label: '访客 ServerQuery 组', type: 'number' },
+    { key: 'serverinstance_guest_serverquery_group', label: '访客服务器查询组', type: 'number' },
     { key: 'serverinstance_template_serveradmin_group', label: '模板服务器管理员组', type: 'number' },
     { key: 'serverinstance_template_serverdefault_group', label: '模板服务器默认组', type: 'number' },
     { key: 'serverinstance_template_channeldefault_group', label: '模板频道默认组', type: 'number' },

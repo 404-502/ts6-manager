@@ -147,7 +147,7 @@ cd packages/frontend/src && grep -rhoE '>[A-Za-z][^<>{}]{3,}<' --include='*.tsx'
 - locale：`de-DE` 全部改为 `zh-CN`；`date-fns` 引入 `zhCN`。
 
 **特意保留英文的项**：
-`TeamSpeak`、`TS6`、`TS3`、`SSH`、`API`、`HTTPS`/`HTTP`、`URL`、`WebQuery`、`Server Query`、
+`TeamSpeak`、`TS6`、`TS3`、`SSH`、`API`、`HTTPS`/`HTTP`、`URL`、`WebQuery`、
 `Cookie`、`YouTube`、`Get cookies.txt LOCALLY`、`iFrame`、`BBCode`、`SVG`、`PNG`、`HTML`、
 `GET`/`POST`/`PUT`/`DELETE`、`FPS`/`Mbps`/`480p`、IANA 时区名（`Europe/Berlin` 等）、
 `serveradmin`/`johndoe` 账号示例、Netscape cookie 文件模板、`[cspacer]` 频道名前缀、`!play` 命令。

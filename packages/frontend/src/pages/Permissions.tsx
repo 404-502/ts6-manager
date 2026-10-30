@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { cn } from '@/lib/utils';
+import { getPermissionLabel } from '@/data/permission-labels';
 import {
   Lock, Search, ChevronRight, ChevronDown, Shield, Users, Hash, User, Save,
   X, Check, Minus,
@@ -20,7 +21,7 @@ import { toast } from 'sonner';
 const PERM_CATEGORIES: Record<string, string> = {
   b_virtualserver: '虚拟服务器',
   b_serverinstance: '服务器实例',
-  b_serverquery: 'Server Query',
+  b_serverquery: '服务器查询',
   b_channel: '频道',
   b_client: '客户端',
   b_group: '组',
@@ -169,8 +170,13 @@ export default function Permissions() {
   // Categorize permissions
   const categories = useMemo(() => {
     const catMap = new Map<string, PermDef[]>();
+    const q = search.toLowerCase();
     const filtered = search
-      ? allPerms.filter((p) => p.permsid.toLowerCase().includes(search.toLowerCase()) || p.permdesc.toLowerCase().includes(search.toLowerCase()))
+      ? allPerms.filter((p) =>
+          p.permsid.toLowerCase().includes(q) ||
+          p.permdesc.toLowerCase().includes(q) ||
+          (getPermissionLabel(p.permsid)?.toLowerCase().includes(q) ?? false),
+        )
       : allPerms;
 
     for (const perm of filtered) {
@@ -386,7 +392,7 @@ export default function Permissions() {
                         className="flex items-center gap-1.5 w-full px-2 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors rounded"
                       >
                         {expandedCats.has(catKey) ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                        {PERM_CATEGORIES[catKey] || catKey}
+                        {PERM_CATEGORIES[catKey] ?? (catKey === 'other' ? '其他' : catKey)}
                         <Badge variant="secondary" className="text-[9px] h-4 ml-1">{perms.length}</Badge>
                       </button>
                       {expandedCats.has(catKey) && (
@@ -414,8 +420,21 @@ export default function Permissions() {
                                   isSet ? 'text-foreground' : 'text-muted-foreground',
                                 )}
                               >
-                                <div className="col-span-5 truncate" title={perm.permdesc || perm.permsid}>
-                                  <span className="font-mono-data text-[11px]">{perm.permsid}</span>
+                                <div
+                                  className="col-span-5 min-w-0 truncate"
+                                  title={[getPermissionLabel(perm.permsid), perm.permdesc, perm.permsid].filter(Boolean).join(' · ')}
+                                >
+                                  {(() => {
+                                    const label = getPermissionLabel(perm.permsid);
+                                    return label ? (
+                                      <>
+                                        <span>{label}</span>
+                                        <span className="ml-1.5 font-mono-data text-[9px] text-muted-foreground/60">{perm.permsid}</span>
+                                      </>
+                                    ) : (
+                                      <span className="font-mono-data text-[11px]">{perm.permsid}</span>
+                                    );
+                                  })()}
                                 </div>
                                 <div className="col-span-2 flex justify-center">
                                   {isBoolean ? (

@@ -776,7 +776,7 @@ export default function BotEditor() {
                           }
                         />
                         <p className="text-[9px] text-muted-foreground/60 mt-0.5">
-                          仅当 ServerQuery 客户端处于该频道时才会接收到命令。
+                          仅当服务器查询客户端处于该频道时才会接收到命令。
                         </p>
                       </div>
                     </div>
