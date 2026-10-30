@@ -19,6 +19,7 @@ const COOKIE_PATH = path.join(COOKIE_DIR, 'yt-cookies.txt');
 const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
   storage: multer.memoryStorage(),
+  defParamCharset: 'utf8',
 });
 
 // Admin-only guard

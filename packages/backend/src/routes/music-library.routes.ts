@@ -28,6 +28,8 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: { fileSize: MAX_FILE_SIZE },
+  // 浏览器按 UTF-8 写入 multipart 的文件名，multer 默认按 latin1 解码会把中文变成乱码
+  defParamCharset: 'utf8',
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if (ALLOWED_EXTENSIONS.includes(ext)) {
