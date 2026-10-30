@@ -4,5 +4,8 @@
 **/.env
 **/*.db
 .git/
+.github/
 .claude/
 .vscode/
+docs/
+bin/
