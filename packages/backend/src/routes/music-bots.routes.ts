@@ -255,12 +255,12 @@ musicBotRoutes.post('/:id/play-url', async (req: Request, res: Response, next) =
           },
           update: {
             requestedAt: new Date(),
-            title: queueItem.title || 'Unknown Title',
+            title: queueItem.title || '未知标题',
           },
           create: {
             serverConfigId: bot.currentConfig.serverConfigId,
             url: queueItem.sourceUrl,
-            title: queueItem.title || 'Unknown Title',
+            title: queueItem.title || '未知标题',
             requestedAt: new Date(),
           },
         });

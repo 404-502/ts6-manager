@@ -84,8 +84,8 @@ export function downloadYouTube(url: string, outputDir: string): Promise<{ fileP
 
       const info: YouTubeInfo = {
         id: parsed.id,
-        title: parsed.title || "Unknown",
-        artist: parsed.uploader || parsed.channel || "Unknown",
+        title: parsed.title || "未知标题",
+        artist: parsed.uploader || parsed.channel || "未知艺术家",
         duration: parsed.duration || 0,
         thumbnail: parsed.thumbnail || "",
         url,
@@ -180,8 +180,8 @@ export function getYouTubeUrlInfo(url: string): Promise<{ type: 'video' | 'playl
           const parsed = JSON.parse(line);
           return {
             id: parsed.id,
-            title: parsed.title || "Unknown",
-            artist: parsed.uploader || parsed.channel || "Unknown",
+            title: parsed.title || "未知标题",
+            artist: parsed.uploader || parsed.channel || "未知艺术家",
             duration: parsed.duration || 0,
             thumbnail: parsed.thumbnails?.[0]?.url || parsed.thumbnail || "",
           };
@@ -241,8 +241,8 @@ export function searchYouTube(query: string, maxResults: number = 10): Promise<Y
             const parsed = JSON.parse(line);
             return {
               id: parsed.id,
-              title: parsed.title || "Unknown",
-              artist: parsed.uploader || parsed.channel || "Unknown",
+              title: parsed.title || "未知标题",
+              artist: parsed.uploader || parsed.channel || "未知艺术家",
               duration: parsed.duration || 0,
               thumbnail: parsed.thumbnails?.[0]?.url || "",
             };

@@ -311,7 +311,7 @@ export class VoiceBot extends EventEmitter {
 
   async start(): Promise<void> {
     if (this._status === 'connected' || this._status === 'playing' || this._status === 'paused') {
-      throw new Error('Bot is already running');
+      throw new Error('机器人已在运行');
     }
 
     this._manuallyStopped = false;
@@ -397,7 +397,7 @@ export class VoiceBot extends EventEmitter {
       throw new Error('机器人未连接');
     }
     if (!item.streamUrl) {
-      throw new Error('No streamUrl provided');
+      throw new Error('未提供串流地址');
     }
 
     this.stopIcyPolling();
@@ -773,7 +773,7 @@ export class VoiceBot extends EventEmitter {
       throw new Error('机器人未连接');
     }
     if (this._videoStreaming) {
-      throw new Error('Video stream already active');
+      throw new Error('视频串流已在运行');
     }
 
     const sidecarBinary = this.config.sidecarBinaryPath || process.env.SIDECAR_BINARY_PATH || 'sidecar';
@@ -821,7 +821,7 @@ export class VoiceBot extends EventEmitter {
         this.sidecarProc.start();
       } catch (err: any) {
         this.sidecarProc = null;
-        throw new Error(`Failed to start sidecar: ${err.message}`);
+        throw new Error(`启动 sidecar 失败：${err.message}`);
       }
       this.sidecarHttp = new SidecarClient(sidecarPort);
     }
@@ -963,13 +963,13 @@ export class VoiceBot extends EventEmitter {
 
   /** Set WebRTC answer from WebUI preview player */
   async setWebRtcAnswer(sdp: string): Promise<void> {
-    if (!this.sidecarHttp) throw new Error('No sidecar');
+    if (!this.sidecarHttp) throw new Error('sidecar 不可用');
     await this.sidecarHttp.setAnswer('webui-preview', sdp);
   }
 
   /** Add ICE candidate from WebUI preview player */
   async addWebRtcIceCandidate(candidate: string, sdpMid: string, sdpMLineIndex: number): Promise<void> {
-    if (!this.sidecarHttp) throw new Error('No sidecar');
+    if (!this.sidecarHttp) throw new Error('sidecar 不可用');
     await this.sidecarHttp.addIceCandidate('webui-preview', candidate, sdpMid, sdpMLineIndex);
   }
 

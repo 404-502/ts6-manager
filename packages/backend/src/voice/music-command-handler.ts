@@ -111,7 +111,7 @@ export class MusicCommandHandler {
       }
     } catch (err: any) {
       console.error(`[MusicCmd] Error handling !${command}: ${err.message}`);
-      this.reply(bot, userClid, `Error: ${err.message}`);
+      this.reply(bot, userClid, `错误：${err.message}`);
     }
   }
 
@@ -129,7 +129,7 @@ export class MusicCommandHandler {
     // Get serverConfigId for this bot from DB
     const dbBot = await this.prisma.musicBot.findUnique({ where: { id: botId }, select: { serverConfigId: true } });
     if (!dbBot) {
-      this.reply(bot, userClid, 'Bot config not found.');
+      this.reply(bot, userClid, '未找到机器人配置。');
       return;
     }
 
@@ -139,60 +139,60 @@ export class MusicCommandHandler {
     });
 
     if (stations.length === 0) {
-      this.reply(bot, userClid, 'No radio stations configured.');
+      this.reply(bot, userClid, '尚未配置任何电台。');
       return;
     }
 
     // No argument — list stations
     if (!args) {
       const lines = stations.map((s: any) => `[${s.id}] ${s.name}${s.genre ? ` (${s.genre})` : ''}`);
-      this.reply(bot, userClid, 'Radio Stations:\n' + lines.join('\n'));
+      this.reply(bot, userClid, '电台列表：\n' + lines.join('\n'));
       return;
     }
 
     // Argument — play station by ID
     const stationId = parseInt(args);
     if (isNaN(stationId)) {
-      this.reply(bot, userClid, 'Usage: !radio <id> — Use !radio to list stations.');
+      this.reply(bot, userClid, '用法：!radio <编号> —— 发送 !radio 可查看电台列表。');
       return;
     }
 
     const station = stations.find((s: any) => s.id === stationId);
     if (!station) {
-      this.reply(bot, userClid, `Station #${stationId} not found. Use !radio to list stations.`);
+      this.reply(bot, userClid, `未找到编号为 ${stationId} 的电台。发送 !radio 可查看电台列表。`);
       return;
     }
 
     const queueItem: QueueItem = {
       id: `radio_${station.id}`,
       title: station.name,
-      artist: station.genre ?? 'Radio',
+      artist: station.genre ?? '电台',
       filePath: '',
       source: 'radio',
       streamUrl: station.url,
     };
 
     await bot.playStream(queueItem);
-    this.reply(bot, userClid, `Now playing: ${station.name}`);
+    this.reply(bot, userClid, `正在播放：${station.name}`);
   }
 
   private async handlePlay(bot: VoiceBot, userClid: number, args: string): Promise<void> {
     if (!args) {
       if (bot.status === 'paused') {
         bot.resume();
-        this.reply(bot, userClid, 'Resumed.');
+        this.reply(bot, userClid, '已继续播放。');
         return;
       }
-      this.reply(bot, userClid, 'Usage: !play <youtube-url>');
+      this.reply(bot, userClid, '用法：!play <YouTube 链接>');
       return;
     }
 
     if (!args.startsWith('http://') && !args.startsWith('https://')) {
-      this.reply(bot, userClid, 'Please provide a valid URL. Usage: !play <url>');
+      this.reply(bot, userClid, '请提供有效的链接。用法：!play <链接>');
       return;
     }
 
-    this.reply(bot, userClid, 'Loading...');
+    this.reply(bot, userClid, '正在加载...');
 
     try {
       const { filePath, info } = await downloadYouTube(args, MUSIC_DIR);
@@ -214,21 +214,21 @@ export class MusicCommandHandler {
 
       // If something is already playing, queue it instead of interrupting
       if (bot.status === 'playing' || bot.status === 'paused') {
-        this.reply(bot, userClid, `Queued: ${info.artist} - ${info.title} (position #${bot.queue.length})`);
+        this.reply(bot, userClid, `已加入队列：${info.artist} - ${info.title}（第 ${bot.queue.length} 位）`);
       } else {
         bot.queue.playAt(bot.queue.length - 1);
         await bot.play(queueItem);
-        this.reply(bot, userClid, `Now playing: ${info.artist} - ${info.title}`);
+        this.reply(bot, userClid, `正在播放：${info.artist} - ${info.title}`);
       }
     } catch (err: any) {
-      this.reply(bot, userClid, `Failed to play: ${err.message}`);
+      this.reply(bot, userClid, `播放失败：${err.message}`);
     }
   }
 
   private showQueue(bot: VoiceBot, userClid: number): void {
     const items = bot.queue.getAll();
     if (items.length === 0) {
-      this.reply(bot, userClid, 'Queue is empty.');
+      this.reply(bot, userClid, '队列为空。');
       return;
     }
 
@@ -239,8 +239,8 @@ export class MusicCommandHandler {
       const dur = item.duration ? ` [${Math.floor(item.duration / 60)}:${String(Math.floor(item.duration % 60)).padStart(2, '0')}]` : '';
       return `${marker}${i + 1}. ${artist}${item.title}${dur}`;
     });
-    if (items.length > 15) lines.push(`  ... and ${items.length - 15} more`);
-    this.reply(bot, userClid, `Queue (${items.length} tracks):\n${lines.join('\n')}`);
+    if (items.length > 15) lines.push(`  …… 还有 ${items.length - 15} 首`);
+    this.reply(bot, userClid, `队列（共 ${items.length} 首）：\n${lines.join('\n')}`);
   }
 
   private async handleQueue(bot: VoiceBot, userClid: number, args: string): Promise<void> {
@@ -255,12 +255,12 @@ export class MusicCommandHandler {
       const idx = parseInt(args.substring(7).trim()) - 1; // 1-based to 0-based
       const items = bot.queue.getAll();
       if (isNaN(idx) || idx < 0 || idx >= items.length) {
-        this.reply(bot, userClid, `Invalid index. Queue has ${items.length} tracks.`);
+        this.reply(bot, userClid, `编号无效。当前队列共 ${items.length} 首。`);
         return;
       }
       const removed = items[idx];
       bot.queue.remove(removed.id);
-      this.reply(bot, userClid, `Removed #${idx + 1}: ${removed.title}`);
+      this.reply(bot, userClid, `已移除第 ${idx + 1} 首：${removed.title}`);
       return;
     }
 
@@ -269,7 +269,7 @@ export class MusicCommandHandler {
       const idx = parseInt(args.substring(5).trim()) - 1; // 1-based to 0-based
       const item = bot.queue.playAt(idx);
       if (!item) {
-        this.reply(bot, userClid, `Invalid index. Queue has ${bot.queue.length} tracks.`);
+        this.reply(bot, userClid, `编号无效。当前队列共 ${bot.queue.length} 首。`);
         return;
       }
       if (item.streamUrl) {
@@ -277,24 +277,24 @@ export class MusicCommandHandler {
       } else {
         await bot.play(item);
       }
-      this.reply(bot, userClid, `Playing #${idx + 1}: ${item.title}`);
+      this.reply(bot, userClid, `正在播放第 ${idx + 1} 首：${item.title}`);
       return;
     }
 
     // !queue clear
     if (args.toLowerCase() === 'clear') {
       bot.queue.clear();
-      this.reply(bot, userClid, 'Queue cleared.');
+      this.reply(bot, userClid, '队列已清空。');
       return;
     }
 
     // URL provided — add to queue without interrupting
     if (!args.startsWith('http://') && !args.startsWith('https://')) {
-      this.reply(bot, userClid, 'Usage: !queue [show|play <n>|remove <n>|clear|<url>]');
+      this.reply(bot, userClid, '用法：!queue [show|play <编号>|remove <编号>|clear|<链接>]');
       return;
     }
 
-    this.reply(bot, userClid, 'Loading...');
+    this.reply(bot, userClid, '正在加载...');
 
     try {
       const { filePath, info } = await downloadYouTube(args, MUSIC_DIR);
@@ -318,29 +318,29 @@ export class MusicCommandHandler {
       if (bot.status !== 'playing' && bot.status !== 'paused') {
         bot.queue.playAt(bot.queue.length - 1);
         await bot.play(queueItem);
-        this.reply(bot, userClid, `Now playing: ${info.artist} - ${info.title}`);
+        this.reply(bot, userClid, `正在播放：${info.artist} - ${info.title}`);
       } else {
-        this.reply(bot, userClid, `Queued: ${info.artist} - ${info.title} (position #${bot.queue.length})`);
+        this.reply(bot, userClid, `已加入队列：${info.artist} - ${info.title}（第 ${bot.queue.length} 位）`);
       }
     } catch (err: any) {
-      this.reply(bot, userClid, `Failed to queue: ${err.message}`);
+      this.reply(bot, userClid, `加入队列失败：${err.message}`);
     }
   }
 
   private handleStop(bot: VoiceBot, userClid: number): void {
     bot.stopAudio();
-    this.reply(bot, userClid, 'Playback stopped.');
+    this.reply(bot, userClid, '已停止播放。');
   }
 
   private handlePause(bot: VoiceBot, userClid: number): void {
     if (bot.status === 'paused') {
       bot.resume();
-      this.reply(bot, userClid, 'Resumed.');
+      this.reply(bot, userClid, '已继续播放。');
     } else if (bot.status === 'playing') {
       bot.pause();
-      this.reply(bot, userClid, 'Paused.');
+      this.reply(bot, userClid, '已暂停。');
     } else {
-      this.reply(bot, userClid, 'Nothing is playing.');
+      this.reply(bot, userClid, '当前没有正在播放的内容。');
     }
   }
 
@@ -352,10 +352,10 @@ export class MusicCommandHandler {
       } else {
         await bot.play(next);
       }
-      this.reply(bot, userClid, `Skipped to: ${next.title}`);
+      this.reply(bot, userClid, `已跳到：${next.title}`);
     } else {
       bot.stopAudio();
-      this.reply(bot, userClid, 'Queue empty — playback stopped.');
+      this.reply(bot, userClid, '队列已空 —— 播放已停止。');
     }
   }
 
@@ -367,45 +367,45 @@ export class MusicCommandHandler {
       } else {
         await bot.play(prev);
       }
-      this.reply(bot, userClid, `Previous: ${prev.title}`);
+      this.reply(bot, userClid, `上一首：${prev.title}`);
     } else {
-      this.reply(bot, userClid, 'No previous track.');
+      this.reply(bot, userClid, '没有上一首。');
     }
   }
 
   private handleVolume(bot: VoiceBot, userClid: number, args: string): void {
     if (!args) {
       const vol = bot.currentConfig.volume;
-      this.reply(bot, userClid, `Volume: ${vol}%`);
+      this.reply(bot, userClid, `当前音量：${vol}%`);
       return;
     }
 
     const vol = parseInt(args);
     if (isNaN(vol) || vol < 0 || vol > 100) {
-      this.reply(bot, userClid, 'Usage: !vol <0-100>');
+      this.reply(bot, userClid, '用法：!vol <0-100>');
       return;
     }
 
     bot.setVolume(vol);
-    this.reply(bot, userClid, `Volume set to ${vol}%.`);
+    this.reply(bot, userClid, `音量已设为 ${vol}%。`);
   }
 
   private handleNowPlaying(bot: VoiceBot, userClid: number): void {
     const np = bot.nowPlaying;
     if (!np) {
-      this.reply(bot, userClid, 'Nothing is playing.');
+      this.reply(bot, userClid, '当前没有正在播放的内容。');
       return;
     }
 
     const artist = np.artist ? `${np.artist} - ` : '';
-    this.reply(bot, userClid, `Now playing: ${artist}${np.title}`);
+    this.reply(bot, userClid, `正在播放：${artist}${np.title}`);
   }
 
   // ─── Video Streaming Commands ─────────────────────────────
 
   private async handleStream(bot: VoiceBot, userClid: number, args: string): Promise<void> {
     if (!args) {
-      this.reply(bot, userClid, 'Usage: !stream <url> [preset]  — Presets: 480p, 720p, 1080p');
+      this.reply(bot, userClid, '用法：!stream <链接> [画质] —— 画质可选：480p、720p、1080p');
       return;
     }
 
@@ -414,7 +414,7 @@ export class MusicCommandHandler {
     const preset = parts[1] || undefined;
 
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      this.reply(bot, userClid, 'Please provide a valid URL.');
+      this.reply(bot, userClid, '请提供有效的链接。');
       return;
     }
 
@@ -422,46 +422,46 @@ export class MusicCommandHandler {
       // Change source if already streaming
       try {
         await bot.setVideoSource(url);
-        this.reply(bot, userClid, `Stream source changed to: ${url}`);
+        this.reply(bot, userClid, `串流源已切换为：${url}`);
       } catch (err: any) {
-        this.reply(bot, userClid, `Error: ${err.message}`);
+        this.reply(bot, userClid, `错误：${err.message}`);
       }
       return;
     }
 
-    this.reply(bot, userClid, 'Starting video stream...');
+    this.reply(bot, userClid, '正在启动视频串流...');
     try {
       await bot.startVideoStream(url, preset);
-      this.reply(bot, userClid, `Video stream started: ${url}`);
+      this.reply(bot, userClid, `视频串流已启动：${url}`);
     } catch (err: any) {
-      this.reply(bot, userClid, `Failed to start stream: ${err.message}`);
+      this.reply(bot, userClid, `启动串流失败：${err.message}`);
     }
   }
 
   private async handleStopStream(bot: VoiceBot, userClid: number): Promise<void> {
     if (!bot.videoStreaming) {
-      this.reply(bot, userClid, 'No active video stream.');
+      this.reply(bot, userClid, '当前没有活跃的视频串流。');
       return;
     }
     await bot.stopVideoStream();
-    this.reply(bot, userClid, 'Video stream stopped.');
+    this.reply(bot, userClid, '视频串流已停止。');
   }
 
   private handleViewers(bot: VoiceBot, userClid: number): void {
     const status = bot.videoStreamStatus;
     if (!status.streaming) {
-      this.reply(bot, userClid, 'No active video stream.');
+      this.reply(bot, userClid, '当前没有活跃的视频串流。');
       return;
     }
     if (status.viewers.length === 0) {
-      this.reply(bot, userClid, 'No viewers connected.');
+      this.reply(bot, userClid, '暂无观众连接。');
       return;
     }
     const lines = status.viewers.map((v) => {
       const duration = Math.floor((Date.now() - v.joinedAt) / 1000);
-      return `  clid=${v.clid} (${duration}s)`;
+      return `  clid=${v.clid}（已观看 ${duration} 秒）`;
     });
-    this.reply(bot, userClid, `Viewers (${status.viewerCount}):\n${lines.join('\n')}`);
+    this.reply(bot, userClid, `观众（${status.viewerCount} 人）：\n${lines.join('\n')}`);
   }
 
   private saveMusicRequest(bot: VoiceBot, item: QueueItem): void {
@@ -475,12 +475,12 @@ export class MusicCommandHandler {
       },
       update: {
         requestedAt: new Date(),
-        title: item.title || 'Unknown Title',
+        title: item.title || '未知标题',
       },
       create: {
         serverConfigId: bot.currentConfig.serverConfigId,
         url: item.sourceUrl,
-        title: item.title || 'Unknown Title',
+        title: item.title || '未知标题',
         requestedAt: new Date(),
       },
     }).catch((err) => {
