@@ -1,0 +1,85 @@
+name: Docker 镜像发布
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  REGISTRY: docker.io
+  # 镜像仓库名默认取登录用的 Docker Hub 用户名 + ts6-manager-zh
+  # （-zh 表示汉化版，与上游 clusterzx/ts6-manager 区分）。保证一定有该账户的
+  # 写权限；若要推送到别的命名空间（例如组织仓库），在仓库 Settings → Variables
+  # 里新增 TS6_IMAGE_NAME（如 myorg/ts6-manager-zh）覆盖它。
+  IMAGE_NAME: ${{ vars.TS6_IMAGE_NAME || format('{0}/ts6-manager-zh', secrets.DOCKERHUB_USERNAME) }}
+
+jobs:
+  build:
+    name: 构建 ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: backend
+            dockerfile: Dockerfile.backend
+          - image: frontend
+            dockerfile: Dockerfile.frontend
+          - image: sidecar
+            dockerfile: Dockerfile.sidecar
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 QEMU（跨架构构建）
+        uses: docker/setup-qemu-action@v3
+
+      - name: 设置 Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录 Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 构建并推送
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ matrix.image }}
+            ${{ env.IMAGE_NAME }}:${{ matrix.image }}-${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }},mode=max
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+  summary:
+    name: 构建结果汇总
+    runs-on: ubuntu-latest
+    needs: build
+    if: success()
+    steps:
+      - name: 输出镜像地址
+        env:
+          IMAGE: ${{ vars.TS6_IMAGE_NAME || format('{0}/ts6-manager-zh', secrets.DOCKERHUB_USERNAME) }}
+          SHA: ${{ github.sha }}
+        run: |
+          {
+            echo "### 已推送镜像"
+            echo ""
+            for img in backend frontend sidecar; do
+              echo "- \`${IMAGE}:${img}\`"
+              echo "- \`${IMAGE}:${img}-${SHA}\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

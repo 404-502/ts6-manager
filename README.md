@@ -173,7 +173,9 @@ echo "ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 docker compose up -d
 ```
 
-> 注意：`docker-compose.yml` 拉取的是上游的预构建镜像（英文界面）。如需中文界面，请改用下方的[从源码构建](#从源码构建)方式。
+> 注意：`docker-compose.yml` 使用的是本仓库自行构建的镜像（`404502/ts6-manager-zh`），
+> 由 GitHub Actions 自动构建发布，界面已是中文。首次发布前若镜像尚不存在，
+> 请改用下方的[从源码构建](#从源码构建)方式。
 
 4. 打开 `http://localhost:3000/setup`，创建管理员账户
 5. 登录后，在 **设置 → 连接** 中添加 TeamSpeak 服务器连接（主机、WebQuery 端口、API 密钥）
@@ -190,6 +192,27 @@ echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 echo "ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 docker compose -f docker-compose.local.yml up -d --build
 ```
+
+### 自行构建 Docker 镜像
+
+本仓库自带 GitHub Actions 工作流 [`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml)：
+推送到 `main`（或打 `v*` 标签、手动触发）时，会自动构建 `backend` / `frontend` / `sidecar`
+三个镜像并推送到 Docker Hub，同时支持 `linux/amd64` 与 `linux/arm64`。
+
+首次使用需在仓库 **Settings → Secrets and variables → Actions** 中添加两项 secret：
+
+| 名称 | 说明 |
+|---|---|
+| `DOCKERHUB_USERNAME` | Docker Hub 用户名 |
+| `DOCKERHUB_TOKEN` | Docker Hub 访问令牌（Access Token，需读写权限，不要用登录密码） |
+
+镜像名默认为 `<DOCKERHUB_USERNAME>/ts6-manager-zh`，标签为 `backend` / `frontend` / `sidecar`
+（`-zh` 后缀标明这是汉化版，避免与上游 `clusterzx/ts6-manager` 混淆）。
+若要推送到其他命名空间，在同一页面新增 **Variable** `TS6_IMAGE_NAME`（如 `myorg/ts6-manager-zh`）覆盖。
+构建完成后，把 `docker-compose.yml`、`docker-compose.dev.yml`、`docker-compose.coolify.yml`
+里的镜像地址改成你自己的即可（本仓库现在填的是 `404502/ts6-manager-zh:*`）。
+
+> 打标签会额外触发一次构建；若只想要一次，请在推送 `main` 前完成版本标记。
 
 ### Coolify / 反向代理
 

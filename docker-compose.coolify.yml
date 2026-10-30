@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: clusterzx/ts6-manager:backend
+    image: 404502/ts6-manager-zh:backend
     container_name: ts6-backend
     restart: unless-stopped
     environment:
@@ -24,7 +24,7 @@ services:
       - coolify-ts
 
   frontend:
-    image: clusterzx/ts6-manager:frontend
+    image: 404502/ts6-manager-zh:frontend
     container_name: ts6-frontend
     restart: unless-stopped
     depends_on:
