@@ -9,6 +9,7 @@ import { SidecarProcess, type SidecarConfig } from './streaming/sidecar-process.
 import { STREAM_PRESETS, DEFAULT_PRESET, type VideoViewerInfo, type VideoStreamStatus } from './streaming/types.js';
 import { getCookieArgs } from './audio/youtube.js';
 import { spawn } from 'child_process';
+import { StringDecoder } from 'string_decoder';
 
 /** Resolve a YouTube/yt-dlp-compatible URL to a direct stream URL */
 function resolveVideoUrl(url: string, maxHeight: number = 720): Promise<string> {
@@ -30,10 +31,15 @@ function resolveVideoUrl(url: string, maxHeight: number = 720): Promise<string> 
 
     let stdout = '';
     let stderr = '';
-    proc.stdout.on('data', (chunk: Buffer) => { stdout += chunk.toString(); });
-    proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString(); });
+    // 用 StringDecoder 缓存不完整的多字节字符，避免输出被 chunk 边界切断时产生 U+FFFD
+    const outDecoder = new StringDecoder('utf8');
+    const errDecoder = new StringDecoder('utf8');
+    proc.stdout.on('data', (chunk: Buffer) => { stdout += outDecoder.write(chunk); });
+    proc.stderr.on('data', (chunk: Buffer) => { stderr += errDecoder.write(chunk); });
 
     proc.on('close', (code) => {
+      stdout += outDecoder.end();
+      stderr += errDecoder.end();
       if (code !== 0) {
         return reject(new Error(`yt-dlp failed (code ${code}): ${stderr.slice(0, 200)}`));
       }

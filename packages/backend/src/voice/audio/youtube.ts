@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import { StringDecoder } from "string_decoder";
 
 export interface YouTubeInfo {
   id: string;
@@ -55,14 +56,21 @@ export function downloadYouTube(url: string, outputDir: string): Promise<{ fileP
 
     let infoJson = "";
     let infoErr = "";
+    // yt-dlp 输出 UTF-8，多字节字符（中文/日文歌名）可能被切在 chunk 边界上，
+    // 直接 chunk.toString() 会产生 U+FFFD，必须用 StringDecoder 保留不完整字节
+    const infoJsonDecoder = new StringDecoder('utf8');
+    const infoErrDecoder = new StringDecoder('utf8');
     infoProc.stdout.on("data", (chunk: Buffer) => {
-      infoJson += chunk.toString();
+      infoJson += infoJsonDecoder.write(chunk);
     });
     infoProc.stderr.on("data", (chunk: Buffer) => {
-      infoErr += chunk.toString();
+      infoErr += infoErrDecoder.write(chunk);
     });
 
     infoProc.on("close", (code) => {
+      // 冲掉解码器里可能残留的半个字符
+      infoJson += infoJsonDecoder.end();
+      infoErr += infoErrDecoder.end();
       if (code !== 0) {
         return reject(new Error(`yt-dlp info failed (code ${code}): ${infoErr.slice(0, 200)}`));
       }
@@ -102,11 +110,13 @@ export function downloadYouTube(url: string, outputDir: string): Promise<{ fileP
       ], { shell: false });
 
       let dlErr = "";
+      const dlErrDecoder = new StringDecoder('utf8');
       dlProc.stderr.on("data", (chunk: Buffer) => {
-        dlErr += chunk.toString();
+        dlErr += dlErrDecoder.write(chunk);
       });
 
       dlProc.on("close", (dlCode) => {
+        dlErr += dlErrDecoder.end();
         if (dlCode !== 0) {
           return reject(new Error(`yt-dlp download failed (code ${dlCode}): ${dlErr.slice(0, 200)}`));
         }
@@ -148,14 +158,18 @@ export function getYouTubeUrlInfo(url: string): Promise<{ type: 'video' | 'playl
 
     let output = "";
     let stderr = "";
+    const outputDecoder = new StringDecoder('utf8');
+    const stderrDecoder = new StringDecoder('utf8');
     proc.stdout.on("data", (chunk: Buffer) => {
-      output += chunk.toString();
+      output += outputDecoder.write(chunk);
     });
     proc.stderr.on("data", (chunk: Buffer) => {
-      stderr += chunk.toString();
+      stderr += stderrDecoder.write(chunk);
     });
 
     proc.on("close", (code) => {
+      output += outputDecoder.end();
+      stderr += stderrDecoder.end();
       if (code !== 0) {
         return reject(new Error(`yt-dlp info failed (code ${code}): ${stderr.slice(0, 200)}`));
       }
@@ -201,14 +215,18 @@ export function searchYouTube(query: string, maxResults: number = 10): Promise<Y
 
     let output = "";
     let stderr = "";
+    const searchOutDecoder = new StringDecoder('utf8');
+    const searchErrDecoder = new StringDecoder('utf8');
     proc.stdout.on("data", (chunk: Buffer) => {
-      output += chunk.toString();
+      output += searchOutDecoder.write(chunk);
     });
     proc.stderr.on("data", (chunk: Buffer) => {
-      stderr += chunk.toString();
+      stderr += searchErrDecoder.write(chunk);
     });
 
     proc.on("close", (code) => {
+      output += searchOutDecoder.end();
+      stderr += searchErrDecoder.end();
       if (code !== 0) {
         return reject(new Error(`yt-dlp search failed (code ${code}): ${stderr.slice(0, 200)}`));
       }

@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import { spawn } from 'child_process';
 import { randomUUID } from 'crypto';
+import { StringDecoder } from 'string_decoder';
 
 const MUSIC_DIR = process.env.MUSIC_DIR || '/data/music';
 const ALLOWED_EXTENSIONS = ['.mp3', '.wav', '.flac', '.ogg', '.opus', '.m4a', '.aac', '.wma', '.webm'];
@@ -231,8 +232,11 @@ function getAudioDuration(filePath: string): Promise<number> {
     ], { shell: false });
 
     let output = '';
-    proc.stdout.on('data', (chunk: Buffer) => { output += chunk.toString(); });
+    // 用 StringDecoder 缓存不完整的多字节字符，避免输出被 chunk 边界切断时产生 U+FFFD
+    const decoder = new StringDecoder('utf8');
+    proc.stdout.on('data', (chunk: Buffer) => { output += decoder.write(chunk); });
     proc.on('close', (code) => {
+      output += decoder.end();
       if (code !== 0) return reject(new Error('ffprobe failed'));
       try {
         const parsed = JSON.parse(output);
