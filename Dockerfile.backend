@@ -36,23 +36,33 @@ ENV HOME=/home/ts6
 ENV XDG_CONFIG_HOME=/home/ts6/.config
 WORKDIR /app
 
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY --from=build /app/packages/common/dist ./packages/common/dist
-COPY --from=build /app/packages/common/package.json ./packages/common/package.json
-COPY --from=build /app/packages/backend/dist ./packages/backend/dist
-COPY --from=build /app/packages/backend/generated ./packages/backend/generated
-COPY --from=build /app/packages/backend/prisma ./packages/backend/prisma
-COPY --from=build /app/packages/backend/package.json ./packages/backend/package.json
-COPY --from=build /app/packages/backend/node_modules ./packages/backend/node_modules
+# COPY --chown sets the owner while the layer is written, so no later chown has
+# to touch /app. A chown over an existing layer forces overlayfs to copy every
+# file up into the new layer (all 25k node_modules entries => +548 MB).
+COPY --chown=ts6:ts6 --from=build /app/node_modules ./node_modules
+COPY --chown=ts6:ts6 --from=build /app/package.json ./package.json
+COPY --chown=ts6:ts6 --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --chown=ts6:ts6 --from=build /app/packages/common/dist ./packages/common/dist
+COPY --chown=ts6:ts6 --from=build /app/packages/common/package.json ./packages/common/package.json
+COPY --chown=ts6:ts6 --from=build /app/packages/backend/dist ./packages/backend/dist
+COPY --chown=ts6:ts6 --from=build /app/packages/backend/generated ./packages/backend/generated
+COPY --chown=ts6:ts6 --from=build /app/packages/backend/prisma ./packages/backend/prisma
+COPY --chown=ts6:ts6 --from=build /app/packages/backend/package.json ./packages/backend/package.json
+COPY --chown=ts6:ts6 --from=build /app/packages/backend/node_modules ./packages/backend/node_modules
 
 WORKDIR /app/packages/backend
-# yt-dlp config lives under the non-root user's home (uid 1001 => /home/ts6)
+# yt-dlp config lives under the non-root user's home (uid 1001 => /home/ts6).
+# Only dirs newly created in this layer need a chown here; /app files already
+# carry the ts6 owner from the COPY --chown lines above. `data` is created
+# relative to WORKDIR (/app/packages/backend) and backs the SQLite volume.
+# COPY --chown only rewrites the files it copies, so the parent directories it
+# implicitly creates stay root-owned; fix those four (non-recursive, so this
+# stays a few kB instead of copying the whole tree up again).
 RUN mkdir -p data /data/music && \
     mkdir -p /home/ts6/.config/yt-dlp && \
     echo "--js-runtimes node" > /home/ts6/.config/yt-dlp/config && \
-    chown -R ts6:ts6 /home/ts6 /app /data/music
+    chown -R ts6:ts6 /home/ts6 /data/music data && \
+    chown ts6:ts6 /app /app/packages /app/packages/common /app/packages/backend
 USER ts6
 
 EXPOSE 3001
