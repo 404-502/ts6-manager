@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { WidgetManagerModal } from '@/components/widget/WidgetManagerModal';
-import { formatBytes, formatUptime } from '@/lib/utils';
-import { Users, Activity, Clock, Hash, ArrowDownToLine, ArrowUpFromLine, Wifi, Server, LayoutGrid } from 'lucide-react';
+import { formatBytes, formatUptime, isForbiddenError } from '@/lib/utils';
+import { Users, Activity, Clock, Hash, ArrowDownToLine, ArrowUpFromLine, Wifi, Server, LayoutGrid, ShieldAlert } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer } from 'recharts';
 import { useState } from 'react';
 
@@ -100,6 +100,15 @@ export default function Dashboard() {
   }
 
   if (isLoading) return <PageLoader />;
+  if (isForbiddenError(error)) {
+    return (
+      <EmptyState
+        icon={ShieldAlert}
+        title="无权访问该服务器"
+        description="当前账号未被授予该服务器的访问权限，请联系管理员在「设置 → 用户」中为其分配可访问的服务器。"
+      />
+    );
+  }
   if (error || !data) {
     return (
       <EmptyState

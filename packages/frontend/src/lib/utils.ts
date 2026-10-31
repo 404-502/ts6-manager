@@ -42,3 +42,13 @@ export function timeAgo(timestamp: number): string {
   if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
   return `${Math.floor(diff / 86400)} 天前`;
 }
+
+/**
+ * 判断查询错误是否为 403（当前账号未被告知可访问该服务器配置）。
+ * 后端 requireServerAccess 对没有 userServerAccess 记录的 viewer 返回 403，
+ * 必须与「网络不通 / 服务器离线」区分，否则会被误显示成「连接失败」。
+ */
+export function isForbiddenError(error: unknown): boolean {
+  const status = (error as { response?: { status?: number } } | null)?.response?.status;
+  return status === 403;
+}

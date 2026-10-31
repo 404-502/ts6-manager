@@ -18,4 +18,7 @@ export const usersApi = {
   create: (data: any) => api.post('/users', data).then((r) => r.data),
   update: (id: number, data: any) => api.put(`/users/${id}`, data),
   delete: (id: number) => api.delete(`/users/${id}`),
+  getServerAccess: (id: number) => api.get(`/users/${id}/server-access`).then((r) => r.data),
+  setServerAccess: (id: number, serverConfigIds: number[]) =>
+    api.put(`/users/${id}/server-access`, { serverConfigIds }).then((r) => r.data),
 };

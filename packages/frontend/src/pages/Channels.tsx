@@ -13,8 +13,8 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { Hash, Plus, Trash2, Pencil, ChevronRight, ChevronDown, Users, Lock, Volume2, GripVertical } from 'lucide-react';
+import { cn, isForbiddenError } from '@/lib/utils';
+import { Hash, Plus, Trash2, Pencil, ChevronRight, ChevronDown, Users, Lock, Volume2, GripVertical, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ChannelNode {
@@ -477,7 +477,7 @@ function ChannelTreeNode({
 export default function Channels() {
   const { selectedConfigId, selectedSid } = useServerStore();
   const isAdmin = useAuthStore((s) => s.isAdmin());
-  const { data: channelData, isLoading: channelsLoading } = useChannels();
+  const { data: channelData, isLoading: channelsLoading, error: channelsError } = useChannels();
   const { data: clientData } = useClients();
   const createChannel = useCreateChannel();
   const deleteChannel = useDeleteChannel();
@@ -562,6 +562,15 @@ export default function Channels() {
 
   if (!selectedConfigId || !selectedSid) return <EmptyState icon={Hash} title="未选择服务器" />;
   if (channelsLoading) return <PageLoader />;
+  if (isForbiddenError(channelsError)) {
+    return (
+      <EmptyState
+        icon={ShieldAlert}
+        title="无权访问该服务器"
+        description="当前账号未被授予该服务器的访问权限，请联系管理员在「设置 → 用户」中为其分配可访问的服务器。"
+      />
+    );
+  }
 
   const handleCreate = () => {
     if (!newName.trim()) return;

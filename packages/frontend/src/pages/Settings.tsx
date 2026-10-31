@@ -275,10 +275,38 @@ function UsersTab() {
   const [resetPwUserId, setResetPwUserId] = useState<number | null>(null);
   const [resetPwValue, setResetPwValue] = useState('');
   const [form, setForm] = useState({ username: '', password: '', displayName: '', role: 'viewer' });
+  const [accessUserId, setAccessUserId] = useState<number | null>(null);
+  const [accessIds, setAccessIds] = useState<number[]>([]);
+
+  const { data: servers } = useQuery({ queryKey: ['servers'], queryFn: serversApi.list });
+  const serverList = useMemo(() => (Array.isArray(servers) ? servers : []), [servers]);
+  const saveAccess = useMutation({
+    mutationFn: ({ id, ids }: { id: number; ids: number[] }) => usersApi.setServerAccess(id, ids),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
+  });
 
   const userList = useMemo(() => (Array.isArray(users) ? users : []), [users]);
 
   if (isLoading) return <PageLoader />;
+
+  const openAccess = (u: any) => {
+    setAccessUserId(u.id);
+    setAccessIds(Array.isArray(u.serverConfigIds) ? u.serverConfigIds : []);
+  };
+
+  const toggleAccess = (serverConfigId: number) => {
+    setAccessIds((prev) =>
+      prev.includes(serverConfigId) ? prev.filter((x) => x !== serverConfigId) : [...prev, serverConfigId],
+    );
+  };
+
+  const handleSaveAccess = () => {
+    if (accessUserId === null) return;
+    saveAccess.mutate({ id: accessUserId, ids: accessIds }, {
+      onSuccess: () => { toast.success('服务器访问权限已保存'); setAccessUserId(null); },
+      onError: (err: any) => toast.error(err?.response?.data?.error || '保存访问权限失败'),
+    });
+  };
 
   const handleCreate = () => {
     createUser.mutate(form, {
@@ -366,6 +394,16 @@ function UsersTab() {
                   </td>
                   <td className="px-3 py-2.5 text-right">
                     <div className="inline-flex items-center gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        title={u.role === 'admin' ? '管理员默认可访问全部服务器' : '设置可访问的服务器'}
+                        onClick={() => openAccess(u)}
+                        disabled={u.role === 'admin'}
+                      >
+                        <Server className="h-3.5 w-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7" title="重置密码" onClick={() => { setResetPwUserId(u.id); setResetPwValue(''); }}>
                         <KeyRound className="h-3.5 w-3.5" />
                       </Button>
@@ -426,6 +464,49 @@ function UsersTab() {
             <Button variant="outline" onClick={() => { setResetPwUserId(null); setResetPwValue(''); }}>取消</Button>
             <Button onClick={handleResetPassword} disabled={resetPwValue.length < 6 || updateUser.isPending}>
               {updateUser.isPending ? '重置中...' : '重置密码'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Server Access Dialog */}
+      <Dialog open={accessUserId !== null} onOpenChange={(v) => { if (!v) setAccessUserId(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">可访问的服务器</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              为 <span className="font-medium text-foreground">{userList.find((u: any) => u.id === accessUserId)?.username}</span> 选择允许查看的服务器配置。未勾选任何服务器时，该账号登录后看不到任何数据。
+            </p>
+            {serverList.length === 0 ? (
+              <p className="text-xs text-muted-foreground">还没有配置任何 TeamSpeak 服务器。</p>
+            ) : (
+              <div className="rounded-md border border-border divide-y divide-border">
+                {serverList.map((srv: any) => {
+                  const checked = accessIds.includes(srv.id);
+                  return (
+                    <label
+                      key={srv.id}
+                      className="flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer hover:bg-muted/20 transition-colors"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm">{srv.name}</span>
+                        <span className="block truncate font-mono-data text-[11px] text-muted-foreground">
+                          {srv.host}:{srv.webqueryPort}
+                        </span>
+                      </span>
+                      <Switch checked={checked} onCheckedChange={() => toggleAccess(srv.id)} />
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAccessUserId(null)}>取消</Button>
+            <Button onClick={handleSaveAccess} disabled={saveAccess.isPending}>
+              {saveAccess.isPending ? '保存中...' : '保存'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -11,15 +11,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { formatUptime } from '@/lib/utils';
-import { Users, MoreHorizontal, LogOut, Ban, MessageSquare, Zap } from 'lucide-react';
+import { formatUptime, isForbiddenError } from '@/lib/utils';
+import { Users, MoreHorizontal, LogOut, Ban, MessageSquare, Zap, ShieldAlert } from 'lucide-react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
 
 export default function Clients() {
   const { selectedConfigId, selectedSid } = useServerStore();
   const isAdmin = useAuthStore((s) => s.isAdmin());
-  const { data, isLoading } = useClients();
+  const { data, isLoading, error } = useClients();
   const kickClient = useKickClient();
   const banClient = useBanClient();
   const pokeClient = usePokeClient();
@@ -106,6 +106,15 @@ export default function Clients() {
 
   if (!selectedConfigId || !selectedSid) return <EmptyState icon={Users} title="未选择服务器" />;
   if (isLoading) return <PageLoader />;
+  if (isForbiddenError(error)) {
+    return (
+      <EmptyState
+        icon={ShieldAlert}
+        title="无权访问该服务器"
+        description="当前账号未被授予该服务器的访问权限，请联系管理员在「设置 → 用户」中为其分配可访问的服务器。"
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">
