@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useChannels, useCreateChannel, useDeleteChannel, useEditChannel, useMoveChannel } from '@/hooks/use-channels';
-import { useClients } from '@/hooks/use-clients';
+import { useClients, useMoveClient } from '@/hooks/use-clients';
 import { useServerStore } from '@/stores/server.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +49,12 @@ const INDENT = 20;
 /** 树形行高，比原先高一档，方便点击与拖拽 */
 const ROW_PADDING = 'py-2';
 
+/**
+ * 拖动客户端时额外写入的自定义 MIME 类型。
+ * dragover 阶段浏览器不允许读取 getData，只能靠 types 区分「正在拖的是频道还是客户端」。
+ */
+const CLIENT_DRAG_TYPE = 'application/x-ts6-client';
+
 function buildTree(channels: any[]): ChannelNode[] {
   const normalized = channels.map((ch) => ({
     ...ch,
@@ -76,6 +82,9 @@ function buildTree(channels: any[]): ChannelNode[] {
   return roots;
 }
 
+/** 判断当前正在拖的是频道还是客户端（dragover 阶段只能读 types，读不到 data） */
+const isClientDrag = (e: React.DragEvent) => e.dataTransfer.types.includes(CLIENT_DRAG_TYPE);
+
 interface ClientEntryProps {
   client: ClientInfo;
   depth: number;
@@ -85,20 +94,37 @@ interface ClientEntryProps {
   draggedCid: number | null;
   canDropInto: (targetCid: number) => boolean;
   onDropInto: (draggedCid: number, targetCid: number) => void;
+  /** 正在被拖动的客户端 clid（null 表示没在拖客户端） */
+  draggedClid: number | null;
+  /** 正在被拖动的客户端当前所在频道 cid */
+  draggedClientCid: number | null;
+  onClientDragStart: (clid: number) => void;
+  onClientDragEnd: () => void;
+  /** 把客户端移动到某个频道 */
+  onClientDrop: (clid: number, targetCid: number) => void;
 }
 
 /**
- * 频道下的客户端行。它同时是一个拖拽落点：
- * 把频道拖到「频道行与它下面的客户端之间」时，语义等同于放进该频道内部。
+ * 频道下的客户端行。它同时是两种拖拽的落点：
+ * 把频道拖到「频道行与它下面的客户端之间」时，语义等同于放进该频道内部；
+ * 把客户端拖到任意客户端行上时，语义等同于把该客户端移进这个频道。
+ * 它本身也可以被拖动，用来切换客户端所在频道。
  */
 function ClientEntry({
   client, depth, parentCid, draggable, draggedCid, canDropInto, onDropInto,
+  draggedClid, draggedClientCid, onClientDragStart, onClientDragEnd, onClientDrop,
 }: ClientEntryProps) {
   const [over, setOver] = useState(false);
-  const droppable = draggable && !!draggedCid && canDropInto(parentCid);
+  const channelDroppable = draggable && !!draggedCid && canDropInto(parentCid);
+  const clientDroppable = draggable && !!draggedClid && draggedClientCid !== parentCid;
+  const isDraggedClient = draggedClid === client.clid;
 
   const handleDragOver = (e: React.DragEvent) => {
-    if (!droppable) return;
+    if (isClientDrag(e)) {
+      if (!clientDroppable) return;
+    } else if (!channelDroppable) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
@@ -111,27 +137,56 @@ function ClientEntry({
   };
 
   const handleDrop = (e: React.DragEvent) => {
-    if (!droppable) return;
     e.preventDefault();
     e.stopPropagation();
     setOver(false);
+    if (isClientDrag(e)) {
+      if (!clientDroppable) return;
+      const clid = Number(e.dataTransfer.getData(CLIENT_DRAG_TYPE));
+      if (!clid || draggedClientCid === parentCid) return;
+      onClientDrop(clid, parentCid);
+      return;
+    }
+    if (!channelDroppable) return;
     const cid = Number(e.dataTransfer.getData('text/plain'));
     if (!cid || cid === parentCid) return;
     onDropInto(cid, parentCid);
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!draggable) return;
+    e.stopPropagation();
+    e.dataTransfer.setData(CLIENT_DRAG_TYPE, String(client.clid));
+    e.dataTransfer.effectAllowed = 'move';
+    onClientDragStart(client.clid);
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setOver(false);
+    onClientDragEnd();
+  };
+
   return (
     <div
       className={cn(
-        'flex items-center gap-2 py-1.5 px-2 text-[13px] text-muted-foreground transition-colors',
-        over && 'bg-primary/15 ring-1 ring-primary/40 rounded-md',
+        'flex items-center gap-2 py-1.5 px-2 text-[13px] text-muted-foreground transition-colors group/client rounded-md',
+        draggable && 'cursor-grab active:cursor-grabbing',
+        over && 'bg-primary/15 ring-1 ring-primary/40',
+        isDraggedClient && 'opacity-40',
       )}
       style={{ paddingLeft: `${depth * INDENT + 36}px` }}
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onDragEnter={handleDragOver}
     >
+      {draggable && (
+        <GripVertical className="h-3 w-3 text-muted-foreground/30 shrink-0 -ml-1 opacity-0 group-hover/client:opacity-100 transition-opacity" />
+      )}
       <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-mono-data text-primary shrink-0">
         {client.client_nickname?.[0]?.toUpperCase() || '?'}
       </div>
@@ -164,14 +219,23 @@ interface TreeNodeProps {
   draggedCid: number | null;
   setDraggedCid: (cid: number | null) => void;
   canDropInto: (targetCid: number) => boolean;
+  /** 正在被拖动的客户端 clid 与它当前所在频道 */
+  draggedClid: number | null;
+  draggedClientCid: number | null;
+  onClientDragStart: (clid: number) => void;
+  onClientDragEnd: () => void;
+  /** 把客户端移进某个频道 */
+  onClientDrop: (clid: number, targetCid: number) => void;
 }
 
 function ChannelTreeNode({
   node, depth = 0, index, parentCid, nextOrder, isAdmin, clientsByChannel,
   onDelete, onEdit, onDrop, draggedCid, setDraggedCid, canDropInto,
+  draggedClid, draggedClientCid, onClientDragStart, onClientDragEnd, onClientDrop,
 }: TreeNodeProps) {
   const [expanded, setExpanded] = useState(true);
   const [dropPos, setDropPos] = useState<DropPosition | null>(null);
+  const [clientOver, setClientOver] = useState(false);
   const hasChildren = node.children.length > 0;
   const clients = clientsByChannel.get(node.cid) || [];
   const hasContent = hasChildren || clients.length > 0;
@@ -191,7 +255,6 @@ function ChannelTreeNode({
     e.dataTransfer.effectAllowed = 'move';
     setDraggedCid(node.cid);
   };
-
   /**
    * 根据鼠标在行内的纵向位置判断落点：
    * 上沿 30% 放到目标之前，下沿 30% 放到目标之后，中间 40% 表示拖进目标内部。
@@ -206,7 +269,21 @@ function ChannelTreeNode({
     return 'inside';
   };
 
+  /** 拖客户端进来：任意频道都可以作为目标，只要不是它当前所在的频道 */
+  const clientDroppable = isAdmin && !!draggedClid && draggedClientCid !== node.cid;
+
   const handleDragOver = (e: React.DragEvent) => {
+    if (isClientDrag(e)) {
+      if (!clientDroppable) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'move';
+      // 客户端只能在频道之间平移，没有「之前/之后」的语义，落点统一按「移入」处理
+      setDropPos(null);
+      setClientOver(true);
+      return;
+    }
+    setClientOver(false);
     if (!draggedCid || isDragged) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
@@ -218,13 +295,28 @@ function ChannelTreeNode({
     setDropPos(pos);
   };
 
-  const handleDragLeave = () => setDropPos(null);
+  const handleDragLeave = () => {
+    setDropPos(null);
+    setClientOver(false);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isClientDrag(e)) {
+      setClientOver(false);
+      setDropPos(null);
+      if (!clientDroppable) return;
+      const clid = Number(e.dataTransfer.getData(CLIENT_DRAG_TYPE));
+      if (!clid || draggedClientCid === node.cid) return;
+      onClientDrop(clid, node.cid);
+      setExpanded(true);
+      return;
+    }
+
     const pos = dropPos;
     setDropPos(null);
+    setClientOver(false);
     const cid = Number(e.dataTransfer.getData('text/plain'));
     if (!cid || cid === node.cid || !pos) return;
 
@@ -243,6 +335,8 @@ function ChannelTreeNode({
   const handleDragEnd = () => {
     setDraggedCid(null);
     setDropPos(null);
+    setClientOver(false);
+    onClientDragEnd();
   };
 
   return (
@@ -262,6 +356,7 @@ function ChannelTreeNode({
             ROW_PADDING,
             isAdmin && 'cursor-grab active:cursor-grabbing',
             dropPos === 'inside' && 'bg-primary/15 ring-2 ring-primary/50',
+            clientOver && 'bg-primary/20 ring-2 ring-primary/50',
             isDragged && 'opacity-40',
           )}
           style={{ paddingLeft: `${depth * INDENT + 10}px` }}
@@ -343,6 +438,11 @@ function ChannelTreeNode({
               draggedCid={draggedCid}
               canDropInto={canDropInto}
               onDropInto={(cid, targetCid) => onDrop(cid, targetCid, null)}
+              draggedClid={draggedClid}
+              draggedClientCid={draggedClientCid}
+              onClientDragStart={onClientDragStart}
+              onClientDragEnd={onClientDragEnd}
+              onClientDrop={onClientDrop}
             />
           ))}
           {node.children.map((child, i) => (
@@ -361,6 +461,11 @@ function ChannelTreeNode({
               draggedCid={draggedCid}
               setDraggedCid={setDraggedCid}
               canDropInto={canDropInto}
+              draggedClid={draggedClid}
+              draggedClientCid={draggedClientCid}
+              onClientDragStart={onClientDragStart}
+              onClientDragEnd={onClientDragEnd}
+              onClientDrop={onClientDrop}
             />
           ))}
         </>
@@ -378,6 +483,7 @@ export default function Channels() {
   const deleteChannel = useDeleteChannel();
   const editChannel = useEditChannel();
   const moveChannel = useMoveChannel();
+  const moveClient = useMoveClient();
 
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ cid: number; name: string } | null>(null);
@@ -385,6 +491,7 @@ export default function Channels() {
   const [editForm, setEditForm] = useState({ channel_name: '', channel_topic: '', channel_password: '' });
   const [newName, setNewName] = useState('');
   const [draggedCid, setDraggedCid] = useState<number | null>(null);
+  const [draggedClid, setDraggedClid] = useState<number | null>(null);
 
   const tree = useMemo(() => {
     if (!channelData || !Array.isArray(channelData)) return [];
@@ -436,6 +543,22 @@ export default function Channels() {
     }
     return map;
   }, [clientData]);
+
+  /** cid → 频道名，用于移动客户端后的提示文案 */
+  const channelNameOf = (cid: number) => {
+    if (!Array.isArray(channelData)) return `#${cid}`;
+    const found = channelData.find((ch: any) => Number(ch.cid) === cid);
+    return found?.channel_name || `#${cid}`;
+  };
+
+  /** 正在被拖动的客户端当前所在频道 */
+  const draggedClientCid = useMemo(() => {
+    if (!draggedClid) return null;
+    for (const [cid, list] of clientsByChannel) {
+      if (list.some((c) => c.clid === draggedClid)) return cid;
+    }
+    return null;
+  }, [draggedClid, clientsByChannel]);
 
   if (!selectedConfigId || !selectedSid) return <EmptyState icon={Hash} title="未选择服务器" />;
   if (channelsLoading) return <PageLoader />;
@@ -530,6 +653,29 @@ export default function Channels() {
     );
   };
 
+  /** 拖动客户端到频道：直接调 clientmove 换频道，没有排序概念 */
+  const handleClientDrop = (clid: number, targetCid: number) => {
+    const entry = Array.from(clientsByChannel.values()).flat().find((c) => c.clid === clid);
+    if (entry && entry.cid === targetCid) {
+      toast('该客户端已在目标频道');
+      setDraggedClid(null);
+      return;
+    }
+    const nickname = entry?.client_nickname ?? '客户端';
+    const channelName = channelNameOf(targetCid);
+    moveClient.mutate(
+      { clid, cid: targetCid },
+      {
+        onSuccess: () => toast.success(`已将「${nickname}」移到「${channelName}」`),
+        onError: (err: any) => {
+          const msg = err?.response?.data?.error || '移动客户端失败';
+          toast.error(msg);
+        },
+      },
+    );
+    setDraggedClid(null);
+  };
+
   const totalClients = clientsByChannel.size > 0
     ? Array.from(clientsByChannel.values()).reduce((sum, arr) => sum + arr.length, 0)
     : 0;
@@ -559,7 +705,7 @@ export default function Channels() {
             </CardTitle>
             {isAdmin && (
               <span className="text-[11px] text-muted-foreground/70">
-                拖动频道：悬停在目标上沿或下沿显示横线时放到同级，悬停中间（含该频道的用户列表）时设为子频道
+                拖动频道：悬停在目标上沿或下沿显示横线时放到同级，悬停中间（含该频道的用户列表）时设为子频道 · 拖动用户：放到目标频道上即可切换该用户所在频道
               </span>
             )}
           </div>
@@ -582,6 +728,11 @@ export default function Channels() {
                   draggedCid={draggedCid}
                   setDraggedCid={setDraggedCid}
                   canDropInto={canDropInto}
+                  draggedClid={draggedClid}
+                  draggedClientCid={draggedClientCid}
+                  onClientDragStart={setDraggedClid}
+                  onClientDragEnd={() => setDraggedClid(null)}
+                  onClientDrop={handleClientDrop}
                 />
               ))}
             </div>
