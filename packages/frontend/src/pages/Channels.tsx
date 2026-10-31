@@ -14,7 +14,7 @@ import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Hash, Plus, Trash2, Pencil, ChevronRight, ChevronDown, Users, Lock, Volume2 } from 'lucide-react';
+import { Hash, Plus, Trash2, Pencil, ChevronRight, ChevronDown, Users, Lock, Volume2, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ChannelNode {
@@ -26,6 +26,8 @@ interface ChannelNode {
   channel_flag_permanent: number;
   channel_flag_password: number;
   channel_codec_quality: number;
+  /** TeamSpeak 的排序值，稀疏且不连续，只能用来作为「插到某个兄弟之前」的参照 */
+  channel_order: number;
   children: ChannelNode[];
 }
 
@@ -38,6 +40,15 @@ interface ClientInfo {
   client_input_muted: number;
 }
 
+/** 拖拽落点：放在目标之前、拖进目标内部、放在目标之后 */
+type DropPosition = 'before' | 'inside' | 'after';
+
+/** 每一级缩进的像素宽度 */
+const INDENT = 20;
+
+/** 树形行高，比原先高一档，方便点击与拖拽 */
+const ROW_PADDING = 'py-2';
+
 function buildTree(channels: any[]): ChannelNode[] {
   const normalized = channels.map((ch) => ({
     ...ch,
@@ -47,6 +58,7 @@ function buildTree(channels: any[]): ChannelNode[] {
     channel_flag_permanent: Number(ch.channel_flag_permanent) || 0,
     channel_flag_password: Number(ch.channel_flag_password) || 0,
     channel_codec_quality: Number(ch.channel_codec_quality) || 0,
+    channel_order: Number(ch.channel_order) || 0,
     channel_topic: ch.channel_topic || '',
   }));
   const map = new Map<number, ChannelNode>();
@@ -57,21 +69,75 @@ function buildTree(channels: any[]): ChannelNode[] {
     if (ch.pid === 0) roots.push(node);
     else map.get(ch.pid)?.children.push(node);
   });
+  // 按服务端返回的 order 排序，保证界面顺序与 TeamSpeak 一致
+  const byOrder = (a: ChannelNode, b: ChannelNode) => a.channel_order - b.channel_order;
+  roots.sort(byOrder);
+  map.forEach((node) => node.children.sort(byOrder));
   return roots;
 }
 
-function ClientEntry({ client, depth }: { client: ClientInfo; depth: number }) {
+interface ClientEntryProps {
+  client: ClientInfo;
+  depth: number;
+  /** 该客户端所在频道的 cid，拖到客户端行上等价于成为该频道的子频道 */
+  parentCid: number;
+  draggable: boolean;
+  draggedCid: number | null;
+  canDropInto: (targetCid: number) => boolean;
+  onDropInto: (draggedCid: number, targetCid: number) => void;
+}
+
+/**
+ * 频道下的客户端行。它同时是一个拖拽落点：
+ * 把频道拖到「频道行与它下面的客户端之间」时，语义等同于放进该频道内部。
+ */
+function ClientEntry({
+  client, depth, parentCid, draggable, draggedCid, canDropInto, onDropInto,
+}: ClientEntryProps) {
+  const [over, setOver] = useState(false);
+  const droppable = draggable && !!draggedCid && canDropInto(parentCid);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!droppable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    setOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.stopPropagation();
+    setOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    if (!droppable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setOver(false);
+    const cid = Number(e.dataTransfer.getData('text/plain'));
+    if (!cid || cid === parentCid) return;
+    onDropInto(cid, parentCid);
+  };
+
   return (
     <div
-      className="flex items-center gap-1.5 py-0.5 px-2 text-xs text-muted-foreground"
-      style={{ paddingLeft: `${depth * 16 + 28}px` }}
+      className={cn(
+        'flex items-center gap-2 py-1.5 px-2 text-[13px] text-muted-foreground transition-colors',
+        over && 'bg-primary/15 ring-1 ring-primary/40 rounded-md',
+      )}
+      style={{ paddingLeft: `${depth * INDENT + 36}px` }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onDragEnter={handleDragOver}
     >
-      <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center text-[8px] font-mono-data text-primary shrink-0">
+      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-mono-data text-primary shrink-0">
         {client.client_nickname?.[0]?.toUpperCase() || '?'}
       </div>
       <span className="truncate">{client.client_nickname}</span>
-      {client.client_away === 1 && <Badge variant="warning" className="text-[8px] px-1 py-0 h-3.5">离开</Badge>}
-      {client.client_input_muted === 1 && !client.client_away && <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5">静音</Badge>}
+      {client.client_away === 1 && <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-4">离开</Badge>}
+      {client.client_input_muted === 1 && !client.client_away && <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4">静音</Badge>}
     </div>
   );
 }
@@ -79,27 +145,43 @@ function ClientEntry({ client, depth }: { client: ClientInfo; depth: number }) {
 interface TreeNodeProps {
   node: ChannelNode;
   depth?: number;
+  /** 在兄弟节点中的序号，用于计算插入位置 */
+  index: number;
+  /** 父频道 cid，顶层为 0 */
+  parentCid: number;
+  /** 下一个兄弟频道的 order 值；已经是最后一个时为 null */
+  nextOrder: number | null;
   isAdmin: boolean;
   clientsByChannel: Map<number, ClientInfo[]>;
   onDelete: (cid: number, name: string) => void;
   onEdit: (node: ChannelNode) => void;
-  onDrop: (draggedCid: number, targetCid: number) => void;
+  /**
+   * 移动频道。
+   * @param newPid 目标父频道 cid
+   * @param beforeOrder 插到哪个 order 值之前；为 null 表示不调整顺序（只换父级）
+   */
+  onDrop: (draggedCid: number, newPid: number, beforeOrder: number | null) => void;
   draggedCid: number | null;
   setDraggedCid: (cid: number | null) => void;
+  canDropInto: (targetCid: number) => boolean;
 }
 
-function ChannelTreeNode({ node, depth = 0, isAdmin, clientsByChannel, onDelete, onEdit, onDrop, draggedCid, setDraggedCid }: TreeNodeProps) {
+function ChannelTreeNode({
+  node, depth = 0, index, parentCid, nextOrder, isAdmin, clientsByChannel,
+  onDelete, onEdit, onDrop, draggedCid, setDraggedCid, canDropInto,
+}: TreeNodeProps) {
   const [expanded, setExpanded] = useState(true);
-  const [dropOver, setDropOver] = useState(false);
+  const [dropPos, setDropPos] = useState<DropPosition | null>(null);
   const hasChildren = node.children.length > 0;
   const clients = clientsByChannel.get(node.cid) || [];
   const hasContent = hasChildren || clients.length > 0;
   const isSpacer = node.channel_name.startsWith('[spacer') || node.channel_name.startsWith('[*spacer');
+  const isDragged = draggedCid === node.cid;
 
   if (isSpacer) {
     return (
-      <div className="py-0.5" style={{ paddingLeft: `${depth * 16 + 8}px` }}>
-        <div className="border-t border-border/40 my-1" />
+      <div style={{ paddingLeft: `${depth * INDENT + 8}px` }}>
+        <div className="border-t border-border/40 my-2" />
       </div>
     );
   }
@@ -110,98 +192,167 @@ function ChannelTreeNode({ node, depth = 0, isAdmin, clientsByChannel, onDelete,
     setDraggedCid(node.cid);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (draggedCid && draggedCid !== node.cid) {
-      setDropOver(true);
-    }
+  /**
+   * 根据鼠标在行内的纵向位置判断落点：
+   * 上沿 30% 放到目标之前，下沿 30% 放到目标之后，中间 40% 表示拖进目标内部。
+   * 上沿/下沿让频道能升到目标的同级，从而把频道从子层级里拖出来。
+   */
+  const computePosition = (e: React.DragEvent): DropPosition => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offset = e.clientY - rect.top;
+    const ratio = offset / rect.height;
+    if (ratio < 0.3) return 'before';
+    if (ratio > 0.7) return 'after';
+    return 'inside';
   };
 
-  const handleDragLeave = () => setDropOver(false);
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!draggedCid || isDragged) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const pos = computePosition(e);
+    if (pos === 'inside' && !canDropInto(node.cid)) {
+      setDropPos(null);
+      return;
+    }
+    setDropPos(pos);
+  };
+
+  const handleDragLeave = () => setDropPos(null);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setDropOver(false);
-    const cidStr = e.dataTransfer.getData('text/plain');
-    const cid = Number(cidStr);
-    if (cid && cid !== node.cid) {
-      onDrop(cid, node.cid);
+    const pos = dropPos;
+    setDropPos(null);
+    const cid = Number(e.dataTransfer.getData('text/plain'));
+    if (!cid || cid === node.cid || !pos) return;
+
+    if (pos === 'inside') {
+      // 成为子频道；服务端会把新子频道放在最前面，不再额外调整顺序
+      onDrop(cid, node.cid, null);
+      setExpanded(true);
+    } else if (pos === 'before') {
+      onDrop(cid, parentCid, node.channel_order);
+    } else {
+      // 放到目标之后 = 插到下一个兄弟之前；目标已是最后一个时退回目标自身的 order
+      onDrop(cid, parentCid, nextOrder ?? node.channel_order);
     }
   };
 
-  const handleDragEnd = () => setDraggedCid(null);
+  const handleDragEnd = () => {
+    setDraggedCid(null);
+    setDropPos(null);
+  };
 
   return (
     <div>
-      <div
-        className={cn(
-          'flex items-center gap-1 py-1 px-2 rounded-sm hover:bg-muted/30 transition-colors group text-sm',
-          isAdmin && 'cursor-grab active:cursor-grabbing',
-          dropOver && 'bg-primary/10 ring-1 ring-primary/40',
-          draggedCid === node.cid && 'opacity-40',
-        )}
-        style={{ paddingLeft: `${depth * 16 + 4}px` }}
-        draggable={isAdmin}
-        onDragStart={isAdmin ? handleDragStart : undefined}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onDragEnd={handleDragEnd}
-      >
-        {hasContent ? (
-          <button onClick={() => setExpanded(!expanded)} className="p-0.5 hover:bg-muted rounded">
-            {expanded ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-          </button>
-        ) : (
-          <span className="w-4" />
+      <div className="relative">
+        {/* 放到目标之前 */}
+        {dropPos === 'before' && (
+          <div
+            className="absolute top-0 h-0.5 bg-primary rounded-full z-10"
+            style={{ left: `${depth * INDENT + 8}px`, right: '8px' }}
+          />
         )}
 
-        <Hash className="h-3.5 w-3.5 text-primary/70 shrink-0" />
-
-        <span className="truncate flex-1">{node.channel_name}</span>
-
-        <span className="text-[10px] font-mono-data text-muted-foreground/50 shrink-0">#{node.cid}</span>
-
-        {isAdmin && (
-          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => onEdit(node)}
-              className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Pencil className="h-3 w-3" />
-            </button>
-            <button
-              onClick={() => onDelete(node.cid, node.channel_name)}
-              className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
-            >
-              <Trash2 className="h-3 w-3" />
-            </button>
-          </div>
-        )}
-
-        <div className="flex items-center gap-1.5 ml-1">
-          {node.channel_flag_password === 1 && <Lock className="h-3 w-3 text-amber-400/60" />}
-          {(node.total_clients > 0 || clients.length > 0) && (
-            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground font-mono-data">
-              <Users className="h-3 w-3" />
-              {clients.length || node.total_clients}
-            </span>
+        <div
+          className={cn(
+            'flex items-center gap-1.5 px-2.5 rounded-md hover:bg-muted/30 transition-colors group text-sm',
+            ROW_PADDING,
+            isAdmin && 'cursor-grab active:cursor-grabbing',
+            dropPos === 'inside' && 'bg-primary/15 ring-2 ring-primary/50',
+            isDragged && 'opacity-40',
           )}
+          style={{ paddingLeft: `${depth * INDENT + 10}px` }}
+          draggable={isAdmin}
+          onDragStart={isAdmin ? handleDragStart : undefined}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onDragEnd={handleDragEnd}
+        >
+          {isAdmin && (
+            <GripVertical className="h-3.5 w-3.5 text-muted-foreground/30 shrink-0 -ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+          )}
+
+          {hasContent ? (
+            <button onClick={() => setExpanded(!expanded)} className="p-0.5 hover:bg-muted rounded shrink-0">
+              {expanded
+                ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+            </button>
+          ) : (
+            <span className="w-4 shrink-0" />
+          )}
+
+          <Hash className="h-4 w-4 text-primary/70 shrink-0" />
+
+          <span className="truncate flex-1 font-medium">{node.channel_name}</span>
+
+          <span className="text-[11px] font-mono-data text-muted-foreground/50 shrink-0">#{node.cid}</span>
+
+          {isAdmin && (
+            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              <button
+                onClick={() => onEdit(node)}
+                title="编辑频道"
+                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => onDelete(node.cid, node.channel_name)}
+                title="删除频道"
+                className="p-1.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 ml-1 shrink-0">
+            {node.channel_flag_password === 1 && <Lock className="h-3.5 w-3.5 text-amber-400/60" />}
+            {(node.total_clients > 0 || clients.length > 0) && (
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground font-mono-data">
+                <Users className="h-3.5 w-3.5" />
+                {clients.length || node.total_clients}
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* 放到目标之后 */}
+        {dropPos === 'after' && (
+          <div
+            className="absolute bottom-0 h-0.5 bg-primary rounded-full z-10"
+            style={{ left: `${depth * INDENT + 8}px`, right: '8px' }}
+          />
+        )}
       </div>
 
       {expanded && (
         <>
           {clients.map((client) => (
-            <ClientEntry key={client.clid} client={client} depth={depth + 1} />
+            <ClientEntry
+              key={client.clid}
+              client={client}
+              depth={depth + 1}
+              parentCid={node.cid}
+              draggable={isAdmin}
+              draggedCid={draggedCid}
+              canDropInto={canDropInto}
+              onDropInto={(cid, targetCid) => onDrop(cid, targetCid, null)}
+            />
           ))}
-          {node.children.map((child) => (
+          {node.children.map((child, i) => (
             <ChannelTreeNode
               key={child.cid}
               node={child}
               depth={depth + 1}
+              index={i}
+              parentCid={node.cid}
+              nextOrder={node.children[i + 1]?.channel_order ?? null}
               isAdmin={isAdmin}
               clientsByChannel={clientsByChannel}
               onDelete={onDelete}
@@ -209,6 +360,7 @@ function ChannelTreeNode({ node, depth = 0, isAdmin, clientsByChannel, onDelete,
               onDrop={onDrop}
               draggedCid={draggedCid}
               setDraggedCid={setDraggedCid}
+              canDropInto={canDropInto}
             />
           ))}
         </>
@@ -238,6 +390,32 @@ export default function Channels() {
     if (!channelData || !Array.isArray(channelData)) return [];
     return buildTree(channelData);
   }, [channelData]);
+
+  /** cid → 父 cid 的映射，用于判断层级关系 */
+  const parentOf = useMemo(() => {
+    const map = new Map<number, number>();
+    if (Array.isArray(channelData)) {
+      for (const ch of channelData) map.set(Number(ch.cid), Number(ch.pid));
+    }
+    return map;
+  }, [channelData]);
+
+  /** target 是否是 dragged 的后代；是的话就不能把 dragged 拖进 target */
+  const isDescendantOf = (targetCid: number, ancestorCid: number) => {
+    let current = parentOf.get(targetCid);
+    let guard = 0;
+    while (current && guard++ < 200) {
+      if (current === ancestorCid) return true;
+      current = parentOf.get(current);
+    }
+    return false;
+  };
+
+  const canDropInto = (targetCid: number) => {
+    if (!draggedCid) return false;
+    if (targetCid === draggedCid) return false;
+    return !isDescendantOf(targetCid, draggedCid);
+  };
 
   const clientsByChannel = useMemo(() => {
     const map = new Map<number, ClientInfo[]>();
@@ -294,11 +472,62 @@ export default function Channels() {
     });
   };
 
-  const handleDrop = (draggedCid: number, targetCid: number) => {
-    moveChannel.mutate({ cid: draggedCid, data: { cpid: targetCid } }, {
-      onSuccess: () => toast.success('频道已移动'),
-      onError: () => toast.error('移动频道失败'),
-    });
+  /**
+   * 两步法移动频道：
+   * 1. 父级变化时先发 `channelmove { cpid }`（TeamSpeak 跨父级时只接受不带 order 的调用，
+   *    传了 order 会报 `779 invalid channel order`）。
+   * 2. 需要调整同级顺序时再发 `channeledit { channel_order }`，语义是大致「占住该 order 的位置」。
+   *    服务端对 channel_order 校验很严，失败（779）属于常态，因此顺序调整是 best-effort：
+   *    父级变更成功就视为成功，顺序不生效时给出提示，但不把整次拖拽判为失败。
+   */
+  const handleDrop = (cid: number, newPid: number, beforeOrder: number | null) => {
+    if (cid === newPid) return;
+    if (newPid !== 0 && isDescendantOf(newPid, cid)) {
+      toast.error('不能把频道移动到它自己的子频道下');
+      return;
+    }
+
+    const currentPid = parentOf.get(cid) ?? 0;
+    const pidChanged = currentPid !== newPid;
+    const doneText = newPid === 0 ? '频道已移到顶层' : '频道已移动';
+
+    // 既没有换父级、也没有顺序参考点 —— 落点与原位置相同，不做任何请求
+    if (!pidChanged && beforeOrder === null) {
+      setDraggedCid(null);
+      return;
+    }
+
+    const applyOrder = () => {
+      if (beforeOrder === null) {
+        toast.success(doneText);
+        return;
+      }
+      editChannel.mutate(
+        { cid, data: { channel_order: beforeOrder } },
+        {
+          onSuccess: () => toast.success(doneText),
+          onError: () => {
+            if (pidChanged) toast.success(doneText);
+            else toast.error('TeamSpeak 拒绝了该位置的排序调整，频道顺序未改变');
+          },
+        },
+      );
+    };
+
+    setDraggedCid(null);
+
+    if (!pidChanged) {
+      applyOrder();
+      return;
+    }
+
+    moveChannel.mutate(
+      { cid, data: { cpid: newPid } },
+      {
+        onSuccess: applyOrder,
+        onError: () => toast.error('移动频道失败'),
+      },
+    );
   };
 
   const totalClients = clientsByChannel.size > 0
@@ -323,18 +552,28 @@ export default function Channels() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <Volume2 className="h-4 w-4 text-primary" />
-            频道树
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Volume2 className="h-4 w-4 text-primary" />
+              频道树
+            </CardTitle>
+            {isAdmin && (
+              <span className="text-[11px] text-muted-foreground/70">
+                拖动频道：悬停在目标上沿或下沿显示横线时放到同级，悬停中间（含该频道的用户列表）时设为子频道
+              </span>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[600px]">
             <div className="space-y-0">
-              {tree.map((node) => (
+              {tree.map((node, i) => (
                 <ChannelTreeNode
                   key={node.cid}
                   node={node}
+                  index={i}
+                  parentCid={0}
+                  nextOrder={tree[i + 1]?.channel_order ?? null}
                   isAdmin={isAdmin}
                   clientsByChannel={clientsByChannel}
                   onDelete={(cid, name) => setDeleteTarget({ cid, name })}
@@ -342,6 +581,7 @@ export default function Channels() {
                   onDrop={handleDrop}
                   draggedCid={draggedCid}
                   setDraggedCid={setDraggedCid}
+                  canDropInto={canDropInto}
                 />
               ))}
             </div>
