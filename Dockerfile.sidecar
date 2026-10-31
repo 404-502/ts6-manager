@@ -11,5 +11,13 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build /sidecar /usr/local/bin/sidecar
+
+# Non-root runtime user (uid 1001); /tmp is already world-writable in debian
+RUN useradd -r -u 1001 -m -d /home/ts6 ts6 && \
+    chmod 755 /usr/local/bin/sidecar && \
+    chown -R ts6:ts6 /home/ts6
+ENV HOME=/home/ts6
+USER ts6
+
 EXPOSE 9800
 CMD ["sidecar"]

@@ -1,9 +1,10 @@
 #### 声明：
 ![AI Assisted](https://img.shields.io/badge/AI%20Assisted-Project-00ADD8?style=for-the-badge&logo=dependabot&logoColor=white)
 
-# TS6 Manager 汉化版
+# TS6 Manager 中文增强版
 
-> 本仓库是 [clusterzx/ts6-manager](https://github.com/clusterzx/ts6-manager.git) 的简体中文汉化版，Web 界面已全部翻译为中文。
+> 本仓库基于 [clusterzx/ts6-manager](https://github.com/clusterzx/ts6-manager.git) 二次开发：
+> **界面全量汉化** + **功能增强**（文件浏览器、频道树拖拽、权限细项中文名）+ **安全加固**。
 
 TeamSpeak 服务器的 Web 管理界面。在浏览器中即可管理虚拟服务器、频道、客户端、权限、音乐机器人、自动化流程，以及可嵌入的服务器小组件。
 
@@ -42,16 +43,18 @@ TeamSpeak 服务器的 Web 管理界面。在浏览器中即可管理虚拟服�
 ### 服务器管理
 - 仪表盘：实时服务器状态、带宽曲线与容量概览
 - 虚拟服务器列表，支持启动/停止
-- 频道树，支持拖拽排序
+- 频道树，支持拖拽调整层级与排序
 - 客户端列表，支持踢出、封禁、移动、戳一戳
+- 支持直接把客户端拖到其它频道完成换频道
 - 服务器组与频道组管理
 - 权限编辑器（服务器、频道、客户端、服务器组各级别）
+- 权限细项全中文显示，支持中英文检索
 - 封禁列表管理
 - 令牌 / 权限密钥管理
 - 投诉查看器
 - 离线消息系统
 - 服务器日志查看器，支持筛选
-- 频道文件浏览器，支持上传/下载
+- 频道文件浏览器：上传（拖拽 + 队列与进度）、下载、重命名、移动到其它频道、新建目录、目录内搜索与排序
 - 实例级设置
 
 ### 音乐机器人
@@ -92,14 +95,19 @@ TeamSpeak 服务器的 Web 管理界面。在浏览器中即可管理虚拟服�
 ### 安全
 - 首次使用设置向导创建管理员账户（无默认凭据）
 - 存储的凭据（API 密钥、SSH 密码）采用 AES-256-GCM 加密
-- 所有出站 HTTP 请求与 FFmpeg URL 均具备 SSRF 防护
-- 认证接口限流
-- JWT 访问令牌 + 刷新令牌轮换，含重用检测
+- 生产环境缺少 `ENCRYPTION_KEY` 时后端直接拒绝启动，避免用 JWT 密钥兼任加密密钥
+- 所有出站 HTTP 请求与 FFmpeg URL 均具备 SSRF 防护（含 DNS 重绑定复查）
+- 登录接口带图形验证码（5 位、一次性、5 分钟过期）与按「IP + 用户名」维度的限流
+- 反向代理来源限定为内网网段，伪造 `X-Forwarded-For` 无法绕过限流
+- JWT 访问令牌 + 刷新令牌轮换，含重用检测；每次请求回库校验账户状态与角色
 - 基于角色的访问控制（管理员 / 查看者）
 - 多租户场景下的按服务器访问控制
-- 机器人流程中的 WebQuery 命令白名单（拦截破坏性命令）
+- 文件浏览器的下载与列举接口需要管理员权限，用户传入的文件路径做统一合法性校验
+- 机器人流程中的 WebQuery 命令白名单（拦截破坏性命令）；Webhook 强制校验密钥且使用恒定时间比较
 - 需鉴权的 WebSocket 连接
 - 密码复杂度要求
+- 后端与 sidecar 容器以非 root 用户运行
+- 前端返回 CSP、`X-Content-Type-Options`、`Referrer-Policy` 等安全响应头
 
 ### 设置与运维
 - yt-dlp cookie 文件管理，用于访问有年龄限制或仅会员可见的 YouTube 内容
@@ -181,7 +189,12 @@ docker compose up -d
 5. 登录后，在 **设置 → 连接** 中添加 TeamSpeak 服务器连接（主机、WebQuery 端口、API 密钥）
 
 > `JWT_SECRET` 为**必填项** —— 生产环境下缺失该变量后端将拒绝启动。
-> `ENCRYPTION_KEY` 可选但强烈建议设置 —— 若未设置，将回退使用 `JWT_SECRET` 作为凭据加密密钥。
+> `ENCRYPTION_KEY` 在 `NODE_ENV=production`（Docker 镜像默认值）下也**必须设置**，否则后端会打印明确错误并直接退出；
+> 开发环境下才允许省略并回退使用 `JWT_SECRET`。
+
+> **端口暴露**：`docker-compose.yml` 只把前端 `3000` 暴露到所有网卡，
+> 后端 `3001` 与 sidecar `9800` 均绑定在 `127.0.0.1`，仅供本机调试与反代使用。
+> 若你把本机地址换到局域网，请通过前端 `3000` 访问，不要直接放开 3001 / 9800。
 
 ### 从源码构建
 
@@ -262,7 +275,7 @@ Docker 镜像会在启动时自动执行数据库迁移。
 | 变量 | 默认值 | 说明 |
 |----------|---------|-------------|
 | `JWT_SECRET` | — | **必填。** JWT 签名密钥，生产环境必须设置。 |
-| `ENCRYPTION_KEY` | — | 可选。AES-256-GCM 凭据加密的专用密钥，未设置时回退使用 `JWT_SECRET`。 |
+| `ENCRYPTION_KEY` | — | 生产环境**必填**。AES-256-GCM 凭据加密的专用密钥；`NODE_ENV=production` 下缺失将拒绝启动，仅开发环境回退使用 `JWT_SECRET`。 |
 | `PORT` | `3001` | 后端端口 |
 | `DATABASE_URL` | `file:./data/ts6webui.db` | SQLite 数据库路径 |
 | `JWT_ACCESS_EXPIRY` | `15m` | 访问令牌有效期 |
@@ -270,6 +283,8 @@ Docker 镜像会在启动时自动执行数据库迁移。
 | `FRONTEND_URL` | `http://localhost:3000` | CORS 来源 |
 | `MUSIC_DIR` | `/data/music` | 音乐文件下载目录 |
 | `SIDECAR_URL` | — | 可选。WebRTC sidecar 服务的完整 URL（如 `http://ts6-sidecar:9800`），sidecar 作为独立容器运行时需设置。 |
+| `FILE_UPLOAD_MAX_MB` | `100` | 单个文件上传大小上限（MB），作用于频道文件浏览器 |
+| `FILE_TRANSFER_PORT` | — | 可选。TeamSpeak 文件传输端口，服务端端口经过 NAT 映射时用于覆盖 |
 | `YT_COOKIE_FILE` | — | 可选。yt-dlp 使用的 Netscape 格式 cookies.txt 文件路径，也可通过界面中的 **设置 → YouTube** 管理。 |
 
 ## 环境变量 Sidecar（视频串流）
@@ -281,6 +296,7 @@ Docker 镜像会在启动时自动执行数据库迁移。
 | `SYNC_PLAYOUT_BUFFER_MS` | `4` | 供自适应节奏控制使用的小型播放缓冲区 |
 | `SYNC_VIDEO_BIAS_MS` | `4` | 可选的视频额外延迟，用于微调同步 |
 | `AUDIO_DELAY_MS` | `0` | 旧版 / 手动音频延迟选项。在当前节奏控制逻辑下通常应保持为 0 |
+| `SIDECAR_BIND` | `127.0.0.1` | sidecar 监听地址。直连二进制时默认只听回环；容器内需设为 `0.0.0.0` 才能被后端访问 |
 | `SIDECAR_DEBUG_LOGS` | `1` | 开启高频运行时细节的详细调试日志 |
 | `VIDEO_READ_RTP_BUFFER` | `4194304` | 视频端口的 UDP 系统套接字缓冲区 |
 | `AUDIO_READ_RTP_BUFFER` | `1048576` | 音频端口的 UDP 系统套接字缓冲区 |

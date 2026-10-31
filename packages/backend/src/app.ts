@@ -1,4 +1,5 @@
 import express, { type Express } from 'express';
+import { isIP } from 'node:net';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -37,8 +38,9 @@ import { requireServerAccess } from './middleware/server-access.js';
 export function createApp(): Express {
   const app = express();
 
-  // Trust first proxy (nginx / Coolify reverse proxy)
-  app.set('trust proxy', 1);
+  // Trust only the known reverse-proxy hops (nginx / Coolify / docker bridge networks).
+  // A blanket `true` or `1` would let clients spoof X-Forwarded-For and dodge IP rate limiting.
+  app.set('trust proxy', ['127.0.0.1/32', '::1/128', '172.16.0.0/12', '192.168.0.0/16']);
 
   app.use(helmet());
   app.use(cors({ origin: config.frontendUrl, credentials: true }));
@@ -50,15 +52,90 @@ export function createApp(): Express {
   });
 
   // H1: Rate limiting on auth endpoints
+  //
+  // Key = `${normalizedIp}|${username}`. Two notes:
+  //  - express-rate-limit 7.5.1 has no `ipKeyGenerator` helper, so IP normalization
+  //    (IPv6 /64 bucketing) is implemented here.
+  //  - IPv6 clients routinely rotate the low 64 bits of their address, so keying on
+  //    the full address would let them bypass the limit; bucket by prefix instead.
+  const normalizeIp = (ip: string | undefined): string => {
+    const raw = (ip ?? '').trim();
+    if (!raw) return 'unknown';
+
+    // Drop an IPv6 zone id, e.g. `fe80::1%eth0`.
+    const addr = raw.split('%')[0].toLowerCase();
+
+    // IPv4-mapped IPv6 (`::ffff:127.0.0.1`) is really an IPv4 client.
+    const mapped = addr.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/);
+    if (mapped) return mapped[1];
+
+    if (isIP(addr) === 4) return addr;
+    if (isIP(addr) !== 6) return 'unknown';
+
+    // Expand a possibly-compressed IPv6 address into exactly 8 hextets.
+    const expand = (value: string): string[] | null => {
+      let text = value;
+      const lastColon = text.lastIndexOf(':');
+      const tail = text.slice(lastColon + 1);
+      if (tail.includes('.')) {
+        const octets = tail.split('.').map((part) => Number.parseInt(part, 10));
+        if (octets.length !== 4 || octets.some((n) => Number.isNaN(n))) return null;
+        const hi = ((octets[0] << 8) | octets[1]).toString(16);
+        const lo = ((octets[2] << 8) | octets[3]).toString(16);
+        text = `${text.slice(0, lastColon + 1)}${hi}:${lo}`;
+      }
+
+      const halves = text.split('::');
+      if (halves.length > 2) return null;
+      if (halves.length === 1) {
+        const groups = halves[0].split(':');
+        return groups.length === 8 ? groups : null;
+      }
+      const left = halves[0] ? halves[0].split(':') : [];
+      const right = halves[1] ? halves[1].split(':') : [];
+      const missing = 8 - left.length - right.length;
+      if (missing < 0) return null;
+      return [...left, ...Array<string>(missing).fill('0'), ...right];
+    };
+
+    const groups = expand(addr);
+    if (!groups) return 'unknown';
+
+    const hextets = groups.map((group) => {
+      const parsed = Number.parseInt(group, 16);
+      return Number.isNaN(parsed) ? '0' : parsed.toString(16);
+    });
+
+    // Bucket at /64 — the interface-identifier part is not a stable client identity.
+    return `${hextets.slice(0, 4).join(':')}::/64`;
+  };
+
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 15,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: '尝试次数过多，请稍后再试' },
+    keyGenerator: (req) => {
+      const username = typeof req.body?.username === 'string' ? req.body.username.trim().toLowerCase() : '';
+      // Bound the username segment so absurd payloads cannot bloat limiter keys.
+      return `${normalizeIp(req.ip)}|${username.slice(0, 128)}`;
+    },
   });
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/refresh', authLimiter);
+
+  // Captcha image generation is unauthenticated and CPU-bound (PNG rendering),
+  // so it gets its own tighter budget.
+  const captchaLimiter = rateLimit({
+    windowMs: 60_000, // 1 minute
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: '请求过于频繁，请稍后再试' },
+    keyGenerator: (req) => normalizeIp(req.ip),
+  });
+  app.use('/api/auth/captcha', captchaLimiter);
 
   // Public routes
   app.use('/api/setup', setupRoutes);

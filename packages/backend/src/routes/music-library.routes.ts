@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireRole } from '../middleware/rbac.js';
 import { AppError } from '../middleware/error-handler.js';
+import { validateUrl } from '../utils/url-validator.js';
 import { downloadYouTube, searchYouTube, getYouTubeUrlInfo } from '../voice/audio/youtube.js';
 import multer from 'multer';
 import path from 'path';
@@ -136,6 +137,10 @@ musicLibraryRoutes.post('/youtube/download', async (req: Request, res: Response,
     const { url } = req.body;
     if (!url) throw new AppError(400, 'url 为必填项');
 
+    // SSRF 防护：下载前校验 URL，阻止内网 / 云元数据端点探测（yt-dlp 会实际发起连接）
+    const urlCheck = await validateUrl(String(url));
+    if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
+
     const { filePath, info } = await downloadYouTube(url, MUSIC_DIR);
     const fileStats = fs.statSync(filePath);
 
@@ -169,6 +174,11 @@ musicLibraryRoutes.post('/youtube/info', async (req: Request, res: Response, nex
   try {
     const { url } = req.body;
     if (!url) throw new AppError(400, 'url 为必填项');
+
+    // SSRF 防护：解析前校验 URL
+    const urlCheck = await validateUrl(String(url));
+    if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
+
     const info = await getYouTubeUrlInfo(url);
     res.json(info);
   } catch (err) { next(err); }
@@ -187,6 +197,10 @@ musicLibraryRoutes.post('/youtube/download-batch', async (req: Request, res: Res
 
     for (const url of urls) {
       try {
+        // SSRF 防护：批量下载时逐个校验每个 URL，任一非法则该条失败但不影响其它条目
+        const urlCheck = await validateUrl(String(url));
+        if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
+
         // Check if already downloaded
         const existing = await prisma.song.findFirst({
           where: { sourceUrl: url, serverConfigId: configId },

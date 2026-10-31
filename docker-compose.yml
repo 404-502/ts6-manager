@@ -25,7 +25,7 @@ services:
       # Optional: mount YouTube cookies file for yt-dlp
       # - ./cookies.txt:/app/cookies.txt
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     depends_on:
       - sidecar
     networks:
@@ -37,8 +37,9 @@ services:
     restart: unless-stopped
     environment:
       - SIDECAR_PORT=9800
+      - SIDECAR_BIND=0.0.0.0
     ports:
-      - "9800:9800"
+      - "127.0.0.1:9800:9800"
     networks:
       - ts6-network
 

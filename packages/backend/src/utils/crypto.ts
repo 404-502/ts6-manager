@@ -11,10 +11,23 @@ let encryptionKey: Buffer | null = null;
 function getKey(): Buffer {
   if (encryptionKey) return encryptionKey;
 
-  const source = process.env.ENCRYPTION_KEY || config.jwtSecret;
+  const isProduction = process.env.NODE_ENV === 'production';
+
   if (!process.env.ENCRYPTION_KEY) {
+    if (isProduction) {
+      // 生产环境强制要求独立的加密密钥：回落 JWT_SECRET 会让密钥轮换/泄露互相牵连，
+      // 且 JWT_SECRET 常见被写成默认值，加密等同于无保护。直接终止进程，避免带病启动。
+      console.error(
+        '[FATAL] 生产环境未设置 ENCRYPTION_KEY 环境变量。' +
+        '字段加密必须有独立的 32 字节以上随机密钥，禁止回落到 JWT_SECRET。' +
+        '请执行：export ENCRYPTION_KEY="$(openssl rand -hex 32)" 后重启服务。',
+      );
+      process.exit(1);
+    }
     console.warn('[WARN] ENCRYPTION_KEY not set. Using JWT_SECRET as fallback for field encryption. Set ENCRYPTION_KEY in production!');
   }
+
+  const source = process.env.ENCRYPTION_KEY || config.jwtSecret;
 
   // Derive a 32-byte key using scrypt
   encryptionKey = scryptSync(source, SALT, 32);

@@ -1,6 +1,31 @@
 import { Parser } from 'expr-eval';
 import type { PrismaClient } from '../../generated/prisma/index.js';
 
+/**
+ * evaluateCondition 的安全阈值。
+ *
+ * expr-eval 2.0.2 没有可用的修补版本（其表达式解析器存在可导致远程代码执行的
+ * 漏洞），因此这里做纵深防御：长度限制 + 字符集白名单 + 结果类型收敛，
+ * 让攻击面只剩下「纯表达式运算」，无法构造属性访问链或任意函数调用。
+ */
+
+/** 表达式最大长度（字符）。正常模板表达式通常 < 100 字符。 */
+const EXPR_MAX_LENGTH = 500;
+
+/**
+ * 表达式字符集白名单。
+ *
+ * 允许：字母、数字、空白、算术运算符 + - * / % ^、
+ *       比较运算符 = ! < >、逻辑运算符（and/or/not 关键字本身是字母）、
+ *       括号 ( )、单双引号 ' "、点 .、下划线 _、逗号 ,、冒号 :、问号 ?、
+ *       位运算符 & |、美元符号 $（变量名常见字符）。
+ *
+ * 刻意排除：`[` `]` `{` `}` `;` `\` `#` `@` 等可用于构造数组访问、
+ * 对象字面量、注释、转义序列的字符 —— 白名单模式下这些字符直接拒绝，
+ * 而不是黑名单式过滤，避免绕过。
+ */
+const EXPR_ALLOWED_CHARS = /^[A-Za-z0-9\s+\-*/%^<>=!().,'"_:?&|$]*$/;
+
 function resolveDotPath(obj: any, path: string): any {
   const parts = path.split('.');
   let current = obj;
@@ -187,14 +212,55 @@ export class ExecutionContext {
     return result;
   }
 
+  /**
+   * 求值条件表达式。
+   *
+   * 安全约束（expr-eval 2.0.2 属于无修补版本的依赖，其表达式解析器存在可导致
+   * 远程代码执行的已知漏洞）：
+   * 1. 表达式长度上限 EXPR_MAX_LENGTH（500 字符）；
+   * 2. 字符集白名单 EXPR_ALLOWED_CHARS —— 只允许模板实际用到的字符
+   *    （字母数字、空白、算术/比较/逻辑运算符、括号、引号、点、下划线、
+   *    逗号与美元符号），彻底挡掉 `[` `]` `{` `}` `;` `\` `@` `#` 等
+   *    可用于构造属性访问/函数调用的字符；
+   * 3. 求值结果必须是 boolean/number/string 原始值，对象/数组/函数一律拒绝。
+   *
+   * 任何校验失败或求值异常都返回 false，并且只写 debug 日志（避免把
+   * 表达式内容当作错误日志持续外泄）。
+   */
   async evaluateCondition(expression: string): Promise<boolean> {
     try {
+      if (typeof expression !== 'string') {
+        this.debugExpr(`non-string expression rejected: ${typeof expression}`);
+        return false;
+      }
+      if (expression.length > EXPR_MAX_LENGTH) {
+        this.debugExpr(`expression too long (${expression.length} > ${EXPR_MAX_LENGTH}) — rejected`);
+        return false;
+      }
+      if (!EXPR_ALLOWED_CHARS.test(expression)) {
+        this.debugExpr('expression contains disallowed characters — rejected');
+        return false;
+      }
+
       const scope = await this.buildExpressionScope();
       const result = this.exprParser.evaluate(expression, scope);
+
+      const resultType = typeof result;
+      if (resultType !== 'boolean' && resultType !== 'number' && resultType !== 'string') {
+        this.debugExpr(`expression returned non-primitive value (${resultType}) — rejected`);
+        return false;
+      }
       return !!result;
     } catch (err: any) {
-      console.warn(`[ExecutionContext] Expression evaluation failed: "${expression}" — ${err.message}`);
+      this.debugExpr(`expression evaluation failed: ${err?.message ?? 'unknown error'}`);
       return false;
+    }
+  }
+
+  /** 表达式相关日志只在 debug 级别输出，避免泄露用户配置内容。 */
+  private debugExpr(message: string): void {
+    if (process.env.BOT_EXPR_DEBUG === '1') {
+      console.debug(`[ExecutionContext] ${message}`);
     }
   }
 

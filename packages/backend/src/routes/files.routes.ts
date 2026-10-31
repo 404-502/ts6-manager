@@ -83,6 +83,47 @@ function assertAsciiFileName(name: string): void {
   }
 }
 
+/**
+ * 校验用户提交的文件/目录路径（name / dirname / oldname / newname）。
+ *
+ * 这些字符串会经 sshExecute 拼进 ServerQuery 命令串直接下发给 TeamSpeak，
+ * 因此必须在服务端做白名单校验：
+ *  - 不能为空
+ *  - 只能是可打印 ASCII（0x20-0x7E），与 TeamSpeak 文件系统限制一致
+ *  - 不能含反斜杠（避免 Windows 侧把它当分隔符）
+ *  - 不能含 `..` 段（避免穿越到当前频道之外的目录）
+ *  - 不能含连续 `//` 或以 `/` 结尾造成的空段
+ *  - 不能含 CR/LF（避免注入额外命令）
+ *
+ * 与 assertAsciiFileName 互补：本函数管整条路径的结构，assertAsciiFileName 管末段的语义提示。
+ */
+function assertSafePath(name: string, label = '路径'): string {
+  if (typeof name !== 'string' || name.length === 0) {
+    throw new AppError(400, `路径不合法：${label}不能为空。`);
+  }
+  if (/[\r\n]/.test(name)) {
+    throw new AppError(400, `路径不合法：${label}不能包含换行或回车字符。`);
+  }
+  // eslint-disable-next-line no-control-regex
+  if (!/^[\x20-\x7E]+$/.test(name)) {
+    throw new AppError(400, `路径不合法：${label}只能包含可打印 ASCII 字符（不支持中文或控制字符）。`);
+  }
+  if (name.includes('\\')) {
+    throw new AppError(400, `路径不合法：${label}不能包含反斜杠，请用正斜杠 / 分隔目录。`);
+  }
+  // 根目录单独放行，其余位置不允许出现空段（连续 // 或结尾 /）
+  if (name !== '/') {
+    const segments = name.split('/');
+    if (segments.some((seg, idx) => idx > 0 && seg === '')) {
+      throw new AppError(400, `路径不合法：${label}不能包含连续的 // 或以 / 结尾。`);
+    }
+    if (segments.some((seg) => seg === '..')) {
+      throw new AppError(400, `路径不合法：${label}不能包含 .. 上级目录段。`);
+    }
+  }
+  return name;
+}
+
 /** 把 TS 的 ft* 错误码翻译成用户能看懂的提示 */
 function mapFtError(err: any): Error {
   if (err instanceof TSApiError) {
@@ -180,7 +221,7 @@ function resolveTransferPort(serverPort: string | undefined): number {
 
 // List files in a channel directory
 // Uses shared SSH connection because ft* commands are not supported via WebQuery HTTP
-fileRoutes.get('/:cid', async (req: Request, res: Response, next) => {
+fileRoutes.get('/:cid', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const result = await sshExecute(req, 'ftgetfilelist', {
       cid: String(req.params.cid),
@@ -204,6 +245,7 @@ fileRoutes.get('/:cid', async (req: Request, res: Response, next) => {
 fileRoutes.post('/:cid/mkdir', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const dirname: string = req.body.dirname;
+    assertSafePath(dirname, '目录路径');
     assertAsciiFileName(dirname.split('/').filter(Boolean).pop() || '');
     const result = await sshExecute(req, 'ftcreatedir', {
       cid: String(req.params.cid),
@@ -220,7 +262,7 @@ fileRoutes.delete('/:cid/file', requireRole('admin'), async (req: Request, res: 
     const result = await sshExecute(req, 'ftdeletefile', {
       cid: String(req.params.cid),
       cpw: '',
-      name: req.body.name,
+      name: assertSafePath(String(req.body.name ?? ''), '文件名'),
     });
     res.json(result);
   } catch (err) { next(mapFtError(err)); }
@@ -233,6 +275,8 @@ fileRoutes.put('/:cid/rename', requireRole('admin'), async (req: Request, res: R
     if (!oldName || !newName) {
       return next(new AppError(400, 'oldName 与 newName 均为必填项。'));
     }
+    assertSafePath(oldName, '原路径');
+    assertSafePath(newName, '新路径');
     assertAsciiFileName(newName.split('/').filter(Boolean).pop() || '');
     const result = await sshExecute(req, 'ftrenamefile', {
       cid: String(req.params.cid),
@@ -254,6 +298,8 @@ fileRoutes.put('/:cid/move', requireRole('admin'), async (req: Request, res: Res
       return next(new AppError(400, 'oldName 与 targetCid 均为必填项。'));
     }
     const finalName = newName || oldName;
+    assertSafePath(oldName, '原路径');
+    assertSafePath(finalName, '目标路径');
     assertAsciiFileName(finalName.split('/').filter(Boolean).pop() || '');
     const params: Record<string, string> = {
       cid: String(req.params.cid),
@@ -307,12 +353,9 @@ fileRoutes.post('/:cid/upload', requireRole('admin'), upload.single('file'), asy
 });
 
 // Download a file by name (path is resolved from the query string)
-fileRoutes.get('/:cid/download', async (req: Request, res: Response, next) => {
+fileRoutes.get('/:cid/download', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
-    const name = String(req.query.name || '');
-    if (!name) {
-      return next(new AppError(400, '缺少 name 参数。'));
-    }
+    const name = assertSafePath(String(req.query.name || ''), '文件名');
     const initRows = await sshExecute(req, 'ftinitdownload', {
       clientftfid: '1',
       name,
@@ -345,12 +388,9 @@ fileRoutes.get('/:cid/download', async (req: Request, res: Response, next) => {
 });
 
 // Get details of a single entry (files only — TeamSpeak rejects directories here)
-fileRoutes.get('/:cid/info', async (req: Request, res: Response, next) => {
+fileRoutes.get('/:cid/info', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
-    const name = String(req.query.name || '');
-    if (!name) {
-      return next(new AppError(400, '缺少 name 参数。'));
-    }
+    const name = assertSafePath(String(req.query.name || ''), '文件名');
     const result = await sshExecute(req, 'ftgetfileinfo', {
       cid: String(req.params.cid),
       cpw: String(req.query.cpw || ''),

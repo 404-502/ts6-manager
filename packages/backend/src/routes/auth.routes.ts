@@ -7,12 +7,28 @@ import { config } from '../config.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { AppError } from '../middleware/error-handler.js';
 import { validatePassword } from '../utils/validate-password.js';
+import { createCaptcha, verifyCaptcha } from '../utils/captcha.js';
 
 export const authRoutes: Router = Router();
 
+// 图形验证码：无状态 id + data URL PNG，服务端内存持有答案，5 分钟有效
+authRoutes.get('/captcha', (_req: Request, res: Response, next) => {
+  try {
+    const { id, image } = createCaptcha();
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({ id, image });
+  } catch (err) { next(err); }
+});
+
 authRoutes.post('/login', async (req: Request, res: Response, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, captchaId, captchaCode } = req.body;
+
+    // 先校验验证码再查库：验证码错误不泄露任何账号信息，且同样消耗一次验证码
+    if (!captchaId || !captchaCode || !verifyCaptcha(String(captchaId), String(captchaCode))) {
+      throw new AppError(400, '验证码错误或已过期');
+    }
+
     if (!username || !password) throw new AppError(400, '用户名和密码为必填项');
 
     const prisma = req.app.locals.prisma;

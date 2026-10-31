@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireRole } from '../middleware/rbac.js';
 import { AppError } from '../middleware/error-handler.js';
+import { validateUrl } from '../utils/url-validator.js';
 import type { VoiceBotManager } from '../voice/voice-bot-manager.js';
 import { downloadYouTube } from '../voice/audio/youtube.js';
 import { playerWidgetToken } from './widget-public.routes.js';
@@ -220,6 +221,10 @@ musicBotRoutes.post('/:id/play-url', async (req: Request, res: Response, next) =
     const { url } = req.body;
     if (!url) throw new AppError(400, 'url 为必填项');
 
+    // SSRF 防护：交给 yt-dlp 之前校验 URL，阻止内网 / 云元数据端点探测
+    const urlCheck = await validateUrl(String(url));
+    if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
+
     const bot = manager.getBot(id);
     if (!bot) throw new AppError(404, '音乐机器人不存在');
     if (bot.status !== 'connected' && bot.status !== 'playing' && bot.status !== 'paused') {
@@ -271,6 +276,8 @@ musicBotRoutes.post('/:id/play-url', async (req: Request, res: Response, next) =
 
     res.json({ success: true, queueItem });
   } catch (err: any) {
+    // 保留 AppError 的状态码（例如 SSRF 校验返回的 400），其余错误仍按 500 上抛
+    if (err instanceof AppError) return next(err);
     next(new AppError(500, `播放 URL 失败：${err.message}`));
   }
 });
@@ -609,6 +616,11 @@ musicBotRoutes.post('/:id/stream/source', async (req: Request, res: Response, ne
     if (!bot) throw new AppError(404, '音乐机器人不存在');
     const { source } = req.body;
     if (!source) throw new AppError(400, 'source 为必填项');
+
+    // SSRF 防护：串流源会被 yt-dlp 解析 / 直接交给 sidecar 的 ffmpeg，需先校验
+    const urlCheck = await validateUrl(String(source));
+    if (!urlCheck.valid) throw new AppError(400, `URL 无效：${urlCheck.error}`);
+
     await bot.setVideoSource(source);
     res.json({ success: true });
   } catch (err) { next(err); }

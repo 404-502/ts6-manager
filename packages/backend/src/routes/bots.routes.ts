@@ -4,7 +4,7 @@ import { AppError } from '../middleware/error-handler.js';
 
 export const botRoutes: Router = Router();
 
-botRoutes.get('/', async (req: Request, res: Response, next) => {
+botRoutes.get('/', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const bots = await prisma.botFlow.findMany({
@@ -20,7 +20,7 @@ botRoutes.get('/', async (req: Request, res: Response, next) => {
   } catch (err) { next(err); }
 });
 
-botRoutes.get('/:botId', async (req: Request, res: Response, next) => {
+botRoutes.get('/:botId', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const bot = await prisma.botFlow.findUnique({ where: { id: parseInt(String(req.params.botId)) } });
@@ -126,7 +126,7 @@ botRoutes.post('/:botId/disable', requireRole('admin'), async (req: Request, res
   } catch (err) { next(err); }
 });
 
-botRoutes.get('/:botId/executions', async (req: Request, res: Response, next) => {
+botRoutes.get('/:botId/executions', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const executions = await prisma.botExecution.findMany({
@@ -138,7 +138,7 @@ botRoutes.get('/:botId/executions', async (req: Request, res: Response, next) =>
   } catch (err) { next(err); }
 });
 
-botRoutes.get('/:botId/executions/:execId/logs', async (req: Request, res: Response, next) => {
+botRoutes.get('/:botId/executions/:execId/logs', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const prisma = req.app.locals.prisma;
     const logs = await prisma.botExecutionLog.findMany({

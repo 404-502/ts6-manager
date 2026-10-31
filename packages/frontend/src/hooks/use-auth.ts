@@ -3,13 +3,20 @@ import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../stores/auth.store';
 import { useNavigate } from 'react-router-dom';
 
+export interface LoginCredentials {
+  username: string;
+  password: string;
+  captchaId: string;
+  captchaCode: string;
+}
+
 export function useLogin() {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: ({ username, password }: { username: string; password: string }) =>
-      authApi.login(username, password),
+    mutationFn: ({ username, password, captchaId, captchaCode }: LoginCredentials) =>
+      authApi.login(username, password, captchaId, captchaCode),
     onSuccess: (data) => {
       setAuth(data.accessToken, data.refreshToken, data.user);
       navigate('/dashboard');

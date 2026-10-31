@@ -1023,6 +1023,7 @@ func main() {
 			port = v
 		}
 	}
+	bind := envOrDefault("SIDECAR_BIND", "127.0.0.1")
 
 	sidecar := NewSidecar()
 	if err := sidecar.StartRTP(); err != nil {
@@ -1152,8 +1153,8 @@ func main() {
 		os.Exit(0)
 	}()
 
-	log.Printf("[Sidecar] HTTP API listening on :%d", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux); err != nil {
+	log.Printf("[Sidecar] HTTP API listening on %s:%d", bind, port)
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", bind, port), mux); err != nil {
 		log.Fatalf("HTTP server error: %v", err)
 	}
 }
