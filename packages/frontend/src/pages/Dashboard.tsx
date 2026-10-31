@@ -1,16 +1,42 @@
 import { useDashboard } from '@/hooks/use-dashboard';
+import { useBandwidthHistory } from '@/hooks/use-bandwidth-history';
 import { useServerStore } from '@/stores/server.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PageLoader } from '@/components/shared/LoadingSpinner';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { WidgetManagerModal } from '@/components/widget/WidgetManagerModal';
 import { formatBytes, formatUptime } from '@/lib/utils';
 import { Users, Activity, Clock, Hash, ArrowDownToLine, ArrowUpFromLine, Wifi, Server, LayoutGrid } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer } from 'recharts';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+/** Time ranges offered by the bandwidth chart; must match the backend. */
+const BANDWIDTH_RANGES = [
+  { value: '1h', label: '1 小时' },
+  { value: '6h', label: '6 小时' },
+  { value: '24h', label: '24 小时' },
+  { value: '7d', label: '7 天' },
+  { value: '30d', label: '30 天' },
+];
+
+/**
+ * Tick label for the bandwidth axis. Picks the format from the span that is
+ * actually visible rather than the selected range, so a 30 天 selection that only
+ * holds a few minutes of history does not print the same `MM-DD` over and over.
+ */
+function formatBucketLabel(ts: number, spanMs: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  if (spanMs > 24 * 60 * 60 * 1000) {
+    return `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 
 interface StatsCardProps {
   icon: React.ElementType;
@@ -44,25 +70,24 @@ export default function Dashboard() {
   const { selectedConfigId, selectedSid } = useServerStore();
   const { data, isLoading, error } = useDashboard();
   const isAdmin = useAuthStore((s) => s.isAdmin());
-  const [bandwidthHistory, setBandwidthHistory] = useState<any[]>([]);
+  const [bandwidthRange, setBandwidthRange] = useState('1h');
+  const { data: bandwidthHistory } = useBandwidthHistory(bandwidthRange);
   const [showWidgets, setShowWidgets] = useState(false);
 
-  // Build bandwidth history from periodic data
-  useEffect(() => {
-    if (data) {
-      setBandwidthHistory((prev) => {
-        const next = [
-          ...prev,
-          {
-            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-            in: data.bandwidth.incoming,
-            out: data.bandwidth.outgoing,
-          },
-        ];
-        return next.slice(-30); // Keep last 30 data points
-      });
-    }
-  }, [data]);
+  const bandwidthSeries = bandwidthHistory?.series ?? [];
+  // While the collected history is shorter than the selected range the axis is
+  // pinned to the data itself (one bucket of padding on the right) so the curve
+  // fills the chart evenly instead of being squeezed against the right edge.
+  // As samples accumulate the axis stretches back out to the full range on its own.
+  const bandwidthDomain: [number, number] = (() => {
+    if (!bandwidthHistory) return [Date.now() - 3600_000, Date.now()];
+    const { from, to, partial, bucketMs } = bandwidthHistory;
+    if (!partial || bandwidthSeries.length === 0) return [from, to];
+    const firstT = Number(bandwidthSeries[0].t);
+    const lastT = Number(bandwidthSeries[bandwidthSeries.length - 1].t);
+    return [firstT, Math.min(to, lastT + bucketMs)];
+  })();
+
 
   if (!selectedConfigId || !selectedSid) {
     return (
@@ -147,16 +172,30 @@ export default function Dashboard() {
         {/* Bandwidth Chart */}
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" />
-              带宽
-            </CardTitle>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Activity className="h-4 w-4 text-primary" />
+                带宽
+              </CardTitle>
+              <Select value={bandwidthRange} onValueChange={setBandwidthRange}>
+                <SelectTrigger className="h-7 w-[104px] text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BANDWIDTH_RANGES.map((r) => (
+                    <SelectItem key={r.value} value={r.value} className="text-xs">
+                      {r.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
-              {bandwidthHistory.length > 1 ? (
+              {bandwidthSeries.length > 1 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={bandwidthHistory}>
+                  <AreaChart data={bandwidthSeries}>
                     <defs>
                       <linearGradient id="inGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="hsl(186, 72%, 42%)" stopOpacity={0.3} />
@@ -167,11 +206,22 @@ export default function Dashboard() {
                         <stop offset="100%" stopColor="hsl(280, 55%, 60%)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="time" tick={{ fontSize: 10, fill: 'hsl(215, 16%, 50%)' }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="t"
+                      type="number"
+                      scale="time"
+                      domain={bandwidthDomain}
+                      tick={{ fontSize: 10, fill: 'hsl(215, 16%, 50%)' }}
+                      axisLine={false}
+                      tickLine={false}
+                      minTickGap={28}
+                      tickFormatter={(v) => formatBucketLabel(Number(v), bandwidthDomain[1] - bandwidthDomain[0])}
+                    />
                     <YAxis tick={{ fontSize: 10, fill: 'hsl(215, 16%, 50%)' }} axisLine={false} tickLine={false} tickFormatter={(v) => formatBytes(v)} width={60} />
                     <ReTooltip
                       contentStyle={{ background: 'hsl(218, 28%, 10%)', border: '1px solid hsl(215, 22%, 14%)', borderRadius: '6px', fontSize: '12px' }}
                       labelStyle={{ color: 'hsl(213, 20%, 85%)' }}
+                      labelFormatter={(v) => new Date(Number(v)).toLocaleString('zh-CN', { hour12: false })}
                       formatter={(value: number, name: string) => [formatBytes(value) + '/s', name === 'in' ? '下载' : '上传']}
                     />
                     <Area type="monotone" dataKey="in" stroke="hsl(186, 72%, 42%)" fill="url(#inGrad)" strokeWidth={2} />

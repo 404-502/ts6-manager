@@ -66,7 +66,27 @@ model TsServerConfig {
   radioStations RadioStation[]
   widgets       Widget[]
   musicRequests MusicRequest[]
+  bandwidthSamples BandwidthSample[]
 }
+
+// === Bandwidth history (server-side sampler) ===
+
+model BandwidthSample {
+  id              Int            @id @default(autoincrement())
+  serverConfigId  Int
+  serverConfig    TsServerConfig @relation(fields: [serverConfigId], references: [id], onDelete: Cascade)
+  virtualServerId Int            @default(1)
+  // Minute-aligned bucket start. Prisma stores DateTime as INTEGER epoch ms on SQLite.
+  bucketStart     DateTime
+  bytesIn         BigInt         @default(0)
+  bytesOut        BigInt         @default(0)
+  // Wall-clock milliseconds actually covered by this bucket, so a partially filled
+  // bucket still yields a correct bytes/second rate.
+  coveredMs       Int            @default(0)
+
+  @@unique([serverConfigId, virtualServerId, bucketStart])
+}
+
 
 model BotFlow {
   id              Int      @id @default(autoincrement())

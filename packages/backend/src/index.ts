@@ -6,6 +6,7 @@ import { ConnectionPool } from './ts-client/connection-pool.js';
 import { BotEngine } from './bot-engine/engine.js';
 import { VoiceBotManager } from './voice/voice-bot-manager.js';
 import { MusicCommandHandler } from './voice/music-command-handler.js';
+import { BandwidthSampler } from './services/bandwidth-sampler.js';
 import { config } from './config.js';
 import { setYtCookieFile } from './voice/audio/youtube.js';
 import jwt from 'jsonwebtoken';
@@ -83,6 +84,12 @@ async function main() {
   const musicCommandHandler = new MusicCommandHandler(prisma, voiceBotManager);
   voiceBotManager.setMusicCommandHandler(musicCommandHandler);
 
+  // Start continuous bandwidth sampling so the dashboard chart has history
+  // even while nobody has the page open.
+  const bandwidthSampler = new BandwidthSampler(prisma, connectionPool);
+  app.locals.bandwidthSampler = bandwidthSampler;
+  await bandwidthSampler.start();
+
   server.listen(config.port, () => {
     console.log(`[TS6 WebUI] Backend running on http://localhost:${config.port}`);
     console.log(`[TS6 WebUI] WebSocket available at ws://localhost:${config.port}/ws`);
@@ -92,6 +99,7 @@ async function main() {
   // Graceful shutdown
   const shutdown = async () => {
     console.log('\n[TS6 WebUI] Shutting down...');
+    await bandwidthSampler.stop();
     await voiceBotManager.stopAll();
     botEngine.destroy();
     connectionPool.destroy();
