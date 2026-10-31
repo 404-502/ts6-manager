@@ -42,8 +42,22 @@ export const messagesApi = {
 };
 
 export const logsApi = {
-  get: (configId: number, sid: number, lines = 100) =>
-    api.get(`/servers/${configId}/vs/${sid}/logs`, { params: { lines, reverse: 1 } }).then((r) => r.data),
+  /**
+   * 分页读取服务器日志。
+   * @param params.instance 0 = 虚拟服务器日志，1 = 实例日志（默认 1）
+   * @param params.page 页码，从 1 开始（默认 1）
+   * @param params.pageSize 每页行数，TS6 上限 100（默认 100）
+   */
+  get: (configId: number, sid: number, params: { instance?: number; page?: number; pageSize?: number } = {}) =>
+    api
+      .get(`/servers/${configId}/vs/${sid}/logs`, {
+        params: {
+          instance: params.instance ?? 1,
+          page: params.page ?? 1,
+          lines: params.pageSize ?? 100,
+        },
+      })
+      .then((r) => r.data),
 };
 
 export const filesApi = {
